@@ -31,4 +31,4 @@ Segments_800m_SA
 
 The raster contains an integer identifier for each segment. This identifier is used in subsequent calculations.
 
-![](images/clipboard-3207155972.png)
+![National 800m segmentation layer generated for the BII South Africa](images/segments.png)
