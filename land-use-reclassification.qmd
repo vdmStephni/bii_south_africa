@@ -1,0 +1,62 @@
+---
+title: "BII land use allocation"
+bibliography: references.bib
+---
+
+## Summary
+
+The NLC 2022 data were reclassified into broad land-use classes required by the BII workflow [@clements2026]. A second band records the available low, medium or high intensity class associated with the original land-cover category.
+
+## Input data
+
+-   South African National Land Cover 2022.
+-   A BII reclassification table linking each source class to:
+    1.  a broad BII land use class; and
+    2.  selected intensity class.
+
+The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. Intensity classes. Protected areas are not assigned directly from national land cover. They are added later during segment allocation using the SAPAD layer.
+
+## Data preparation
+
+The original national land cover classes were grouped into six broad BII land-use categories:
+
+| Value | BII land use       |
+|------:|--------------------|
+|     1 | Settlements        |
+|     2 | Timber plantations |
+|     3 | Tree crops         |
+|     4 | Croplands          |
+|     5 | Protected          |
+|     6 | Untransformed      |
+
+The preliminary intensity classes that could be used from the NLC 2022 were retained in a second band as:
+
+| Value | Intensity class          |
+|------:|--------------------------|
+|     0 | No within class gradient |
+|     1 | Unknown                  |
+|     2 | Low                      |
+|     3 | Medium                   |
+|     4 | High                     |
+
+## Analysis
+
+Each NLC class was assigned a broad BII land-use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.
+
+The resulting raster dataset contains three bands:
+
+``` text
+bii_land_use
+bii_intensity_class
+sanlc_class
+```
+
+The original national land-cover value is retained in `sanlc_class` for traceability.
+
+## Output
+
+Google Earth Engine asset:
+
+``` text
+NLC_reclass_BII_land_use_intensity
+```

@@ -1,0 +1,12 @@
+body {
+  line-height: 1.55;
+}
+.navbar-title {
+  font-weight: 600;
+}
+h2 {
+  margin-top: 2rem;
+}
+table {
+  font-size: 0.95rem;
+}

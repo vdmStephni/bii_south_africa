@@ -1,0 +1,38 @@
+---
+title: "South African BII land use intensity workflow"
+subtitle: "Segment-based land use and intensity for Biodiversity Intactness Index calculations"
+date: "23 July 2026"
+---
+
+## Summary
+
+This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.
+
+The unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:
+
+1.  one dominant BII land use class; and
+2.  one land use intensity score between 0 and 1.
+
+![](images/ChatGPT Image Jul 23, 2026, 05_10_55 PM.png)
+
+The workflow currently includes four steps:
+
+1.  [National segmentation](segmentation.qmd)
+2.  National [land use reclassification](land-use-reclassification.qmd)
+3.  National [segment land use and intensity allocation](segment-allocation.qmd)
+4.  Context-specific land use intensity score refinement of "untransformed"
+
+Case study for [Thicket-specific intensity refinement](thicket-intensity.qmd)
+
+## Current output structure
+
+| Band                     | Description                                         |
+|------------------------------------|------------------------------------|
+| `bii_land_use`           | Dominant BII land use class assigned to the segment |
+| `bii_land_use_intensity` | Segment-level land use intensity from 0 to 1        |
+
+Low values represent lower land use intensity and high values represent higher land use intensity.
+
+## Current status
+
+National segmentation and land cover reclassification are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as untransformed land.

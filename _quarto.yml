@@ -1,0 +1,28 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "South African BII land use intensity workflow"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: segmentation.qmd
+        text: Segmentation
+      - href: land-use-reclassification.qmd
+        text: Land-use reclassification
+      - href: segment-allocation.qmd
+        text: Segment allocation
+      - href: thicket-intensity.qmd
+        text: Thicket intensity
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: true
+    code-tools: true
+    css: styles.css
+
+execute:
+  freeze: auto
