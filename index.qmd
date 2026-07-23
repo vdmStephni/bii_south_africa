@@ -14,9 +14,9 @@ The unit of assessment is a spatial segment rather than an individual raster pix
 
 2.  one land use intensity score between 0 and 1.
 
-    ![](images/workflow.png){width="964"}
+    ![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png){width="671" height="438"}
 
-The workflow currently includes four steps:
+The pages are split into four sections with an additional case study:
 
 1.  [National segmentation](segmentation.qmd)
 2.  National [land use reclassification](land-use-reclassification.qmd)
@@ -25,15 +25,13 @@ The workflow currently includes four steps:
 
 Case study for [Thicket-specific intensity refinement](thicket-intensity.qmd)
 
-## Current output structure
+## Planned outputs
 
-| Band                     | Description                                         |
+| Band                     | Description                                                          |
 |------------------------------------|------------------------------------|
-| `bii_land_use`           | Dominant BII land use class assigned to the segment |
-| `bii_land_use_intensity` | Segment-level land use intensity from 0 to 1        |
-
-Low values represent lower land use intensity and high values represent higher land use intensity.
+| `bii_land_use`           | Dominant BII land use class assigned to each segment in South Africa |
+| `bii_land_use_intensity` | Segment-level land use intensity from 0 to 1                         |
 
 ## Current status
 
-National segmentation and land cover reclassification are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as untransformed land.
+National segmentation and land cover reclassification steps are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as Untransformed land.

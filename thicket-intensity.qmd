@@ -4,22 +4,24 @@ title: "Thicket-specific intensity refinement"
 
 ## Summary
 
-Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as untransformed within the Thicket biome.
+Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.
 
-In solid Thicket, mapped ecological condition is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. The condition probabilities are therefore converted to a continuous intensity score for BII use.
+A recent [project](https://vdmstephni.github.io/ecosystem_condition/content/thicket/) mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.
 
 ## Input data
+
+Script: <https://code.earthengine.google.com/6756a26efc2945884f1b96c5ee0c0856>
 
 -   National BII segment raster.
 -   National BII land use reclassification.
 -   National protected area layer.
--   Thicket ecosystem functional group boundaries:
+-   Thicket biome boundaries:
 
 ``` text
 projects/thicket-ecological-condition/assets/ThicketEFGs
 ```
 
--   Thicket ecosystem condition probability surfaces:
+-   Thicket degradation probability surfaces:
 
 ``` text
 projects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025
@@ -28,16 +30,16 @@ projects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025
 The probability raster contains:
 
 ``` text
-p_intact
-p_moderate
-p_severe
+p_intact = probability of being intact
+p_moderate = probability of being moderately degraded
+p_severe = = probability of being severely degraded
 ```
 
 ## Data preparation
 
-The national segment workflow is clipped to the mapped Thicket biome extent.
+The national segment workflow was clipped to the mapped Thicket biome extent.
 
-The pixel-level Thicket intensity score is calculated as:
+The pixel-level Thicket intensity score was calculated as:
 
 $$
 I = 0.5p_{moderate} + p_{severe}
@@ -55,21 +57,12 @@ Only valid, unmasked probability pixels are used. Pixels masked in the probabili
 
 ## Analysis
 
-Valid pixel-level scores are averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.
+Valid pixel-level land use intensity scores were averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.
 
-Two protected area treatments were initially compared:
+Two protected area rules were initially compared:
 
 1.  apply the Thicket intensity score to untransformed and protected segments; and
 
 2.  retain protected areas at an intensity of 0.
-
-## Output
-
-The Thicket test output follows the national two-band structure:
-
-``` text
-bii_land_use
-bii_land_use_intensity
-```
 
 The workflow will later be extended as equivalent biome-specific intensity datasets become available.

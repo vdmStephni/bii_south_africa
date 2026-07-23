@@ -4,10 +4,10 @@ title: "Segment land use and intensity allocation"
 
 ## Summary
 
-Each segment receives:
+The aim of this section of the workflow is to assign each segment:
 
 1.  one dominant BII land use class; and
-2.  one land use intensity score between 0 and 1, where available.
+2.  one land use intensity score between 0 and 1, where applicable.
 
 The segment allocation has three steps:
 
@@ -17,7 +17,9 @@ The segment allocation has three steps:
 
 ## Input data
 
-The following spatial layers are used in Google Earth Engine:
+Script: <https://code.earthengine.google.com/b24c2eb0480039c2c13c32a0e9cd7a53>
+
+The following spatial layers are used in GEE:
 
 | Input                                | Description                                                                                        |
 |------------------------------------|------------------------------------|
@@ -73,7 +75,7 @@ Example, if:
 
 The segment is assigned to **Settlements**, because settlements have higher priority than croplands.
 
-### Further examples
+### Examples
 
 | Segment composition                                        | Assigned class      | Reason                                                        |
 |------------------------|------------------------|------------------------|
@@ -83,7 +85,7 @@ The segment is assigned to **Settlements**, because settlements have higher prio
 | 10% settlement, 10% crop, 15% protected, 65% untransformed | Untransformed lands | No other class exceeds 20%                                    |
 | 25% settlement inside a protected area                     | Settlements         | Transformed land is assigned before protected land            |
 
-The last example is important: a segment is not automatically treated as protected merely because it overlaps a protected area. A higher-priority transformed land use can override the protected assignment.
+A higher-priority transformed land use can override the protected assignment.
 
 The allocation is implemented in reverse order in GEE because later `where()` statements overwrite earlier assignments:
 
@@ -120,9 +122,7 @@ var assignedLandUse = ee.Image(BII_UNTRANSFORMED)
 
 ## 3. Assign land use intensity
 
-Land use class and land use intensity are separate attributes.
-
-For example, two segments may both be assigned to **Settlements**, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.
+Land use class and land use intensity are separate attributes. For example, two segments may both be assigned to Settlements, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.
 
 The preliminary NLC intensity categories are converted to the following numeric scale:
 
@@ -180,97 +180,7 @@ where:
 -   (a_i) is the area of pixel (i); and
 -   only pixels belonging to the assigned land use class are included.
 
-## 4. Detailed NLC reclassification and intensity lookup
-
-The table below records the current assignment for every NLC class.
-
-The **Spreadsheet intensity** column reproduces the assignment in the working lookup table:
-
--   `low`, `medium` and `high` are implemented as 0, 0.5 and 1;
--   `unknown` means that intensity has not yet been resolved from NLC alone;
--   `n/a` means that a separate class-level rule is used or the class is excluded.
-
-::: {.callout-note collapse="true"}
-## Complete NLC lookup table
-
-| NLC code | NLC class                                            | BII land use        | Spreadsheet intensity | Current numeric treatment | Notes                                                                                                                       |
-|-----------:|------------|------------|---------------|------------|------------|
-|        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|        2 | contiguous low forest & thicket                      | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|        3 | dense forest & woodland                              | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|        4 | open woodland                                        | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|        5 | contiguous & dense plantation forest                 | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |
-|        6 | open & sparse plantation forest                      | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |
-|        7 | temporary unplanted (clear-felled) plantation forest | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |
-|        8 | low shrubland (other)                                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|        9 | low shrubland (fynbos)                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       10 | low shrubland (succulent karoo)                      | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       11 | low shrubland (nama karoo)                           | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       12 | sparsely wooded grassland                            | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       13 | natural grassland                                    | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       14 | natural rivers                                       | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       15 | natural estuaries & lagoons                          | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       16 | natural ocean & coastal                              | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       17 | natural lakes                                        | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       18 | natural pans (flooded at observation times)          | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       19 | artificial dams, including canals                    | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       20 | artificial sewage ponds                              | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       21 | artificial flooded mine pits                         | Exclude             | n/a                   | Excluded                  |                                                                                                                             |
-|       22 | herbaceous wetlands, currently mapped                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       23 | herbaceous wetlands, previously mapped               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       24 | mangrove wetlands                                    | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       25 | natural rock surfaces                                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       26 | dry pans                                             | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       27 | eroded lands                                         | Untransformed lands | high                  | 1                         | Less than 1% of the country; intended to represent severe erosion                                                           |
-|       28 | sand dunes, terrestrial                              | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       29 | coastal sand and dunes                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       30 | bare riverbed material                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       31 | other bare                                           | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
-|       32 | cultivated commercial permanent orchards             | Tree croplands      | high                  | 1                         |                                                                                                                             |
-|       33 | cultivated commercial permanent vines                | Tree croplands      | high                  | 1                         |                                                                                                                             |
-|       34 | cultivated commercial sugarcane pivot irrigated      | Croplands           | high                  | 1                         |                                                                                                                             |
-|       35 | cultivated commercial permanent pineapples           | Croplands           | high                  | 1                         |                                                                                                                             |
-|       36 | cultivated commercial sugarcane non-pivot            | Croplands           | high                  | 1                         |                                                                                                                             |
-|       37 | cultivated emerging farmer sugarcane non-pivot       | Croplands           | high                  | 1                         |                                                                                                                             |
-|       38 | commercial annual crops pivot irrigated              | Croplands           | high                  | 1                         |                                                                                                                             |
-|       39 | commercial annual crops non-pivot irrigated          | Croplands           | high                  | 1                         |                                                                                                                             |
-|       40 | commercial annual crops rain-fed or dryland          | Croplands           | high                  | 1                         |                                                                                                                             |
-|       41 | subsistence or small-scale annual crops              | Croplands           | low                   | 0                         |                                                                                                                             |
-|       42 | fallow land and old fields, trees                    | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |
-|       43 | fallow land and old fields, bush                     | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |
-|       44 | fallow land and old fields, grass                    | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |
-|       45 | fallow land and old fields, bare                     | Untransformed lands | high                  | 1                         | Assumed degraded because it was formerly cropland and is currently bare                                                     |
-|       46 | fallow land and old fields, low shrub                | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |
-|       47 | residential formal, tree                             | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       48 | residential formal, bush                             | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       49 | residential formal, low vegetation or grass          | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       50 | residential formal, bare                             | Settlements         | high                  | 1                         |                                                                                                                             |
-|       51 | residential informal, tree                           | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       52 | residential informal, bush                           | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       53 | residential informal, low vegetation or grass        | Settlements         | medium                | 0.5                       |                                                                                                                             |
-|       54 | residential informal, bare                           | Settlements         | high                  | 1                         |                                                                                                                             |
-|       55 | village scattered, bare and low vegetation or grass  | Settlements         | low                   | 0                         |                                                                                                                             |
-|       56 | village dense, bare and low vegetation or grass      | Settlements         | low                   | 0                         |                                                                                                                             |
-|       57 | smallholdings, tree                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |
-|       58 | smallholdings, bush                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |
-|       59 | smallholdings, low vegetation or grass               | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |
-|       60 | smallholdings, bare                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |
-|       61 | urban recreational fields, tree                      | Settlements         | low                   | 0                         |                                                                                                                             |
-|       62 | urban recreational fields, bush                      | Settlements         | low                   | 0                         |                                                                                                                             |
-|       63 | urban recreational fields, grass                     | Settlements         | low                   | 0                         |                                                                                                                             |
-|       64 | urban recreational fields, bare                      | Settlements         | low                   | 0                         |                                                                                                                             |
-|       65 | commercial                                           | Settlements         | high                  | 1                         |                                                                                                                             |
-|       66 | industrial                                           | Settlements         | high                  | 1                         |                                                                                                                             |
-|       67 | roads and rails, major linear features               | Settlements         | high                  | 1                         |                                                                                                                             |
-|       68 | mines: surface infrastructure                        | Settlements         | high                  | 1                         |                                                                                                                             |
-|       69 | mines: extraction pits and quarries                  | Settlements         | high                  | 1                         |                                                                                                                             |
-|       70 | mines: salt mines                                    | Settlements         | high                  | 1                         |                                                                                                                             |
-|       71 | mines: tailings and resource dumps                   | Settlements         | high                  | 1                         |                                                                                                                             |
-|       72 | landfills                                            | Settlements         | high                  | 1                         |                                                                                                                             |
-|       73 | fallow land and old fields, wetlands                 | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |
-:::
-
-## 5. Protected area treatment
+## 4. Protected area treatment
 
 The following terrestrial protected area types are currently included:
 
@@ -286,7 +196,7 @@ The following terrestrial protected area types are currently included:
 
 -   World Heritage Site
 
-    The following are excluded from the current protected allocation:
+    The following are **excluded** from the current protected allocation:
 
 -   Protected Environment;
 
@@ -307,13 +217,11 @@ A segment is assigned to Protected lands only when:
 
 Protected intensity is provisionally fixed at 0. This represents the low-intensity endpoint of land use, not a direct measurement of protected area effectiveness. The assumption should be reviewed using biome-specific information where available.
 
-## 6. Untransformed intensity
+## 5. Untransformed intensity
 
-The NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation. For this reason, most natural NLC classes are currently marked `unknown`.
+**In Progress**
 
-Additional information is required to distinguish land use intensit. These intensity refinements will be added separately for each biome where suitable spatial data are available.
-
-For example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed.
+The NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation, often used as rangelands. For this reason, most natural NLC classes are currently marked `unknown`. Additional information is required to distinguish land use intensity here. These intensity refinements will be added separately for each biome where suitable spatial data are available. For example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed. Recent global products such as Livestock density at 1km resolution are being explored.
 
 ## Output
 
@@ -332,4 +240,4 @@ An integer value from 1 to 6 representing the dominant BII land use class assign
 
 A continuous value from 0 to 1 representing land use intensity within the assigned class.
 
-The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes; they do not imply equivalent ecological condition.
+The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes.
