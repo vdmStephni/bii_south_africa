@@ -1,0 +1,219 @@
+[
+  {
+    "objectID": "thicket-intensity.html",
+    "href": "thicket-intensity.html",
+    "title": "Thicket-specific intensity refinement",
+    "section": "",
+    "text": "Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as untransformed within the Thicket biome.\nIn solid Thicket, mapped ecological condition is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. The condition probabilities are therefore converted to a continuous intensity score for BII use."
+  },
+  {
+    "objectID": "thicket-intensity.html#summary",
+    "href": "thicket-intensity.html#summary",
+    "title": "Thicket-specific intensity refinement",
+    "section": "",
+    "text": "Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as untransformed within the Thicket biome.\nIn solid Thicket, mapped ecological condition is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. The condition probabilities are therefore converted to a continuous intensity score for BII use."
+  },
+  {
+    "objectID": "thicket-intensity.html#input-data",
+    "href": "thicket-intensity.html#input-data",
+    "title": "Thicket-specific intensity refinement",
+    "section": "Input data",
+    "text": "Input data\n\nNational BII segment raster.\nNational BII land use reclassification.\nNational protected area layer.\nThicket ecosystem functional group boundaries:\n\nprojects/thicket-ecological-condition/assets/ThicketEFGs\n\nThicket ecosystem condition probability surfaces:\n\nprojects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025\nThe probability raster contains:\np_intact\np_moderate\np_severe"
+  },
+  {
+    "objectID": "thicket-intensity.html#data-preparation",
+    "href": "thicket-intensity.html#data-preparation",
+    "title": "Thicket-specific intensity refinement",
+    "section": "Data preparation",
+    "text": "Data preparation\nThe national segment workflow is clipped to the mapped Thicket biome extent.\nThe pixel-level Thicket intensity score is calculated as:\n\\[\nI = 0.5p_{moderate} + p_{severe}\n\\]\nThis assigns the following class endpoints:\n\n\n\nCondition\nIntensity contribution\n\n\n\n\nIntact\n0\n\n\nModerate\n0.5\n\n\nSevere\n1\n\n\n\nOnly valid, unmasked probability pixels are used. Pixels masked in the probability raster were excluded from the condition model because they were already transformed, water or otherwise outside the modelled natural extent."
+  },
+  {
+    "objectID": "thicket-intensity.html#analysis",
+    "href": "thicket-intensity.html#analysis",
+    "title": "Thicket-specific intensity refinement",
+    "section": "Analysis",
+    "text": "Analysis\nValid pixel-level scores are averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.\nTwo protected area treatments were initially compared:\n\napply the Thicket intensity score to untransformed and protected segments; and\nretain protected areas at an intensity of 0."
+  },
+  {
+    "objectID": "thicket-intensity.html#output",
+    "href": "thicket-intensity.html#output",
+    "title": "Thicket-specific intensity refinement",
+    "section": "Output",
+    "text": "Output\nThe Thicket test output follows the national two-band structure:\nbii_land_use\nbii_land_use_intensity\nThe workflow will later be extended as equivalent biome-specific intensity datasets become available."
+  },
+  {
+    "objectID": "segment-allocation.html",
+    "href": "segment-allocation.html",
+    "title": "Segment land use and intensity allocation",
+    "section": "",
+    "text": "Each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1, where available.\n\nThe segment allocation has three steps:\n\ncalculate the proportion of each land use class in every segment;\nassign one dominant land use class using a sequential decision tree;\ncalculate the segment intensity as the mean intensity of all valid pixels belonging to that class"
+  },
+  {
+    "objectID": "segment-allocation.html#summary",
+    "href": "segment-allocation.html#summary",
+    "title": "Segment land use and intensity allocation",
+    "section": "",
+    "text": "Each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1, where available.\n\nThe segment allocation has three steps:\n\ncalculate the proportion of each land use class in every segment;\nassign one dominant land use class using a sequential decision tree;\ncalculate the segment intensity as the mean intensity of all valid pixels belonging to that class"
+  },
+  {
+    "objectID": "segment-allocation.html#input-data",
+    "href": "segment-allocation.html#input-data",
+    "title": "Segment land use and intensity allocation",
+    "section": "Input data",
+    "text": "Input data\nThe following spatial layers are used in Google Earth Engine:\n\n\n\n\n\n\n\nInput\nDescription\n\n\n\n\nSegments_800m_SA\nNational segmentation raster containing a unique integer identifier for every segment\n\n\nNLC_reclass_BII_land_use_intensity\nSouth African National Land Cover reclassified into BII land use and preliminary intensity classes\n\n\nSANBI_PA_2025_BII\nGazetted and managed terrestrial protected areas retained for BII\n\n\nPixel-area image\nPixel area in square metres, generated using ee.Image.pixelArea()"
+  },
+  {
+    "objectID": "segment-allocation.html#calculate-land-use-proportions",
+    "href": "segment-allocation.html#calculate-land-use-proportions",
+    "title": "Segment land use and intensity allocation",
+    "section": "1. Calculate land use proportions",
+    "text": "1. Calculate land use proportions\nFor each segment, the mapped area of the following candidate classes is calculated:\n\nsettlements;\ntimber plantations;\ntree croplands;\ncroplands;\nprotected lands; and\nuntransformed lands.\n\nPixel areas are summed within each segment.\nFor land use class (c) in segment (s), proportional cover is:\n\\[\np_{c,s} = \\frac{A_{c,s}}{A_s}\n\\]\nwhere:\n\n(A_{c,s}) is the area of class (c) in segment (s); and\n(A_s) is the total terrestrial area of segment (s)."
+  },
+  {
+    "objectID": "segment-allocation.html#assign-one-bii-land-use-class",
+    "href": "segment-allocation.html#assign-one-bii-land-use-class",
+    "title": "Segment land use and intensity allocation",
+    "section": "2. Assign one BII land use class",
+    "text": "2. Assign one BII land use class\nA candidate class becomes eligible for assignment when it covers more than 20% of the segment.\nThe classes are evaluated in the following priority order:\n\nSettlements\nTimber plantations\nTree croplands\nCroplands\nProtected lands\nUntransformed lands\n\nWhere multiple classes exceed 20%, the class with the highest priority is assigned.\nExample, if:\n\nsettlement proportion = 0.25;\ncropland proportion = 0.30; and\nboth exceed 0.20.\n\nThe segment is assigned to Settlements, because settlements have higher priority than croplands.\n\nFurther examples\n\n\n\n\n\n\n\n\nSegment composition\nAssigned class\nReason\n\n\n\n\n15% settlement, 30% cropland, 55% untransformed\nCroplands\nSettlement does not exceed 20%, but cropland does\n\n\n22% timber, 35% cropland, 43% untransformed\nTimber plantations\nBoth exceed 20%, but timber has higher priority\n\n\n10% cropland, 25% protected, 65% untransformed\nProtected lands\nProtected cover exceeds 20% and no higher-priority class does\n\n\n10% settlement, 10% crop, 15% protected, 65% untransformed\nUntransformed lands\nNo other class exceeds 20%\n\n\n25% settlement inside a protected area\nSettlements\nTransformed land is assigned before protected land\n\n\n\nThe last example is important: a segment is not automatically treated as protected merely because it overlaps a protected area. A higher-priority transformed land use can override the protected assignment.\nThe allocation is implemented in reverse order in GEE because later where() statements overwrite earlier assignments:\nvar assignedLandUse = ee.Image(BII_UNTRANSFORMED)\n\n  .where(\n    propProtected.gt(0.20),\n    BII_PROTECTED\n  )\n\n  .where(\n    propCropland.gt(0.20),\n    BII_CROPLAND\n  )\n\n  .where(\n    propTreeCrop.gt(0.20),\n    BII_TREE_CROP\n  )\n\n  .where(\n    propTimber.gt(0.20),\n    BII_TIMBER\n  )\n\n  .where(\n    propSettlement.gt(0.20),\n    BII_SETTLEMENT\n  )\n\n  .rename('bii_land_use');"
+  },
+  {
+    "objectID": "segment-allocation.html#assign-land-use-intensity",
+    "href": "segment-allocation.html#assign-land-use-intensity",
+    "title": "Segment land use and intensity allocation",
+    "section": "3. Assign land use intensity",
+    "text": "3. Assign land use intensity\nLand use class and land use intensity are separate attributes.\nFor example, two segments may both be assigned to Settlements, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.\nThe preliminary NLC intensity categories are converted to the following numeric scale:\n\n\n\n\n\n\n\n\nIntensity category\nScore\nInterpretation\n\n\n\n\nLow\n0\nLowest mapped intensity within that broad land use class\n\n\nMedium\n0.5\nIntermediate mapped intensity\n\n\nHigh\n1\nHighest mapped intensity\n\n\nUnknown\nNot yet assigned\nRequires an additional biome-specific intensity layer or decision\n\n\nn/a\nClass-specific rule\nNo within-class gradient is currently used\n\n\n\n\nCurrent class-level rules\n\n\n\n\n\n\n\nBII land use\nCurrent intensity treatment\n\n\n\n\nSettlements\nMean of valid low, medium and high settlement-intensity pixels in the segment\n\n\nTimber plantations\nFixed provisionally at 1\n\n\nTree croplands\nMean of valid tree-crop intensity pixels in the segment\n\n\nCroplands\nMean of valid cropland intensity pixels in the segment\n\n\nProtected lands\nFixed provisionally at 0; effectiveness may be assessed separately by biome\n\n\nUntransformed lands\nAssigned from available NLC indicators or additional biome-specific condition and pressure datasets\n\n\n\n\n\nHow the segment mean is calculated\nOnly pixels belonging to the assigned BII land use class are included in the intensity calculation.\nFor example, suppose a segment is assigned to Settlements and contains 20 valid settlement pixels:\n\n\n\nSettlement intensity\nNumber of pixels\nContribution\n\n\n\n\nLow, score 0\n5\n(5 = 0)\n\n\nMedium, score 0.5\n10\n(10 = 5)\n\n\nHigh, score 1\n5\n(5 = 5)\n\n\n\nThe segment intensity is:\n\\[\nI_s = \\frac{0 + 5 + 5}{20} = 0.5\n\\]\nCropland, protected and untransformed pixels occurring in the same segment are not included because the assigned class is Settlements.\nMore generally:\n\\[\nI_s =\n\\frac{\\sum_{i=1}^{n} a_i I_i}\n     {\\sum_{i=1}^{n} a_i}\n\\]\nwhere:\n\n(I_s) is the intensity assigned to segment (s);\n(I_i) is the intensity score of valid pixel (i);\n(a_i) is the area of pixel (i); and\nonly pixels belonging to the assigned land use class are included."
+  },
+  {
+    "objectID": "segment-allocation.html#detailed-nlc-reclassification-and-intensity-lookup",
+    "href": "segment-allocation.html#detailed-nlc-reclassification-and-intensity-lookup",
+    "title": "Segment land use and intensity allocation",
+    "section": "4. Detailed NLC reclassification and intensity lookup",
+    "text": "4. Detailed NLC reclassification and intensity lookup\nThe table below records the current assignment for every NLC class.\nThe Spreadsheet intensity column reproduces the assignment in the working lookup table:\n\nlow, medium and high are implemented as 0, 0.5 and 1;\nunknown means that intensity has not yet been resolved from NLC alone;\nn/a means that a separate class-level rule is used or the class is excluded.\n\n\n\n\n\n\n\nComplete NLC lookup table\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNLC code\nNLC class\nBII land use\nSpreadsheet intensity\nCurrent numeric treatment\nNotes\n\n\n\n\n1\ncontiguous (indigenous) forest\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n2\ncontiguous low forest & thicket\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n3\ndense forest & woodland\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n4\nopen woodland\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n5\ncontiguous & dense plantation forest\nTimber plantations\nn/a\n1, fixed by class\nsome likely to be degraded\n\n\n6\nopen & sparse plantation forest\nTimber plantations\nn/a\n1, fixed by class\nsome likely to be degraded\n\n\n7\ntemporary unplanted (clear-felled) plantation forest\nTimber plantations\nn/a\n1, fixed by class\nsome likely to be degraded\n\n\n8\nlow shrubland (other)\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n9\nlow shrubland (fynbos)\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n10\nlow shrubland (succulent karoo)\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n11\nlow shrubland (nama karoo)\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n12\nsparsely wooded grassland\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n13\nnatural grassland\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n14\nnatural rivers\nExclude\nn/a\nExcluded\n\n\n\n15\nnatural estuaries & lagoons\nExclude\nn/a\nExcluded\n\n\n\n16\nnatural ocean & coastal\nExclude\nn/a\nExcluded\n\n\n\n17\nnatural lakes\nExclude\nn/a\nExcluded\n\n\n\n18\nnatural pans (flooded at observation times)\nExclude\nn/a\nExcluded\n\n\n\n19\nartificial dams, including canals\nExclude\nn/a\nExcluded\n\n\n\n20\nartificial sewage ponds\nExclude\nn/a\nExcluded\n\n\n\n21\nartificial flooded mine pits\nExclude\nn/a\nExcluded\n\n\n\n22\nherbaceous wetlands, currently mapped\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n23\nherbaceous wetlands, previously mapped\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n24\nmangrove wetlands\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n25\nnatural rock surfaces\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n26\ndry pans\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n27\neroded lands\nUntransformed lands\nhigh\n1\nLess than 1% of the country; intended to represent severe erosion\n\n\n28\nsand dunes, terrestrial\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n29\ncoastal sand and dunes\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n30\nbare riverbed material\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n31\nother bare\nUntransformed lands\nunknown\nNot yet assigned\nsome likely to be degraded\n\n\n32\ncultivated commercial permanent orchards\nTree croplands\nhigh\n1\n\n\n\n33\ncultivated commercial permanent vines\nTree croplands\nhigh\n1\n\n\n\n34\ncultivated commercial sugarcane pivot irrigated\nCroplands\nhigh\n1\n\n\n\n35\ncultivated commercial permanent pineapples\nCroplands\nhigh\n1\n\n\n\n36\ncultivated commercial sugarcane non-pivot\nCroplands\nhigh\n1\n\n\n\n37\ncultivated emerging farmer sugarcane non-pivot\nCroplands\nhigh\n1\n\n\n\n38\ncommercial annual crops pivot irrigated\nCroplands\nhigh\n1\n\n\n\n39\ncommercial annual crops non-pivot irrigated\nCroplands\nhigh\n1\n\n\n\n40\ncommercial annual crops rain-fed or dryland\nCroplands\nhigh\n1\n\n\n\n41\nsubsistence or small-scale annual crops\nCroplands\nlow\n0\n\n\n\n42\nfallow land and old fields, trees\nUntransformed lands\nhigh?\n1, provisional\nAssumed degraded because it was formerly cropland\n\n\n43\nfallow land and old fields, bush\nUntransformed lands\nhigh?\n1, provisional\nAssumed degraded because it was formerly cropland\n\n\n44\nfallow land and old fields, grass\nUntransformed lands\nhigh?\n1, provisional\nAssumed degraded because it was formerly cropland\n\n\n45\nfallow land and old fields, bare\nUntransformed lands\nhigh\n1\nAssumed degraded because it was formerly cropland and is currently bare\n\n\n46\nfallow land and old fields, low shrub\nUntransformed lands\nhigh?\n1, provisional\nAssumed degraded because it was formerly cropland\n\n\n47\nresidential formal, tree\nSettlements\nmedium\n0.5\n\n\n\n48\nresidential formal, bush\nSettlements\nmedium\n0.5\n\n\n\n49\nresidential formal, low vegetation or grass\nSettlements\nmedium\n0.5\n\n\n\n50\nresidential formal, bare\nSettlements\nhigh\n1\n\n\n\n51\nresidential informal, tree\nSettlements\nmedium\n0.5\n\n\n\n52\nresidential informal, bush\nSettlements\nmedium\n0.5\n\n\n\n53\nresidential informal, low vegetation or grass\nSettlements\nmedium\n0.5\n\n\n\n54\nresidential informal, bare\nSettlements\nhigh\n1\n\n\n\n55\nvillage scattered, bare and low vegetation or grass\nSettlements\nlow\n0\n\n\n\n56\nvillage dense, bare and low vegetation or grass\nSettlements\nlow\n0\n\n\n\n57\nsmallholdings, tree\nSettlements\nlow\n0\nCould also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban\n\n\n58\nsmallholdings, bush\nSettlements\nlow\n0\nCould also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban\n\n\n59\nsmallholdings, low vegetation or grass\nSettlements\nlow\n0\nCould also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban\n\n\n60\nsmallholdings, bare\nSettlements\nlow\n0\nCould also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban\n\n\n61\nurban recreational fields, tree\nSettlements\nlow\n0\n\n\n\n62\nurban recreational fields, bush\nSettlements\nlow\n0\n\n\n\n63\nurban recreational fields, grass\nSettlements\nlow\n0\n\n\n\n64\nurban recreational fields, bare\nSettlements\nlow\n0\n\n\n\n65\ncommercial\nSettlements\nhigh\n1\n\n\n\n66\nindustrial\nSettlements\nhigh\n1\n\n\n\n67\nroads and rails, major linear features\nSettlements\nhigh\n1\n\n\n\n68\nmines: surface infrastructure\nSettlements\nhigh\n1\n\n\n\n69\nmines: extraction pits and quarries\nSettlements\nhigh\n1\n\n\n\n70\nmines: salt mines\nSettlements\nhigh\n1\n\n\n\n71\nmines: tailings and resource dumps\nSettlements\nhigh\n1\n\n\n\n72\nlandfills\nSettlements\nhigh\n1\n\n\n\n73\nfallow land and old fields, wetlands\nUntransformed lands\nhigh?\n1, provisional\nAssumed degraded because it was formerly cropland"
+  },
+  {
+    "objectID": "segment-allocation.html#protected-area-treatment",
+    "href": "segment-allocation.html#protected-area-treatment",
+    "title": "Segment land use and intensity allocation",
+    "section": "5. Protected area treatment",
+    "text": "5. Protected area treatment\nThe following terrestrial protected area types are currently included:\n\nNature Reserve;\nForest Nature Reserve;\nNational Park;\nForest Wilderness Area;\nSpecial Nature Reserve; and\nWorld Heritage Site\nThe following are excluded from the current protected allocation:\nProtected Environment;\nMountain Catchment Area;\nRamsar Site;\nUNESCO Biosphere Reserve;\nBotanical Garden; and\nMarine protected areas.\n\nA segment is assigned to Protected lands only when:\n\nprotected area cover exceeds 20%; and\nno higher-priority transformed class exceeds 20%.\n\nProtected intensity is provisionally fixed at 0. This represents the low-intensity endpoint of land use, not a direct measurement of protected area effectiveness. The assumption should be reviewed using biome-specific information where available."
+  },
+  {
+    "objectID": "segment-allocation.html#untransformed-intensity",
+    "href": "segment-allocation.html#untransformed-intensity",
+    "title": "Segment land use and intensity allocation",
+    "section": "6. Untransformed intensity",
+    "text": "6. Untransformed intensity\nThe NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation. For this reason, most natural NLC classes are currently marked unknown.\nAdditional information is required to distinguish land use intensit. These intensity refinements will be added separately for each biome where suitable spatial data are available.\nFor example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed."
+  },
+  {
+    "objectID": "segment-allocation.html#output",
+    "href": "segment-allocation.html#output",
+    "title": "Segment land use and intensity allocation",
+    "section": "Output",
+    "text": "Output\nThe final spatial product is a two-band raster:\nbii_land_use\nbii_land_use_intensity\n\nBand 1: bii_land_use\nAn integer value from 1 to 6 representing the dominant BII land use class assigned to each segment.\n\n\nBand 2: bii_land_use_intensity\nA continuous value from 0 to 1 representing land use intensity within the assigned class.\nThe two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes; they do not imply equivalent ecological condition."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "South African BII land use intensity workflow",
+    "section": "",
+    "text": "This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.\nThe unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1.\n\n\nThe workflow currently includes four steps:\n\nNational segmentation\nNational land use reclassification\nNational segment land use and intensity allocation\nContext-specific land use intensity score refinement of “untransformed”\n\nCase study for Thicket-specific intensity refinement"
+  },
+  {
+    "objectID": "index.html#worflow-summary",
+    "href": "index.html#worflow-summary",
+    "title": "South African BII land use intensity workflow",
+    "section": "",
+    "text": "This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.\nThe unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1.\n\n\nThe workflow currently includes four steps:\n\nNational segmentation\nNational land use reclassification\nNational segment land use and intensity allocation\nContext-specific land use intensity score refinement of “untransformed”\n\nCase study for Thicket-specific intensity refinement"
+  },
+  {
+    "objectID": "index.html#current-output-structure",
+    "href": "index.html#current-output-structure",
+    "title": "South African BII land use intensity workflow",
+    "section": "Current output structure",
+    "text": "Current output structure\n\n\n\n\n\n\n\nBand\nDescription\n\n\n\n\nbii_land_use\nDominant BII land use class assigned to the segment\n\n\nbii_land_use_intensity\nSegment-level land use intensity from 0 to 1\n\n\n\nLow values represent lower land use intensity and high values represent higher land use intensity."
+  },
+  {
+    "objectID": "index.html#current-status",
+    "href": "index.html#current-status",
+    "title": "South African BII land use intensity workflow",
+    "section": "Current status",
+    "text": "Current status\nNational segmentation and land cover reclassification are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as untransformed land."
+  },
+  {
+    "objectID": "land-use-reclassification.html",
+    "href": "land-use-reclassification.html",
+    "title": "NLC to BII crosswalk",
+    "section": "",
+    "text": "The NLC 2022 data were reclassified into broad land use classes required by the BII workflow (Clements et al. 2026). A second band records the available low, medium or high intensity class associated with the original land cover category."
+  },
+  {
+    "objectID": "land-use-reclassification.html#summary",
+    "href": "land-use-reclassification.html#summary",
+    "title": "NLC to BII crosswalk",
+    "section": "",
+    "text": "The NLC 2022 data were reclassified into broad land use classes required by the BII workflow (Clements et al. 2026). A second band records the available low, medium or high intensity class associated with the original land cover category."
+  },
+  {
+    "objectID": "land-use-reclassification.html#input-data",
+    "href": "land-use-reclassification.html#input-data",
+    "title": "NLC to BII crosswalk",
+    "section": "Input data",
+    "text": "Input data\n\nSouth African National Land Cover 2022.\nA BII reclassification table linking each source class to:\n\na broad BII land use class; and\nselected intensity class.\n\n\nThe NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. Intensity classes. Protected areas are not assigned directly from national land cover. They are added later during segment allocation using the SAPAD layer."
+  },
+  {
+    "objectID": "land-use-reclassification.html#data-preparation",
+    "href": "land-use-reclassification.html#data-preparation",
+    "title": "NLC to BII crosswalk",
+    "section": "Data preparation",
+    "text": "Data preparation\nThe original NLC classes were grouped into six broad BII land use categories:\n\n\n\nValue\nBII land use\n\n\n\n\n1\nSettlements\n\n\n2\nTimber plantations\n\n\n3\nTree crops\n\n\n4\nCroplands\n\n\n5\nProtected\n\n\n6\nUntransformed\n\n\n\nWaterbodies are excluded from the terrestrial assessment.\nThe preliminary intensity classes that could be used from the NLC 2022 were retained in a second band as:\n\n\n\nValue\nIntensity class\n\n\n\n\n0\nNo within class gradient\n\n\n1\nUnknown\n\n\n2\nLow\n\n\n3\nMedium\n\n\n4\nHigh"
+  },
+  {
+    "objectID": "land-use-reclassification.html#analysis",
+    "href": "land-use-reclassification.html#analysis",
+    "title": "NLC to BII crosswalk",
+    "section": "Analysis",
+    "text": "Analysis\nEach NLC class was assigned a broad BII land use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.\nThe resulting raster dataset contains three bands:\nbii_land_use\nbii_intensity_class\nsanlc_class\nThe original national land cover value is retained in sanlc_class for traceability."
+  },
+  {
+    "objectID": "land-use-reclassification.html#output",
+    "href": "land-use-reclassification.html#output",
+    "title": "NLC to BII crosswalk",
+    "section": "Output",
+    "text": "Output\nGoogle Earth Engine asset:\nNLC_reclass_BII_land_use_intensity"
+  },
+  {
+    "objectID": "segmentation.html",
+    "href": "segmentation.html",
+    "title": "National segmentation",
+    "section": "",
+    "text": "A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation groups pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness."
+  },
+  {
+    "objectID": "segmentation.html#rationale",
+    "href": "segmentation.html#rationale",
+    "title": "National segmentation",
+    "section": "",
+    "text": "A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation groups pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness."
+  },
+  {
+    "objectID": "segmentation.html#input-data",
+    "href": "segmentation.html#input-data",
+    "title": "National segmentation",
+    "section": "Input data",
+    "text": "Input data\n\nAlpha Earth annual satellite embeddings(Brown et al., n.d.).\nLand and water masks used to restrict the analysis."
+  },
+  {
+    "objectID": "segmentation.html#parameter-selecetion-and-analysis",
+    "href": "segmentation.html#parameter-selecetion-and-analysis",
+    "title": "National segmentation",
+    "section": "Parameter selecetion and analysis",
+    "text": "Parameter selecetion and analysis\nSegmentation was implemented in Google Earth Engine using the Simple Non-Iterative Clustering algorithm (SNIC,or superpixel clustering) applied to the AlphaEarth Foundations Embeddings (Brown et al., 2025). The embeddings provide a condensed representation of landscape characteristics derived from multiple sensors and environmental variables, including optical reflectance (e.g. Sentinel-2, Landsat 8 & 9), radar backscatter (e.g. Sentinel-1, PALSAR-2 and GEDI), climate (e.g. ERA5-Land), land cover context (NLCD), and topographic (GLO-30 DEM) information. Rather than representing a single spectral index or satellite band, each embedding dimension, of which there are 64, captures complex spatial, spectral and temporal patterns learned from large volumes of EO data.  So, instead of asking do these pixels have similar spectral values, it asks do these pixels have similar embedding signatures or landscape “fingerprints” (vegetation, soil, topography etc.)?\nThe key parameter: “size” controls how large each segment is, with smaller values producing numerous small, detailed segments and larger values producing fewer, larger segments that represent broader landscape units. The “compactness” parameter controls whether segments follow natural patterns in the data (low values, more irregular and realistic shapes) or form more regular, uniform shapes (high values). This was set to 1 to allow segments to follow natural landscape boundaries while maintaining some spatial regularity.”Connectivity” controls how pixels are considered connected, where 8 allows diagonal connections (on top of the 4 direct neighbours) and results in smoother, more continuous segments. We tested three sizes: fine (size = 15; c. 150 m), medium (size = 40; c. 400 m), and coarse (size = 100; c. 1 km), to evaluate how segment size influences the representation of landscape heterogeneity and land-use systems. Smaller segments captured fine-scale variation such as field boundaries and patchy vegetation but over-fragmented the landscape (e.g. detect small mosaiced plant communities within a wetland), whereas larger segments represented broader land-use systems but merged some distinct land uses (different crops). An intermediate scale (800m) was selected for further analysis as it best balanced ecological realism and spatial coherence. The neighbourhood size was scaled proportionally to segment size (size × 4) to ensure stable region growth and minimise edge artefacts. Projection and scale were fixed before segmentation to reduce zoom-dependent behaviour in GEE visualisation and to improve reproducibility of the exported outputs.\nThe segmentation was generated once for the national extent and saved as a reusable asset. The same segment identifiers are used for all subsequent land use proportion and intensity calculations."
+  },
+  {
+    "objectID": "segmentation.html#output",
+    "href": "segmentation.html#output",
+    "title": "National segmentation",
+    "section": "Output",
+    "text": "Output\nGoogle Earth Engine asset:\nSegments_800m_SA\nThe raster contains an integer identifier for each segment. This identifier is used in subsequent calculations."
+  }
+]
