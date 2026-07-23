@@ -1,11 +1,11 @@
 ---
-title: "BII land use allocation"
+title: "NLC to BII crosswalk"
 bibliography: references.bib
 ---
 
 ## Summary
 
-The NLC 2022 data were reclassified into broad land-use classes required by the BII workflow [@clements2026]. A second band records the available low, medium or high intensity class associated with the original land-cover category.
+The NLC 2022 data were reclassified into broad land use classes required by the BII workflow [@clements2026]. A second band records the available low, medium or high intensity class associated with the original land cover category.
 
 ## Input data
 
@@ -18,7 +18,7 @@ The NLC thus is used for 2 classification frameworks: 1. broad land use classes 
 
 ## Data preparation
 
-The original national land cover classes were grouped into six broad BII land-use categories:
+The original NLC classes were grouped into six broad BII land use categories:
 
 | Value | BII land use       |
 |------:|--------------------|
@@ -28,6 +28,8 @@ The original national land cover classes were grouped into six broad BII land-us
 |     4 | Croplands          |
 |     5 | Protected          |
 |     6 | Untransformed      |
+
+Waterbodies are excluded from the terrestrial assessment.
 
 The preliminary intensity classes that could be used from the NLC 2022 were retained in a second band as:
 
@@ -41,7 +43,7 @@ The preliminary intensity classes that could be used from the NLC 2022 were reta
 
 ## Analysis
 
-Each NLC class was assigned a broad BII land-use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.
+Each NLC class was assigned a broad BII land use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.
 
 The resulting raster dataset contains three bands:
 
@@ -51,7 +53,7 @@ bii_intensity_class
 sanlc_class
 ```
 
-The original national land-cover value is retained in `sanlc_class` for traceability.
+The original national land cover value is retained in `sanlc_class` for traceability.
 
 ## Output
 

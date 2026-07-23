@@ -9,31 +9,18 @@ Each segment receives:
 1.  one dominant BII land use class; and
 2.  one land use intensity score between 0 and 1, where available.
 
-The workflow has three steps:
+The segment allocation has three steps:
 
 1.  calculate the proportion of each land use class in every segment;
 2.  assign one dominant land use class using a sequential decision tree;
 3.  calculate the segment intensity as the mean intensity of all valid pixels belonging to that class
-
-The six broad BII land use classes are:
-
-| Code | BII land use        |
-|-----:|---------------------|
-|    1 | Settlements         |
-|    2 | Timber plantations  |
-|    3 | Tree croplands      |
-|    4 | Croplands           |
-|    5 | Protected lands     |
-|    6 | Untransformed lands |
-
-Waterbodies are excluded from the terrestrial assessment.
 
 ## Input data
 
 The following spatial layers are used in Google Earth Engine:
 
 | Input                                | Description                                                                                        |
-|--------------------------------------|----------------------------------------------------------------------------------------------------|
+|------------------------------------|------------------------------------|
 | `Segments_800m_SA`                   | National segmentation raster containing a unique integer identifier for every segment              |
 | `NLC_reclass_BII_land_use_intensity` | South African National Land Cover reclassified into BII land use and preliminary intensity classes |
 | `SANBI_PA_2025_BII`                  | Gazetted and managed terrestrial protected areas retained for BII                                  |
@@ -89,7 +76,7 @@ The segment is assigned to **Settlements**, because settlements have higher prio
 ### Further examples
 
 | Segment composition                                        | Assigned class      | Reason                                                        |
-|------------------------------------------------------------|---------------------|---------------------------------------------------------------|
+|------------------------|------------------------|------------------------|
 | 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |
 | 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |
 | 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |
@@ -140,7 +127,7 @@ For example, two segments may both be assigned to **Settlements**, but one may c
 The preliminary NLC intensity categories are converted to the following numeric scale:
 
 | Intensity category |               Score | Interpretation                                                    |
-|--------------------|--------------------:|-------------------------------------------------------------------|
+|----------------------|---------------------------:|----------------------|
 | Low                |                   0 | Lowest mapped intensity within that broad land use class          |
 | Medium             |                 0.5 | Intermediate mapped intensity                                     |
 | High               |                   1 | Highest mapped intensity                                          |
@@ -150,7 +137,7 @@ The preliminary NLC intensity categories are converted to the following numeric 
 ### Current class-level rules
 
 | BII land use        | Current intensity treatment                                                                         |
-|---------------------|-----------------------------------------------------------------------------------------------------|
+|------------------------------------|------------------------------------|
 | Settlements         | Mean of valid low, medium and high settlement-intensity pixels in the segment                       |
 | Timber plantations  | Fixed provisionally at 1                                                                            |
 | Tree croplands      | Mean of valid tree-crop intensity pixels in the segment                                             |
@@ -207,7 +194,7 @@ The **Spreadsheet intensity** column reproduces the assignment in the working lo
 ## Complete NLC lookup table
 
 | NLC code | NLC class                                            | BII land use        | Spreadsheet intensity | Current numeric treatment | Notes                                                                                                                       |
-|---------:|------------------------------------------------------|---------------------|-----------------------|---------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+|-----------:|------------|------------|---------------|------------|------------|
 |        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        2 | contiguous low forest & thicket                      | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        3 | dense forest & woodland                              | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |

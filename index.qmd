@@ -4,16 +4,17 @@ subtitle: "Segment-based land use and intensity for Biodiversity Intactness Inde
 date: "23 July 2026"
 ---
 
-## Summary
+## Worflow summary
 
 This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.
 
 The unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:
 
 1.  one dominant BII land use class; and
+
 2.  one land use intensity score between 0 and 1.
 
-![](images/ChatGPT Image Jul 23, 2026, 05_10_55 PM.png)
+    ![](images/workflow.png){width="964"}
 
 The workflow currently includes four steps:
 
