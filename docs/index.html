@@ -160,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#worflow-summary" id="toc-worflow-summary" class="nav-link active" data-scroll-target="#worflow-summary">Worflow summary</a></li>
-  <li><a href="#current-output-structure" id="toc-current-output-structure" class="nav-link" data-scroll-target="#current-output-structure">Current output structure</a></li>
+  <li><a href="#planned-outputs" id="toc-planned-outputs" class="nav-link" data-scroll-target="#planned-outputs">Planned outputs</a></li>
   <li><a href="#current-status" id="toc-current-status" class="nav-link" data-scroll-target="#current-status">Current status</a></li>
   </ul>
 </nav>
@@ -201,9 +201,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><p>one dominant BII land use class; and</p></li>
 <li><p>one land use intensity score between 0 and 1.</p>
-<p><img src="images/workflow.png" class="img-fluid" width="964"></p></li>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/workflow.png" width="671" height="438" class="figure-img"></p>
+<figcaption>Provisional 6 step workflow for generation of a land use intensity layer for South Africa</figcaption>
+</figure>
+</div></li>
 </ol>
-<p>The workflow currently includes four steps:</p>
+<p>The pages are split into four sections with an additional case study:</p>
 <ol type="1">
 <li><a href="./segmentation.html">National segmentation</a></li>
 <li>National <a href="./land-use-reclassification.html">land use reclassification</a></li>
@@ -212,8 +217,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p>Case study for <a href="./thicket-intensity.html">Thicket-specific intensity refinement</a></p>
 </section>
-<section id="current-output-structure" class="level2">
-<h2 class="anchored" data-anchor-id="current-output-structure">Current output structure</h2>
+<section id="planned-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="planned-outputs">Planned outputs</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -228,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>bii_land_use</code></td>
-<td>Dominant BII land use class assigned to the segment</td>
+<td>Dominant BII land use class assigned to each segment in South Africa</td>
 </tr>
 <tr class="even">
 <td><code>bii_land_use_intensity</code></td>
@@ -236,11 +241,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>Low values represent lower land use intensity and high values represent higher land use intensity.</p>
 </section>
 <section id="current-status" class="level2">
 <h2 class="anchored" data-anchor-id="current-status">Current status</h2>
-<p>National segmentation and land cover reclassification are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as untransformed land.</p>
+<p>National segmentation and land cover reclassification steps are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as Untransformed land.</p>
 
 
 <!-- -->
@@ -732,9 +736,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>one land use intensity score between 0 and 1.</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="al">![](images/workflow.png)</span>{width="964"}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="al">![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png)</span>{width="671" height="438"}</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>The workflow currently includes four steps:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>The pages are split into four sections with an additional case study:</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span><span class="co">[</span><span class="ot">National segmentation</span><span class="co">](segmentation.qmd)</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>National <span class="co">[</span><span class="ot">land use reclassification</span><span class="co">](land-use-reclassification.qmd)</span></span>
@@ -745,16 +749,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">## Planned outputs</span></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>| Band                     | Description                                         |</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>| Band                     | Description                                                          |</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>| <span class="in">`bii_land_use`</span>           | Dominant BII land use class assigned to the segment |</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>| <span class="in">`bii_land_use_intensity`</span> | Segment-level land use intensity from 0 to 1        |</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>| <span class="in">`bii_land_use`</span>           | Dominant BII land use class assigned to each segment in South Africa |</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>| <span class="in">`bii_land_use_intensity`</span> | Segment-level land use intensity from 0 to 1                         |</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>Low values represent lower land use intensity and high values represent higher land use intensity.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## Current status</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## Current status</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>National segmentation and land cover reclassification are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as untransformed land.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>National segmentation and land cover reclassification steps are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as Untransformed land.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

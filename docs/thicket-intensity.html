@@ -191,7 +191,6 @@ window.Quarto = {
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data preparation</a></li>
   <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
-  <li><a href="#output" id="toc-output" class="nav-link" data-scroll-target="#output">Output</a></li>
   </ul>
 </nav>
     </div>
@@ -219,31 +218,32 @@ window.Quarto = {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as untransformed within the Thicket biome.</p>
-<p>In solid Thicket, mapped ecological condition is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. The condition probabilities are therefore converted to a continuous intensity score for BII use.</p>
+<p>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as “Untransformed” within the Thicket biome.</p>
+<p>A recent <a href="https://vdmstephni.github.io/ecosystem_condition/content/thicket/">project</a> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.</p>
 </section>
 <section id="input-data" class="level2">
 <h2 class="anchored" data-anchor-id="input-data">Input data</h2>
+<p>Script: <a href="https://code.earthengine.google.com/6756a26efc2945884f1b96c5ee0c0856" class="uri">https://code.earthengine.google.com/6756a26efc2945884f1b96c5ee0c0856</a></p>
 <ul>
 <li>National BII segment raster.</li>
 <li>National BII land use reclassification.</li>
 <li>National protected area layer.</li>
-<li>Thicket ecosystem functional group boundaries:</li>
+<li>Thicket biome boundaries:</li>
 </ul>
 <pre class="text"><code>projects/thicket-ecological-condition/assets/ThicketEFGs</code></pre>
 <ul>
-<li>Thicket ecosystem condition probability surfaces:</li>
+<li>Thicket degradation probability surfaces:</li>
 </ul>
 <pre class="text"><code>projects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025</code></pre>
 <p>The probability raster contains:</p>
-<pre class="text"><code>p_intact
-p_moderate
-p_severe</code></pre>
+<pre class="text"><code>p_intact = probability of being intact
+p_moderate = probability of being moderately degraded
+p_severe = = probability of being severely degraded</code></pre>
 </section>
 <section id="data-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="data-preparation">Data preparation</h2>
-<p>The national segment workflow is clipped to the mapped Thicket biome extent.</p>
-<p>The pixel-level Thicket intensity score is calculated as:</p>
+<p>The national segment workflow was clipped to the mapped Thicket biome extent.</p>
+<p>The pixel-level Thicket intensity score was calculated as:</p>
 <p><span class="math display">\[
 I = 0.5p_{moderate} + p_{severe}
 \]</span></p>
@@ -274,18 +274,12 @@ I = 0.5p_{moderate} + p_{severe}
 </section>
 <section id="analysis" class="level2">
 <h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
-<p>Valid pixel-level scores are averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.</p>
-<p>Two protected area treatments were initially compared:</p>
+<p>Valid pixel-level land use intensity scores were averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.</p>
+<p>Two protected area rules were initially compared:</p>
 <ol type="1">
 <li><p>apply the Thicket intensity score to untransformed and protected segments; and</p></li>
 <li><p>retain protected areas at an intensity of 0.</p></li>
 </ol>
-</section>
-<section id="output" class="level2">
-<h2 class="anchored" data-anchor-id="output">Output</h2>
-<p>The Thicket test output follows the national two-band structure:</p>
-<pre class="text"><code>bii_land_use
-bii_land_use_intensity</code></pre>
 <p>The workflow will later be extended as equivalent biome-specific intensity datasets become available.</p>
 
 
@@ -762,81 +756,74 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Thicket-specific intensity refinement"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as untransformed within the Thicket biome.</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>In solid Thicket, mapped ecological condition is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. The condition probabilities are therefore converted to a continuous intensity score for BII use.</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National BII segment raster.</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National BII land use reclassification.</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National protected area layer.</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Thicket ecosystem functional group boundaries:</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/ThicketEFGs</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Thicket ecosystem condition probability surfaces:</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>The probability raster contains:</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="in">p_intact</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="in">p_moderate</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="in">p_severe</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data preparation</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>The national segment workflow is clipped to the mapped Thicket biome extent.</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>The pixel-level Thicket intensity score is calculated as:</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>I = 0.5p_{moderate} + p_{severe}</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>This assigns the following class endpoints:</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>| Condition | Intensity contribution |</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>|-----------|-----------------------:|</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>| Intact    |                      0 |</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>| Moderate  |                    0.5 |</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>| Severe    |                      1 |</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>Only valid, unmasked probability pixels are used. Pixels masked in the probability raster were excluded from the condition model because they were already transformed, water or otherwise outside the modelled natural extent.</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analysis</span></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>Valid pixel-level scores are averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>Two protected area treatments were initially compared:</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>apply the Thicket intensity score to untransformed and protected segments; and</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>retain protected areas at an intensity of 0.</span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a><span class="fu">## Output</span></span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>The Thicket test output follows the national two-band structure:</span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use</span></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use_intensity</span></span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>The workflow will later be extended as equivalent biome-specific intensity datasets become available.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Thicket-specific intensity refinement"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>A recent <span class="co">[</span><span class="ot">project</span><span class="co">](https://vdmstephni.github.io/ecosystem_condition/content/thicket/)</span> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>Script: <span class="ot">&lt;https://code.earthengine.google.com/6756a26efc2945884f1b96c5ee0c0856&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National BII segment raster.</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National BII land use reclassification.</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National protected area layer.</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Thicket biome boundaries:</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/ThicketEFGs</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Thicket degradation probability surfaces:</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/RF_prob_surfaces_solid_thicket_2025</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>The probability raster contains:</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="in">p_intact = probability of being intact</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="in">p_moderate = probability of being moderately degraded</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="in">p_severe = = probability of being severely degraded</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data preparation</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>The national segment workflow was clipped to the mapped Thicket biome extent.</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>The pixel-level Thicket intensity score was calculated as:</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>I = 0.5p_{moderate} + p_{severe}</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>This assigns the following class endpoints:</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>| Condition | Intensity contribution |</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>|-----------|-----------------------:|</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>| Intact    |                      0 |</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>| Moderate  |                    0.5 |</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>| Severe    |                      1 |</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>Only valid, unmasked probability pixels are used. Pixels masked in the probability raster were excluded from the condition model because they were already transformed, water or otherwise outside the modelled natural extent.</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analysis</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>Valid pixel-level land use intensity scores were averaged within each segment. The Thicket-derived score is used only to refine the intensity of segments assigned to the Untransformed BII land use class. The dominant BII land use allocation remains unchanged. Transformed classes retain their national BII intensity rules.</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>Two protected area rules were initially compared:</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>apply the Thicket intensity score to untransformed and protected segments; and</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>retain protected areas at an intensity of 0.</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>The workflow will later be extended as equivalent biome-specific intensity datasets become available.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

@@ -183,7 +183,7 @@ div.csl-indent {
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data preparation</a></li>
   <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
   <li><a href="#detailed-nlc-reclassification-and-intensity-lookup" id="toc-detailed-nlc-reclassification-and-intensity-lookup" class="nav-link" data-scroll-target="#detailed-nlc-reclassification-and-intensity-lookup">Detailed NLC reclassification and intensity lookup</a></li>
-  <li><a href="#output" id="toc-output" class="nav-link" data-scroll-target="#output">Output</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
   </ul>
 </nav>
     </div>
@@ -211,23 +211,23 @@ div.csl-indent {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>The NLC 2022 data were reclassified into broad land use classes required by the BII workflow <span class="citation" data-cites="clements2026">(<a href="#ref-clements2026" role="doc-biblioref">Clements et al. 2026</a>)</span>. A second band records the available low, medium or high intensity class associated with the original land cover category.</p>
+<p>The NLC 2022 data were reclassified into broad land use classes required by the BII workflow <span class="citation" data-cites="clements2026">(<a href="#ref-clements2026" role="doc-biblioref">Clements et al. 2026</a>)</span>. A second band records the available low, medium or high intensity class associated with the original NLC category.</p>
 </section>
 <section id="input-data" class="level2">
 <h2 class="anchored" data-anchor-id="input-data">Input data</h2>
 <ul>
-<li>South African National Land Cover 2022.</li>
-<li>A BII reclassification table linking each source class to:
+<li>NLC 2022.</li>
+<li>A BII reclassification table linking each NLC class to:
 <ol type="1">
 <li>a broad BII land use class; and</li>
-<li>selected intensity class.</li>
+<li>selected intensity class for each NLC class.</li>
 </ol></li>
 </ul>
-<p>The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. Intensity classes. Protected areas are not assigned directly from national land cover. They are added later during segment allocation using the SAPAD layer.</p>
+<p>The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. the broad level classes’ intensity gradients. The protected areas class is added later during segment allocation using the SAPAD layer.</p>
 </section>
 <section id="data-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="data-preparation">Data preparation</h2>
-<p>The original NLC classes were grouped into six broad BII land use categories:</p>
+<p>The original NLC classes (for details see <a href="#nlclooklup">#nlclooklup</a>) were grouped into six broad BII land use categories:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -262,12 +262,12 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-<p>Waterbodies are excluded from the terrestrial assessment.</p>
-<p>The preliminary intensity classes that could be used from the NLC 2022 were retained in a second band as:</p>
+<p>-Waterbodies are excluded from the terrestrial assessment.</p>
+<p>The preliminary intensity classes that could be identified from the NLC 2022 were retained in a second band as:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: right;">Value</th>
+<th style="text-align: right;">Raster value</th>
 <th>Intensity class</th>
 </tr>
 </thead>
@@ -297,22 +297,29 @@ div.csl-indent {
 </section>
 <section id="analysis" class="level2">
 <h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
-<p>Each NLC class was assigned a broad BII land use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.</p>
+<p>Script: <a href="https://code.earthengine.google.com/6958a52908d318de493032cd5dbdd59d" class="uri">https://code.earthengine.google.com/6958a52908d318de493032cd5dbdd59d</a></p>
+<p>Each NLC class was assigned a broad BII land use value in GEE. Where we were able to distinguished BII within-class intensity from NLC classes, it was also assigned a low, medium or high intensity class.</p>
 <p>The resulting raster dataset contains three bands:</p>
 <pre class="text"><code>bii_land_use
 bii_intensity_class
 sanlc_class</code></pre>
 <p>The original national land cover value is retained in <code>sanlc_class</code> for traceability.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/3band.png" class="img-fluid figure-img" width="513"></p>
+<figcaption>Representation of the 3 bands raster generated in GEE for segment land use allocation in the next steps of the workflow</figcaption>
+</figure>
+</div>
 </section>
 <section id="detailed-nlc-reclassification-and-intensity-lookup" class="level2">
 <h2 class="anchored" data-anchor-id="detailed-nlc-reclassification-and-intensity-lookup">Detailed NLC reclassification and intensity lookup</h2>
-<p>The table below records the current assignment for every NLC class. The <strong>Spreadsheet intensity</strong> column reproduces the assignment in the working lookup table:</p>
+<p>The table below records the current preliminiray assignment for every NLC class:</p>
 <ul>
 <li><code>low</code>, <code>medium</code> and <code>high</code> are implemented as 0, 0.5 and 1;</li>
 <li><code>unknown</code> means that intensity has not yet been assigned from NLC alone;</li>
 <li><code>n/a</code> means that a separate class-level rule is used or the class is excluded.</li>
 </ul>
-<div class="callout callout-style-default callout-note callout-titled">
+<div id="nlclooklup" class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -338,7 +345,7 @@ Complete NLC lookup table
 <th style="text-align: right;">NLC code</th>
 <th>NLC class</th>
 <th>BII land use</th>
-<th>Spreadsheet intensity</th>
+<th>NLC-based intensity</th>
 <th>Current numeric treatment</th>
 <th>Notes</th>
 </tr>
@@ -454,7 +461,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">15</td>
@@ -462,7 +469,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">16</td>
@@ -470,7 +477,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">17</td>
@@ -478,7 +485,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">18</td>
@@ -486,7 +493,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">19</td>
@@ -494,7 +501,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">20</td>
@@ -502,7 +509,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">21</td>
@@ -510,7 +517,7 @@ Complete NLC lookup table
 <td>Exclude</td>
 <td>n/a</td>
 <td>Excluded</td>
-<td></td>
+<td>water excluded</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">22</td>
@@ -676,7 +683,7 @@ Complete NLC lookup table
 <td style="text-align: right;">42</td>
 <td>fallow land and old fields, trees</td>
 <td>Untransformed lands</td>
-<td>high?</td>
+<td>high</td>
 <td>1, provisional</td>
 <td>Assumed degraded because it was formerly cropland</td>
 </tr>
@@ -684,7 +691,7 @@ Complete NLC lookup table
 <td style="text-align: right;">43</td>
 <td>fallow land and old fields, bush</td>
 <td>Untransformed lands</td>
-<td>high?</td>
+<td>high</td>
 <td>1, provisional</td>
 <td>Assumed degraded because it was formerly cropland</td>
 </tr>
@@ -692,7 +699,7 @@ Complete NLC lookup table
 <td style="text-align: right;">44</td>
 <td>fallow land and old fields, grass</td>
 <td>Untransformed lands</td>
-<td>high?</td>
+<td>high</td>
 <td>1, provisional</td>
 <td>Assumed degraded because it was formerly cropland</td>
 </tr>
@@ -708,7 +715,7 @@ Complete NLC lookup table
 <td style="text-align: right;">46</td>
 <td>fallow land and old fields, low shrub</td>
 <td>Untransformed lands</td>
-<td>high?</td>
+<td>high</td>
 <td>1, provisional</td>
 <td>Assumed degraded because it was formerly cropland</td>
 </tr>
@@ -924,7 +931,7 @@ Complete NLC lookup table
 <td style="text-align: right;">73</td>
 <td>fallow land and old fields, wetlands</td>
 <td>Untransformed lands</td>
-<td>high?</td>
+<td>high</td>
 <td>1, provisional</td>
 <td>Assumed degraded because it was formerly cropland</td>
 </tr>
@@ -934,10 +941,8 @@ Complete NLC lookup table
 </div>
 </div>
 </section>
-<section id="output" class="level2">
-<h2 class="anchored" data-anchor-id="output">Output</h2>
-<p>Google Earth Engine asset:</p>
-<pre class="text"><code>NLC_reclass_BII_land_use_intensity</code></pre>
+<section id="section" class="level2">
+
 
 
 <!-- -->
@@ -1418,158 +1423,156 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "NLC to BII crosswalk"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>The NLC 2022 data were reclassified into broad land use classes required by the BII workflow <span class="co">[</span><span class="ot">@clements2026</span><span class="co">]</span>. A second band records the available low, medium or high intensity class associated with the original land cover category.</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>South African National Land Cover 2022.</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A BII reclassification table linking each source class to:</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>a broad BII land use class; and</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>selected intensity class.</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. Intensity classes. Protected areas are not assigned directly from national land cover. They are added later during segment allocation using the SAPAD layer.</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data preparation</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>The original NLC classes were grouped into six broad BII land use categories:</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>| Value | BII land use       |</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>|------:|--------------------|</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>|     1 | Settlements        |</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>|     2 | Timber plantations |</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>|     3 | Tree crops         |</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>|     4 | Croplands          |</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>|     5 | Protected          |</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>|     6 | Untransformed      |</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>Waterbodies are excluded from the terrestrial assessment.</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>The preliminary intensity classes that could be used from the NLC 2022 were retained in a second band as:</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>| Value | Intensity class          |</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>|------:|--------------------------|</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>|     0 | No within class gradient |</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>|     1 | Unknown                  |</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>|     2 | Low                      |</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>|     3 | Medium                   |</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>|     4 | High                     |</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analysis</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>Each NLC class was assigned a broad BII land use value. Where the source classification distinguished intensity, it was also assigned a low, medium or high intensity class.</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>The resulting raster dataset contains three bands:</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="in">bii_intensity_class</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="in">sanlc_class</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>The original national land cover value is retained in <span class="in">`sanlc_class`</span> for traceability.</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Detailed NLC reclassification and intensity lookup</span></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>The table below records the current assignment for every NLC class. The **Spreadsheet intensity** column reproduces the assignment in the working lookup table:</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`low`</span>, <span class="in">`medium`</span> and <span class="in">`high`</span> are implemented as 0, 0.5 and 1;</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`unknown`</span> means that intensity has not yet been assigned from NLC alone;</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`n/a`</span> means that a separate class-level rule is used or the class is excluded.</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>::: {.callout-note collapse="true"}</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="fu">## Complete NLC lookup table</span></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>| NLC code | NLC class                                            | BII land use        | Spreadsheet intensity | Current numeric treatment | Notes                                                                                                                       |</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>|-----------:|------------|------------|------------|------------|------------|</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>|        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>|        2 | contiguous low forest &amp; thicket                      | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>|        3 | dense forest &amp; woodland                              | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>|        4 | open woodland                                        | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>|        5 | contiguous &amp; dense plantation forest                 | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>|        6 | open &amp; sparse plantation forest                      | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>|        7 | temporary unplanted (clear-felled) plantation forest | Timber plantations  | n/a                   | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>|        8 | low shrubland (other)                                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>|        9 | low shrubland (fynbos)                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>|       10 | low shrubland (succulent karoo)                      | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>|       11 | low shrubland (nama karoo)                           | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>|       12 | sparsely wooded grassland                            | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>|       13 | natural grassland                                    | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>|       14 | natural rivers                                       | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>|       15 | natural estuaries &amp; lagoons                          | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>|       16 | natural ocean &amp; coastal                              | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>|       17 | natural lakes                                        | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>|       18 | natural pans (flooded at observation times)          | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>|       19 | artificial dams, including canals                    | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>|       20 | artificial sewage ponds                              | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>|       21 | artificial flooded mine pits                         | Exclude             | n/a                   | Excluded                  |                                                                                                                             |</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>|       22 | herbaceous wetlands, currently mapped                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>|       23 | herbaceous wetlands, previously mapped               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>|       24 | mangrove wetlands                                    | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>|       25 | natural rock surfaces                                | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>|       26 | dry pans                                             | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>|       27 | eroded lands                                         | Untransformed lands | high                  | 1                         | Less than 1% of the country; intended to represent severe erosion                                                           |</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>|       28 | sand dunes, terrestrial                              | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>|       29 | coastal sand and dunes                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>|       30 | bare riverbed material                               | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>|       31 | other bare                                           | Untransformed lands | unknown               | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>|       32 | cultivated commercial permanent orchards             | Tree croplands      | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>|       33 | cultivated commercial permanent vines                | Tree croplands      | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>|       34 | cultivated commercial sugarcane pivot irrigated      | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>|       35 | cultivated commercial permanent pineapples           | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>|       36 | cultivated commercial sugarcane non-pivot            | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>|       37 | cultivated emerging farmer sugarcane non-pivot       | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>|       38 | commercial annual crops pivot irrigated              | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>|       39 | commercial annual crops non-pivot irrigated          | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>|       40 | commercial annual crops rain-fed or dryland          | Croplands           | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>|       41 | subsistence or small-scale annual crops              | Croplands           | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>|       42 | fallow land and old fields, trees                    | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>|       43 | fallow land and old fields, bush                     | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>|       44 | fallow land and old fields, grass                    | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>|       45 | fallow land and old fields, bare                     | Untransformed lands | high                  | 1                         | Assumed degraded because it was formerly cropland and is currently bare                                                     |</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>|       46 | fallow land and old fields, low shrub                | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>|       47 | residential formal, tree                             | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>|       48 | residential formal, bush                             | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>|       49 | residential formal, low vegetation or grass          | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>|       50 | residential formal, bare                             | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>|       51 | residential informal, tree                           | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>|       52 | residential informal, bush                           | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>|       53 | residential informal, low vegetation or grass        | Settlements         | medium                | 0.5                       |                                                                                                                             |</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>|       54 | residential informal, bare                           | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>|       55 | village scattered, bare and low vegetation or grass  | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>|       56 | village dense, bare and low vegetation or grass      | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>|       57 | smallholdings, tree                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>|       58 | smallholdings, bush                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>|       59 | smallholdings, low vegetation or grass               | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>|       60 | smallholdings, bare                                  | Settlements         | low                   | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>|       61 | urban recreational fields, tree                      | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>|       62 | urban recreational fields, bush                      | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>|       63 | urban recreational fields, grass                     | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>|       64 | urban recreational fields, bare                      | Settlements         | low                   | 0                         |                                                                                                                             |</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>|       65 | commercial                                           | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>|       66 | industrial                                           | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>|       67 | roads and rails, major linear features               | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>|       68 | mines: surface infrastructure                        | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>|       69 | mines: extraction pits and quarries                  | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>|       70 | mines: salt mines                                    | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>|       71 | mines: tailings and resource dumps                   | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>|       72 | landfills                                            | Settlements         | high                  | 1                         |                                                                                                                             |</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>|       73 | fallow land and old fields, wetlands                 | Untransformed lands | high?                 | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="fu">## Output</span></span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>Google Earth Engine asset:</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="in">NLC_reclass_BII_land_use_intensity</span></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "NLC to BII crosswalk"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>The NLC 2022 data were reclassified into broad land use classes required by the BII workflow <span class="co">[</span><span class="ot">@clements2026</span><span class="co">]</span>. A second band records the available low, medium or high intensity class associated with the original NLC category.</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NLC 2022.</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A BII reclassification table linking each NLC class to:</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>a broad BII land use class; and</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>selected intensity class for each NLC class.</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. the broad level classes' intensity gradients. The protected areas class is added later during segment allocation using the SAPAD layer.</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data preparation</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>The original NLC classes (for details see <span class="co">[</span><span class="ot">#nlclooklup</span><span class="co">](#nlclooklup)</span>) were grouped into six broad BII land use categories:</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>| Value | BII land use       |</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>|------:|--------------------|</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>|     1 | Settlements        |</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>|     2 | Timber plantations |</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>|     3 | Tree crops         |</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>|     4 | Croplands          |</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>|     5 | Protected          |</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>|     6 | Untransformed      |</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>-Waterbodies are excluded from the terrestrial assessment.</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>The preliminary intensity classes that could be identified from the NLC 2022 were retained in a second band as:</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>| Raster value | Intensity class          |</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>|-------------:|--------------------------|</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>|            0 | No within class gradient |</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>|            1 | Unknown                  |</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>|            2 | Low                      |</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>|            3 | Medium                   |</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>|            4 | High                     |</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analysis</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>Script: <span class="ot">&lt;https://code.earthengine.google.com/6958a52908d318de493032cd5dbdd59d&gt;</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>Each NLC class was assigned a broad BII land use value in GEE. Where we were able to distinguished BII within-class intensity from NLC classes, it was also assigned a low, medium or high intensity class.</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>The resulting raster dataset contains three bands:</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="in">bii_intensity_class</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="in">sanlc_class</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>The original national land cover value is retained in <span class="in">`sanlc_class`</span> for traceability.</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="al">![Representation of the 3 bands raster generated in GEE for segment land use allocation in the next steps of the workflow](images/3band.png)</span>{width="513"}</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## Detailed NLC reclassification and intensity lookup</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>The table below records the current preliminiray assignment for every NLC class:</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`low`</span>, <span class="in">`medium`</span> and <span class="in">`high`</span> are implemented as 0, 0.5 and 1;</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`unknown`</span> means that intensity has not yet been assigned from NLC alone;</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="in">`n/a`</span> means that a separate class-level rule is used or the class is excluded.</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>::: {#nlclooklup .callout-note collapse="true"}</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Complete NLC lookup table</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>| NLC code | NLC class                                            | BII land use        | NLC-based intensity | Current numeric treatment | Notes                                                                                                                       |</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>|-----------:|------------|------------|------------|------------|------------|</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>|        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>|        2 | contiguous low forest &amp; thicket                      | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>|        3 | dense forest &amp; woodland                              | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>|        4 | open woodland                                        | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>|        5 | contiguous &amp; dense plantation forest                 | Timber plantations  | n/a                 | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>|        6 | open &amp; sparse plantation forest                      | Timber plantations  | n/a                 | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>|        7 | temporary unplanted (clear-felled) plantation forest | Timber plantations  | n/a                 | 1, fixed by class         | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>|        8 | low shrubland (other)                                | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>|        9 | low shrubland (fynbos)                               | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>|       10 | low shrubland (succulent karoo)                      | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>|       11 | low shrubland (nama karoo)                           | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>|       12 | sparsely wooded grassland                            | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>|       13 | natural grassland                                    | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>|       14 | natural rivers                                       | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>|       15 | natural estuaries &amp; lagoons                          | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>|       16 | natural ocean &amp; coastal                              | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>|       17 | natural lakes                                        | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>|       18 | natural pans (flooded at observation times)          | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>|       19 | artificial dams, including canals                    | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>|       20 | artificial sewage ponds                              | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>|       21 | artificial flooded mine pits                         | Exclude             | n/a                 | Excluded                  | water excluded                                                                                                              |</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>|       22 | herbaceous wetlands, currently mapped                | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>|       23 | herbaceous wetlands, previously mapped               | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>|       24 | mangrove wetlands                                    | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>|       25 | natural rock surfaces                                | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>|       26 | dry pans                                             | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>|       27 | eroded lands                                         | Untransformed lands | high                | 1                         | Less than 1% of the country; intended to represent severe erosion                                                           |</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>|       28 | sand dunes, terrestrial                              | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>|       29 | coastal sand and dunes                               | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>|       30 | bare riverbed material                               | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>|       31 | other bare                                           | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>|       32 | cultivated commercial permanent orchards             | Tree croplands      | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>|       33 | cultivated commercial permanent vines                | Tree croplands      | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>|       34 | cultivated commercial sugarcane pivot irrigated      | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>|       35 | cultivated commercial permanent pineapples           | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>|       36 | cultivated commercial sugarcane non-pivot            | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>|       37 | cultivated emerging farmer sugarcane non-pivot       | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>|       38 | commercial annual crops pivot irrigated              | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>|       39 | commercial annual crops non-pivot irrigated          | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>|       40 | commercial annual crops rain-fed or dryland          | Croplands           | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>|       41 | subsistence or small-scale annual crops              | Croplands           | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>|       42 | fallow land and old fields, trees                    | Untransformed lands | high                | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>|       43 | fallow land and old fields, bush                     | Untransformed lands | high                | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>|       44 | fallow land and old fields, grass                    | Untransformed lands | high                | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>|       45 | fallow land and old fields, bare                     | Untransformed lands | high                | 1                         | Assumed degraded because it was formerly cropland and is currently bare                                                     |</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>|       46 | fallow land and old fields, low shrub                | Untransformed lands | high                | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>|       47 | residential formal, tree                             | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>|       48 | residential formal, bush                             | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>|       49 | residential formal, low vegetation or grass          | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>|       50 | residential formal, bare                             | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>|       51 | residential informal, tree                           | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>|       52 | residential informal, bush                           | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>|       53 | residential informal, low vegetation or grass        | Settlements         | medium              | 0.5                       |                                                                                                                             |</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>|       54 | residential informal, bare                           | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>|       55 | village scattered, bare and low vegetation or grass  | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>|       56 | village dense, bare and low vegetation or grass      | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>|       57 | smallholdings, tree                                  | Settlements         | low                 | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>|       58 | smallholdings, bush                                  | Settlements         | low                 | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>|       59 | smallholdings, low vegetation or grass               | Settlements         | low                 | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>|       60 | smallholdings, bare                                  | Settlements         | low                 | 0                         | Could also represent low-intensity agriculture, but agriculture is not always present and the class is generally peri-urban |</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>|       61 | urban recreational fields, tree                      | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>|       62 | urban recreational fields, bush                      | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>|       63 | urban recreational fields, grass                     | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>|       64 | urban recreational fields, bare                      | Settlements         | low                 | 0                         |                                                                                                                             |</span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>|       65 | commercial                                           | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>|       66 | industrial                                           | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>|       67 | roads and rails, major linear features               | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a>|       68 | mines: surface infrastructure                        | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>|       69 | mines: extraction pits and quarries                  | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>|       70 | mines: salt mines                                    | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a>|       71 | mines: tailings and resource dumps                   | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a>|       72 | landfills                                            | Settlements         | high                | 1                         |                                                                                                                             |</span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a>|       73 | fallow land and old fields, wetlands                 | Untransformed lands | high                | 1, provisional            | Assumed degraded because it was formerly cropland                                                                           |</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a><span class="fu">## </span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
