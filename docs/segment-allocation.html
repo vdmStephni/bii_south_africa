@@ -242,7 +242,7 @@ window.Quarto = {
 <ol type="1">
 <li>calculate the proportion of each land use class in every segment;</li>
 <li>assign one dominant land use class using a sequential decision tree;</li>
-<li>calculate the segment intensity as the mean intensity of all valid pixels belonging to that class</li>
+<li>calculate the segment intensity as the mean intensity of all valid pixels belonging to the chosen class</li>
 </ol>
 </section>
 <section id="input-data" class="level2">
@@ -291,15 +291,15 @@ window.Quarto = {
 <li>protected lands; and</li>
 <li>untransformed lands.</li>
 </ul>
-<p>Pixel areas are summed within each segment.</p>
+<p>For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately using ee.Reducer.sum(). And uses <a href="https://developers.google.com/earth-engine/apidocs/ee-image-pixelarea">ee.Image.pixelArea()</a> for total segment area, rather than simply counting pixels.</p>
 <p>For land use class (c) in segment (s), proportional cover is:</p>
 <p><span class="math display">\[
 p_{c,s} = \frac{A_{c,s}}{A_s}
 \]</span></p>
 <p>where:</p>
 <ul>
-<li>(A_{c,s}) is the area of class (c) in segment (s); and</li>
-<li>(A_s) is the total terrestrial area of segment (s).</li>
+<li>(Ac,s) is the area of class (c) in segment (s); and</li>
+<li>(As) is the total terrestrial area of segment (s).</li>
 </ul>
 </section>
 <section id="assign-one-bii-land-use-class" class="level2">
@@ -314,7 +314,13 @@ p_{c,s} = \frac{A_{c,s}}{A_s}
 <li>Protected lands</li>
 <li>Untransformed lands</li>
 </ol>
-<p>Where multiple classes exceed 20%, the class with the highest priority is assigned.</p>
+<p>Where multiple classes exceed 20%, the class with the highest priority is assigned. Therefore the decision tree logic is:</p>
+<p>IF settlement proportion &gt; 0.20 assign Settlement</p>
+<p>ELSE IF timber proportion &gt; 0.20 assign Timber plantation</p>
+<p>ELSE IF tree-crop proportion &gt; 0.20 assign Tree cropland</p>
+<p>ELSE IF cropland proportion &gt; 0.20 assign Cropland</p>
+<p>ELSE IF protected proportion &gt; 0.20 assign Protected land</p>
+<p>ELSE assign Untransformed land</p>
 <p>Example, if:</p>
 <ul>
 <li>settlement proportion = 0.25;</li>
@@ -365,8 +371,8 @@ p_{c,s} = \frac{A_{c,s}}{A_s}
 </tr>
 </tbody>
 </table>
-<p>A higher-priority transformed land use can override the protected assignment.</p>
-<p>The allocation is implemented in reverse order in GEE because later <code>where()</code> statements overwrite earlier assignments:</p>
+<p>Note, a higher-priority transformed land use can override the protected assignment.</p>
+<p>The allocation logic is implemented in reverse order in GEE because later <code>where()</code> statements overwrite earlier assignments. In other words, “where” the condition is true, replace the current value with the specified class.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> assignedLandUse <span class="op">=</span> ee<span class="op">.</span><span class="fu">Image</span>(BII_UNTRANSFORMED)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
@@ -433,7 +439,7 @@ p_{c,s} = \frac{A_{c,s}}{A_s}
 <tr class="even">
 <td>Unknown</td>
 <td style="text-align: right;">Not yet assigned</td>
-<td>Requires an additional biome-specific intensity layer or decision</td>
+<td>Requires an additional intensity layer or decision</td>
 </tr>
 <tr class="odd">
 <td><code>n/a</code></td>
@@ -1067,7 +1073,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>calculate the proportion of each land use class in every segment;</span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>assign one dominant land use class using a sequential decision tree;</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>calculate the segment intensity as the mean intensity of all valid pixels belonging to that class</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>calculate the segment intensity as the mean intensity of all valid pixels belonging to the chosen class</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -1093,7 +1099,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>protected lands; and</span>
 <span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>untransformed lands.</span>
 <span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>Pixel areas are summed within each segment.</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately using ee.Reducer.sum(). And uses <span class="co">[</span><span class="ot">ee.Image.pixelArea()</span><span class="co">](https://developers.google.com/earth-engine/apidocs/ee-image-pixelarea)</span> for total segment area, rather than simply counting pixels.</span>
 <span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>For land use class (c) in segment (s), proportional cover is:</span>
 <span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
@@ -1103,8 +1109,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>where:</span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(A<span class="sc">\_</span>{c,s}) is the area of class (c) in segment (s); and</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(A_s) is the total terrestrial area of segment (s).</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(Ac,s) is the area of class (c) in segment (s); and</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(As) is the total terrestrial area of segment (s).</span>
 <span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Assign one BII land use class</span></span>
 <span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
@@ -1119,182 +1125,194 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>Protected lands</span>
 <span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>Untransformed lands</span>
 <span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>Where multiple classes exceed 20%, the class with the highest priority is assigned.</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>Where multiple classes exceed 20%, the class with the highest priority is assigned. Therefore the decision tree logic is:</span>
 <span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>Example, if:</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>IF settlement proportion <span class="sc">\&gt;</span> 0.20 assign Settlement</span>
 <span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>settlement proportion = 0.25;</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>cropland proportion = 0.30; and</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>both exceed 0.20.</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>ELSE IF timber proportion <span class="sc">\&gt;</span> 0.20 assign Timber plantation</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>ELSE IF tree-crop proportion <span class="sc">\&gt;</span> 0.20 assign Tree cropland</span>
 <span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>The segment is assigned to **Settlements**, because settlements have higher priority than croplands.</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>ELSE IF cropland proportion <span class="sc">\&gt;</span> 0.20 assign Cropland</span>
 <span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### Examples</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>ELSE IF protected proportion <span class="sc">\&gt;</span> 0.20 assign Protected land</span>
 <span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>| Segment composition                                        | Assigned class      | Reason                                                        |</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>| 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>| 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>| 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>| 10% settlement, 10% crop, 15% protected, 65% untransformed | Untransformed lands | No other class exceeds 20%                                    |</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>| 25% settlement inside a protected area                     | Settlements         | Transformed land is assigned before protected land            |</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>ELSE assign Untransformed land</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>Example, if:</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>settlement proportion = 0.25;</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>cropland proportion = 0.30; and</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>both exceed 0.20.</span>
 <span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>A higher-priority transformed land use can override the protected assignment.</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>The segment is assigned to **Settlements**, because settlements have higher priority than croplands.</span>
 <span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>The allocation is implemented in reverse order in GEE because later <span class="in">`where()`</span> statements overwrite earlier assignments:</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="fu">### Examples</span></span>
 <span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> assignedLandUse <span class="op">=</span> ee<span class="op">.</span><span class="fu">Image</span>(BII_UNTRANSFORMED)</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>    propProtected<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>    BII_PROTECTED</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>| Segment composition                                        | Assigned class      | Reason                                                        |</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>| 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>| 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>| 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>| 10% settlement, 10% crop, 15% protected, 65% untransformed | Untransformed lands | No other class exceeds 20%                                    |</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>| 25% settlement inside a protected area                     | Settlements         | Transformed land is assigned before protected land            |</span>
 <span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>    propCropland<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>    BII_CROPLAND</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    propTreeCrop<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    BII_TREE_CROP</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    propTimber<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>    BII_TIMBER</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>    propSettlement<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>    BII_SETTLEMENT</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">rename</span>(<span class="st">'bii_land_use'</span>)<span class="op">;</span></span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Assign land use intensity</span></span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>Land use class and land use intensity are separate attributes. For example, two segments may both be assigned to Settlements, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>Note, a higher-priority transformed land use can override the protected assignment.</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>The allocation logic is implemented in reverse order in GEE because later <span class="in">`where()`</span> statements overwrite earlier assignments. In other words, "where" the condition is true, replace the current value with the specified class.</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> assignedLandUse <span class="op">=</span> ee<span class="op">.</span><span class="fu">Image</span>(BII_UNTRANSFORMED)</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    propProtected<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    BII_PROTECTED</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>    propCropland<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>    BII_CROPLAND</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>    propTreeCrop<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>    BII_TREE_CROP</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>    propTimber<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>    BII_TIMBER</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>The preliminary NLC intensity categories are converted to the following numeric scale:</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>| Intensity category |               Score | Interpretation                                                    |</span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>|----------------------|---------------------------:|----------------------|</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>| Low                |                   0 | Lowest mapped intensity within that broad land use class          |</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>| Medium             |                 0.5 | Intermediate mapped intensity                                     |</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>| High               |                   1 | Highest mapped intensity                                          |</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>| Unknown            |    Not yet assigned | Requires an additional biome-specific intensity layer or decision |</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>| <span class="in">`n/a`</span>              | Class-specific rule | No within-class gradient is currently used                        |</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">where</span>(</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>    propSettlement<span class="op">.</span><span class="fu">gt</span>(<span class="fl">0.20</span>)<span class="op">,</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>    BII_SETTLEMENT</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">rename</span>(<span class="st">'bii_land_use'</span>)<span class="op">;</span></span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Assign land use intensity</span></span>
 <span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="fu">### Current class-level rules</span></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>Land use class and land use intensity are separate attributes. For example, two segments may both be assigned to Settlements, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.</span>
 <span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>| BII land use        | Current intensity treatment                                                                         |</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>| Settlements         | Mean of valid low, medium and high settlement-intensity pixels in the segment                       |</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>| Timber plantations  | Fixed provisionally at 1                                                                            |</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>| Tree croplands      | Mean of valid tree-crop intensity pixels in the segment                                             |</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>| Croplands           | Mean of valid cropland intensity pixels in the segment                                              |</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>| Protected lands     | Fixed provisionally at 0; effectiveness may be assessed separately by biome                         |</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>| Untransformed lands | Assigned from available NLC indicators or additional biome-specific condition and pressure datasets |</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="fu">### How the segment mean is calculated</span></span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>Only pixels belonging to the **assigned BII land use class** are included in the intensity calculation.</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>For example, suppose a segment is assigned to Settlements and contains 20 valid settlement pixels:</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>| Settlement intensity | Number of pixels |        Contribution |</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>|----------------------|-----------------:|--------------------:|</span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>| Low, score 0         |                5 |    (5 \times 0 = 0) |</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>| Medium, score 0.5    |               10 | (10 \times 0.5 = 5) |</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>| High, score 1        |                5 |    (5 \times 1 = 5) |</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>The preliminary NLC intensity categories are converted to the following numeric scale:</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>| Intensity category |               Score | Interpretation                                           |</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>|----------------------|---------------------------:|----------------------|</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>| Low                |                   0 | Lowest mapped intensity within that broad land use class |</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>| Medium             |                 0.5 | Intermediate mapped intensity                            |</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>| High               |                   1 | Highest mapped intensity                                 |</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>| Unknown            |    Not yet assigned | Requires an additional intensity layer or decision       |</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>| <span class="in">`n/a`</span>              | Class-specific rule | No within-class gradient is currently used               |</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="fu">### Current class-level rules</span></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>| BII land use        | Current intensity treatment                                                                         |</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>| Settlements         | Mean of valid low, medium and high settlement-intensity pixels in the segment                       |</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>| Timber plantations  | Fixed provisionally at 1                                                                            |</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>| Tree croplands      | Mean of valid tree-crop intensity pixels in the segment                                             |</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>| Croplands           | Mean of valid cropland intensity pixels in the segment                                              |</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>| Protected lands     | Fixed provisionally at 0; effectiveness may be assessed separately by biome                         |</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>| Untransformed lands | Assigned from available NLC indicators or additional biome-specific condition and pressure datasets |</span>
 <span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>The segment intensity is:</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="fu">### How the segment mean is calculated</span></span>
 <span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>I_s = \frac{0 + 5 + 5}{20} = 0.5</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>Only pixels belonging to the **assigned BII land use class** are included in the intensity calculation.</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>For example, suppose a segment is assigned to Settlements and contains 20 valid settlement pixels:</span>
 <span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>Cropland, protected and untransformed pixels occurring in the same segment are not included because the assigned class is Settlements.</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>More generally:</span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>I_s =</span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>\frac{\sum_{i=1}^{n} a_i I_i}</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>     {\sum_{i=1}^{n} a_i}</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>| Settlement intensity | Number of pixels |        Contribution |</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>|----------------------|-----------------:|--------------------:|</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>| Low, score 0         |                5 |    (5 \times 0 = 0) |</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>| Medium, score 0.5    |               10 | (10 \times 0.5 = 5) |</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>| High, score 1        |                5 |    (5 \times 1 = 5) |</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>The segment intensity is:</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>I_s = \frac{0 + 5 + 5}{20} = 0.5</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(I_s) is the intensity assigned to segment (s);</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(I_i) is the intensity score of valid pixel (i);</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(a_i) is the area of pixel (i); and</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>only pixels belonging to the assigned land use class are included.</span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Protected area treatment</span></span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>The following terrestrial protected area types are currently included:</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Nature Reserve;</span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Forest Nature Reserve;</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National Park;</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Forest Wilderness Area;</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>Cropland, protected and untransformed pixels occurring in the same segment are not included because the assigned class is Settlements.</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>More generally:</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>I_s =</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>\frac{\sum_{i=1}^{n} a_i I_i}</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>     {\sum_{i=1}^{n} a_i}</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(I_s) is the intensity assigned to segment (s);</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(I_i) is the intensity score of valid pixel (i);</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>(a_i) is the area of pixel (i); and</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>only pixels belonging to the assigned land use class are included.</span>
 <span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Special Nature Reserve; and</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4. Protected area treatment</span></span>
 <span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>World Heritage Site</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>The following terrestrial protected area types are currently included:</span>
 <span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>    The following are **excluded** from the current protected allocation:</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Nature Reserve;</span>
 <span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Protected Environment;</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Forest Nature Reserve;</span>
 <span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mountain Catchment Area;</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National Park;</span>
 <span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Ramsar Site;</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Forest Wilderness Area;</span>
 <span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>UNESCO Biosphere Reserve;</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Special Nature Reserve; and</span>
 <span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Botanical Garden; and</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>World Heritage Site</span>
 <span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Marine protected areas.</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>    The following are **excluded** from the current protected allocation:</span>
 <span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>A segment is assigned to Protected lands only when:</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Protected Environment;</span>
 <span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>protected area cover exceeds 20%; and</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>no higher-priority transformed class exceeds 20%.</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>Protected intensity is provisionally fixed at 0. This represents the low-intensity endpoint of land use, not a direct measurement of protected area effectiveness. The assumption should be reviewed using biome-specific information where available.</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Untransformed intensity</span></span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>**In Progress**</span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>The NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation, often used as rangelands. For this reason, most natural NLC classes are currently marked <span class="in">`unknown`</span>. Additional information is required to distinguish land use intensity here. These intensity refinements will be added separately for each biome where suitable spatial data are available. For example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed. Recent global products such as Livestock density at 1km resolution are being explored.</span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="fu">## Output</span></span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>The final spatial product is a two-band raster:</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mountain Catchment Area;</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Ramsar Site;</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>UNESCO Biosphere Reserve;</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Botanical Garden; and</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Marine protected areas.</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>A segment is assigned to Protected lands only when:</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>protected area cover exceeds 20%; and</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>no higher-priority transformed class exceeds 20%.</span>
 <span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use</span></span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use_intensity</span></span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="fu">### Band 1: `bii_land_use`</span></span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>An integer value from 1 to 6 representing the dominant BII land use class assigned to each segment.</span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="fu">### Band 2: `bii_land_use_intensity`</span></span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>A continuous value from 0 to 1 representing land use intensity within the assigned class.</span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>Protected intensity is provisionally fixed at 0. This represents the low-intensity endpoint of land use, not a direct measurement of protected area effectiveness. The assumption should be reviewed using biome-specific information where available.</span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5. Untransformed intensity</span></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>**In Progress**</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>The NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation, often used as rangelands. For this reason, most natural NLC classes are currently marked <span class="in">`unknown`</span>. Additional information is required to distinguish land use intensity here. These intensity refinements will be added separately for each biome where suitable spatial data are available. For example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed. Recent global products such as Livestock density at 1km resolution are being explored.</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="fu">## Output</span></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>The final spatial product is a two-band raster:</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use</span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="in">bii_land_use_intensity</span></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="fu">### Band 1: `bii_land_use`</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>An integer value from 1 to 6 representing the dominant BII land use class assigned to each segment.</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="fu">### Band 2: `bii_land_use_intensity`</span></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>A continuous value from 0 to 1 representing land use intensity within the assigned class.</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

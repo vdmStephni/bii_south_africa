@@ -18,9 +18,9 @@ The NLC thus is used for 2 classification frameworks: 1. broad land use classes 
 
 ## Data preparation
 
-The original NLC classes (for details see [#nlclooklup](#nlclooklup)) were grouped into six broad BII land use categories:
+The original NLC classes (for details see [#nlclooklup](#nlclooklup)) were grouped into six broad BII land use categories. Detailed descriptions of BII land use classes are available in [Supplementary Table 2](https://www.nature.com/articles/s41597-023-02832-6#Sec11) in Clements et al. (2024).
 
-| Value | BII land use       |
+| Value | BII broad land use |
 |------:|--------------------|
 |     1 | Settlements        |
 |     2 | Timber plantations |
@@ -29,7 +29,7 @@ The original NLC classes (for details see [#nlclooklup](#nlclooklup)) were group
 |     5 | Protected          |
 |     6 | Untransformed      |
 
--Waterbodies are excluded from the terrestrial assessment.
+Waterbodies were excluded to retain only terrestrial land cover.
 
 The preliminary intensity classes that could be identified from the NLC 2022 were retained in a second band as:
 
@@ -45,7 +45,7 @@ The preliminary intensity classes that could be identified from the NLC 2022 wer
 
 Script: <https://code.earthengine.google.com/6958a52908d318de493032cd5dbdd59d>
 
-Each NLC class was assigned a broad BII land use value in GEE. Where we were able to distinguished BII within-class intensity from NLC classes, it was also assigned a low, medium or high intensity class.
+Each NLC class was assigned a broad BII land use value in GEE. Where we were able to distinguish BII within-class intensity from NLC classes, it was also assigned a low, medium or high intensity class in this step. The original NLC 2022 value was retained in `sanlc_class` for traceability.
 
 The resulting raster dataset contains three bands:
 
@@ -55,23 +55,21 @@ bii_intensity_class
 sanlc_class
 ```
 
-The original national land cover value is retained in `sanlc_class` for traceability.
-
 ![Representation of the 3 bands raster generated in GEE for segment land use allocation in the next steps of the workflow](images/3band.png){width="513"}
 
 ## Detailed NLC reclassification and intensity lookup
 
-The table below records the current preliminiray assignment for every NLC class:
+The table below records the current preliminary assignment for every NLC class:
 
--   `low`, `medium` and `high` are implemented as 0, 0.5 and 1;
--   `unknown` means that intensity has not yet been assigned from NLC alone;
--   `n/a` means that a separate class-level rule is used or the class is excluded.
+-   `low`, `medium` and `high` are implemented as 0, 0.5 and 1 for the first iteration;
+-   `unknown` means that intensity has not yet been assigned from NLC alone, and needs supplementary data;
+-   `n/a` means that a separate class-level rule is used or the class is excluded in the BII broad land use classes.
 
 ::: {#nlclooklup .callout-note collapse="true"}
 ## Complete NLC lookup table
 
 | NLC code | NLC class                                            | BII land use        | NLC-based intensity | Current numeric treatment | Notes                                                                                                                       |
-|-----------:|------------|------------|------------|------------|------------|
+|-------:|------------|------------------|------------|------------|------------|
 |        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        2 | contiguous low forest & thicket                      | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        3 | dense forest & woodland                              | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |

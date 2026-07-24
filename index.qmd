@@ -28,7 +28,7 @@ Case study for [Thicket-specific intensity refinement](thicket-intensity.qmd)
 ## Planned outputs
 
 | Band                     | Description                                                          |
-|------------------------------------|------------------------------------|
+|--------------------------|----------------------------------------------------------------------|
 | `bii_land_use`           | Dominant BII land use class assigned to each segment in South Africa |
 | `bii_land_use_intensity` | Segment-level land use intensity from 0 to 1                         |
 

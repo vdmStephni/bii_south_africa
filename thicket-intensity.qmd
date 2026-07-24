@@ -4,9 +4,9 @@ title: "Thicket-specific intensity refinement"
 
 ## Summary
 
-Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.
+Biome-specific land use intensity information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.
 
-A recent [project](https://vdmstephni.github.io/ecosystem_condition/content/thicket/) mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.
+A recent [project](https://vdmstephni.github.io/ecosystem_condition/content/thicket/) mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock, such as goats. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occurred prior to satellite monitoring started. A large extent of the biome thus falls within high land use intensity or specific land use 6b. Because Thicket vegetation does not regenerate naturally, the impacts of overutilisation can still be observed with remote sensing and requires active restoration to recover.
 
 ## Input data
 
@@ -37,13 +37,13 @@ p_severe = = probability of being severely degraded
 
 ## Data preparation
 
-The national segment workflow was clipped to the mapped Thicket biome extent.
-
-The pixel-level Thicket intensity score was calculated as:
+The national segment workflow was clipped to the mapped Thicket biome extent. To explore ways to incorprate this data into the land use intensity layer, the pixel-level Thicket intensity score was calculated as:
 
 $$
 I = 0.5p_{moderate} + p_{severe}
 $$
+
+Where I is the intensity score, Pmoderate the probability of being moderately degraded and Psevere the probability of being severe degraded by high intensity browsing in rangelands. This is the inverse of the orginal condition scores which incorporated probability of being intact.
 
 This assigns the following class endpoints:
 

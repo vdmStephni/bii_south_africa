@@ -218,8 +218,8 @@ window.Quarto = {
 
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as “Untransformed” within the Thicket biome.</p>
-<p>A recent <a href="https://vdmstephni.github.io/ecosystem_condition/content/thicket/">project</a> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.</p>
+<p>Biome-specific land use intensity information is being tested as an additional source of land use intensity for BII segments classified as “Untransformed” within the Thicket biome.</p>
+<p>A recent <a href="https://vdmstephni.github.io/ecosystem_condition/content/thicket/">project</a> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock, such as goats. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occurred prior to satellite monitoring started. A large extent of the biome thus falls within high land use intensity or specific land use 6b. Because Thicket vegetation does not regenerate naturally, the impacts of overutilisation can still be observed with remote sensing and requires active restoration to recover.</p>
 </section>
 <section id="input-data" class="level2">
 <h2 class="anchored" data-anchor-id="input-data">Input data</h2>
@@ -242,11 +242,11 @@ p_severe = = probability of being severely degraded</code></pre>
 </section>
 <section id="data-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="data-preparation">Data preparation</h2>
-<p>The national segment workflow was clipped to the mapped Thicket biome extent.</p>
-<p>The pixel-level Thicket intensity score was calculated as:</p>
+<p>The national segment workflow was clipped to the mapped Thicket biome extent. To explore ways to incorprate this data into the land use intensity layer, the pixel-level Thicket intensity score was calculated as:</p>
 <p><span class="math display">\[
 I = 0.5p_{moderate} + p_{severe}
 \]</span></p>
+<p>Where I is the intensity score, Pmoderate the probability of being moderately degraded and Psevere the probability of being severe degraded by high intensity browsing in rangelands. This is the inverse of the orginal condition scores which incorporated probability of being intact.</p>
 <p>This assigns the following class endpoints:</p>
 <table class="caption-top table">
 <thead>
@@ -762,9 +762,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>Biome-specific ecosystem condition information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>Biome-specific land use intensity information is being tested as an additional source of land use intensity for BII segments classified as "Untransformed" within the Thicket biome.</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>A recent <span class="co">[</span><span class="ot">project</span><span class="co">](https://vdmstephni.github.io/ecosystem_condition/content/thicket/)</span> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occured prior to satellite monitoring started. Because Thicket vegetation does not renegerate naturally, the degradation can still be observed with remote sensing.</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>A recent <span class="co">[</span><span class="ot">project</span><span class="co">](https://vdmstephni.github.io/ecosystem_condition/content/thicket/)</span> mapped degradation in the Thicket biome in South Africa, which is strongly associated with rangeland use intensity, particularly browsing by domestic livestock, such as goats. Most of the biome is currently classified as Untransformed in BII, but the ecosystems have been heavily degraded by overutilisation of rangelands that occurred prior to satellite monitoring started. A large extent of the biome thus falls within high land use intensity or specific land use 6b. Because Thicket vegetation does not regenerate naturally, the impacts of overutilisation can still be observed with remote sensing and requires active restoration to recover.</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
@@ -795,13 +795,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data preparation</span></span>
 <span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>The national segment workflow was clipped to the mapped Thicket biome extent.</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>The national segment workflow was clipped to the mapped Thicket biome extent. To explore ways to incorprate this data into the land use intensity layer, the pixel-level Thicket intensity score was calculated as:</span>
 <span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>The pixel-level Thicket intensity score was calculated as:</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>I = 0.5p_{moderate} + p_{severe}</span>
 <span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>I = 0.5p_{moderate} + p_{severe}</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>Where I is the intensity score, Pmoderate the probability of being moderately degraded and Psevere the probability of being severe degraded by high intensity browsing in rangelands. This is the inverse of the orginal condition scores which incorporated probability of being intact.</span>
 <span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>This assigns the following class endpoints:</span>
 <span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>

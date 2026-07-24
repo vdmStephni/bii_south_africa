@@ -13,7 +13,7 @@ The segment allocation has three steps:
 
 1.  calculate the proportion of each land use class in every segment;
 2.  assign one dominant land use class using a sequential decision tree;
-3.  calculate the segment intensity as the mean intensity of all valid pixels belonging to that class
+3.  calculate the segment intensity as the mean intensity of all valid pixels belonging to the chosen class
 
 ## Input data
 
@@ -39,7 +39,7 @@ For each segment, the mapped area of the following candidate classes is calculat
 -   protected lands; and
 -   untransformed lands.
 
-Pixel areas are summed within each segment.
+For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately using ee.Reducer.sum(). And uses [ee.Image.pixelArea()](https://developers.google.com/earth-engine/apidocs/ee-image-pixelarea) for total segment area, rather than simply counting pixels.
 
 For land use class (c) in segment (s), proportional cover is:
 
@@ -49,8 +49,8 @@ $$
 
 where:
 
--   (A\_{c,s}) is the area of class (c) in segment (s); and
--   (A_s) is the total terrestrial area of segment (s).
+-   (Ac,s) is the area of class (c) in segment (s); and
+-   (As) is the total terrestrial area of segment (s).
 
 ## 2. Assign one BII land use class
 
@@ -65,7 +65,19 @@ The classes are evaluated in the following priority order:
 5.  Protected lands
 6.  Untransformed lands
 
-Where multiple classes exceed 20%, the class with the highest priority is assigned.
+Where multiple classes exceed 20%, the class with the highest priority is assigned. Therefore the decision tree logic is:
+
+IF settlement proportion \> 0.20 assign Settlement
+
+ELSE IF timber proportion \> 0.20 assign Timber plantation
+
+ELSE IF tree-crop proportion \> 0.20 assign Tree cropland
+
+ELSE IF cropland proportion \> 0.20 assign Cropland
+
+ELSE IF protected proportion \> 0.20 assign Protected land
+
+ELSE assign Untransformed land
 
 Example, if:
 
@@ -85,9 +97,9 @@ The segment is assigned to **Settlements**, because settlements have higher prio
 | 10% settlement, 10% crop, 15% protected, 65% untransformed | Untransformed lands | No other class exceeds 20%                                    |
 | 25% settlement inside a protected area                     | Settlements         | Transformed land is assigned before protected land            |
 
-A higher-priority transformed land use can override the protected assignment.
+Note, a higher-priority transformed land use can override the protected assignment.
 
-The allocation is implemented in reverse order in GEE because later `where()` statements overwrite earlier assignments:
+The allocation logic is implemented in reverse order in GEE because later `where()` statements overwrite earlier assignments. In other words, "where" the condition is true, replace the current value with the specified class.
 
 ``` javascript
 var assignedLandUse = ee.Image(BII_UNTRANSFORMED)
@@ -126,13 +138,13 @@ Land use class and land use intensity are separate attributes. For example, two 
 
 The preliminary NLC intensity categories are converted to the following numeric scale:
 
-| Intensity category |               Score | Interpretation                                                    |
+| Intensity category |               Score | Interpretation                                           |
 |----------------------|---------------------------:|----------------------|
-| Low                |                   0 | Lowest mapped intensity within that broad land use class          |
-| Medium             |                 0.5 | Intermediate mapped intensity                                     |
-| High               |                   1 | Highest mapped intensity                                          |
-| Unknown            |    Not yet assigned | Requires an additional biome-specific intensity layer or decision |
-| `n/a`              | Class-specific rule | No within-class gradient is currently used                        |
+| Low                |                   0 | Lowest mapped intensity within that broad land use class |
+| Medium             |                 0.5 | Intermediate mapped intensity                            |
+| High               |                   1 | Highest mapped intensity                                 |
+| Unknown            |    Not yet assigned | Requires an additional intensity layer or decision       |
+| `n/a`              | Class-specific rule | No within-class gradient is currently used               |
 
 ### Current class-level rules
 
