@@ -4,34 +4,70 @@ subtitle: "Segment-based land use and intensity for Biodiversity Intactness Inde
 date: "23 July 2026"
 ---
 
-## Worflow summary
+## Workflow summary
 
 This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.
 
 The unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:
 
-1.  one dominant BII land use class; and
+-   one dominant BII land use class; and
 
-2.  one land use intensity score between 0 and 1.
-
-    ![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png){width="671" height="438"}
+-   one land use intensity score between 0 and 1.
 
 The pages are split into four sections with an additional case study:
 
-1.  [National segmentation](segmentation.qmd)
-2.  National [land use reclassification](land-use-reclassification.qmd)
-3.  National [segment land use and intensity allocation](segment-allocation.qmd)
-4.  Context-specific land use intensity score refinement of "untransformed"
+-   [National segmentation](segmentation.qmd)
+
+-   National [land use reclassification](land-use-reclassification.qmd)
+
+-   National [segment land use and intensity allocation](segment-allocation.qmd)
+
+-   Context-specific land use intensity score refinement of "untransformed"
 
 Case study for [Thicket-specific intensity refinement](thicket-intensity.qmd)
 
-## Planned outputs
-
-| Band                     | Description                                                          |
-|--------------------------|----------------------------------------------------------------------|
-| `bii_land_use`           | Dominant BII land use class assigned to each segment in South Africa |
-| `bii_land_use_intensity` | Segment-level land use intensity from 0 to 1                         |
-
 ## Current status
 
-National segmentation and land cover reclassification steps are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as Untransformed land.
+The worflow is setup as three GEE scripts, with data saved as GEE assets and can be updated iteratively.
+
+-   Step 1: National segmentation tested and **completed.**
+
+-   Step 2: NLC reclassification steps **completed**
+
+    -   NLC classes crosswalked to BII broad land use classes
+
+    -   SAPAD appropriate BII classes selected and cleaned
+
+-   Step 3: Calculate proportions of broad land use classes within each segment **completed**
+
+-   Step 4 : Assign dominant land use class using sequential decision tree **first iteration completed**
+
+-   Step 5: Assign intensity for BII land use classes 1-4 from NLC **first iteration completed**
+
+-   Step 6: Assign intensity for BII land class 6 (untransformed). **In progress**
+
+-   Iteratively improve decision rules
+
+    ![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png){alt="Provisional 6 step workflow for generation of a land use intensity layer for South Africa" width="671" height="438"}
+
+## Next steps
+
+-   Different datasets are now being tested as an additional source of intensity information.
+
+-   Finalise priority of decision tree and thresholds for second iteration
+
+-   Check broad land use class distribution in segments in R (export from GEE)
+
+## Discussion points
+
+-   Is intensity for timber n/a because it is high?
+
+-   How do we quantify low, med, high? 0-1?
+
+-   Does protected area get priority over intensity data for untransformed? E.g. Addo North is protected but was heavily overbrowsed in past
+
+-   Should we calculate mean intensity only for pixels of the broad land use class?
+
+-   Relativity of land use intensity
+
+-   Confidence in NLC broad land use classes. Those not confident: additional data sources?

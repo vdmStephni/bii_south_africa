@@ -60,7 +60,7 @@
     "href": "segment-allocation.html#calculate-land-use-proportions",
     "title": "Segment land use and intensity allocation",
     "section": "1. Calculate land use proportions",
-    "text": "1. Calculate land use proportions\nFor each segment, the mapped area of the following candidate classes is calculated:\n\nsettlements;\ntimber plantations;\ntree croplands;\ncroplands;\nprotected lands; and\nuntransformed lands.\n\nFor each segment, the script sums the area (in square meters) of all pixels belonging to each class separately using ee.Reducer.sum(). And uses ee.Image.pixelArea() for total segment area, rather than simply counting pixels.\nFor land use class (c) in segment (s), proportional cover is:\n\\[\np_{c,s} = \\frac{A_{c,s}}{A_s}\n\\]\nwhere:\n\n(Ac,s) is the area of class (c) in segment (s); and\n(As) is the total terrestrial area of segment (s)."
+    "text": "1. Calculate land use proportions\nFor each segment, the mapped area of the following candidate classes is calculated:\n\nsettlements;\ntimber plantations;\ntree croplands;\ncroplands;\nprotected lands; and\nuntransformed lands.\n\nFor each segment, the script sums the area (in square meters) of all pixels belonging to each class separately and for total segment area, rather than simply counting pixels.\nFor land use class (c) in segment (s), proportional cover is:\n\\[\np_{c,s} = \\frac{A_{c,s}}{A_s}\n\\]\nwhere:\n\n(Ac,s) is the area of class (c) in segment (s); and\n(As) is the total terrestrial area of segment (s)."
   },
   {
     "objectID": "segment-allocation.html#assign-one-bii-land-use-class",
@@ -102,7 +102,7 @@
     "href": "index.html",
     "title": "South African BII land use intensity workflow",
     "section": "",
-    "text": "This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.\nThe unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1.\n\n\n\nProvisional 6 step workflow for generation of a land use intensity layer for South Africa\n\n\n\nThe pages are split into four sections with an additional case study:\n\nNational segmentation\nNational land use reclassification\nNational segment land use and intensity allocation\nContext-specific land use intensity score refinement of “untransformed”\n\nCase study for Thicket-specific intensity refinement"
+    "text": "This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.\nThe unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1.\n\nThe pages are split into four sections with an additional case study:\n\nNational segmentation\nNational land use reclassification\nNational segment land use and intensity allocation\nContext-specific land use intensity score refinement of “untransformed”\n\nCase study for Thicket-specific intensity refinement"
   },
   {
     "objectID": "index.html#worflow-summary",
@@ -123,7 +123,7 @@
     "href": "index.html#current-status",
     "title": "South African BII land use intensity workflow",
     "section": "Current status",
-    "text": "Current status\nNational segmentation and land cover reclassification steps are complete. The proportional segment allocation workflow has been implemented nationally and tested for Thicket. Different datasets are being tested as an additional source of intensity information for segments assigned as Untransformed land."
+    "text": "Current status\nThe worflow is setup as three GEE scripts, with data saved as GEE assets and can be updated iteratively.\n\nStep 1: National segmentation tested and completed.\nStep 2: NLC reclassification steps completed\n\nNLC classes crosswalked to BII broad land use classes\nSAPAD appropriate BII classes selected and cleaned\n\nStep 3: Calculate proportions of broad land use classes within each segment completed\nStep 4 : Assign dominant land use class using sequential decision tree first iteration completed\nStep 5: Assign intensity for BII land use classes 1-4 from NLC first iteration completed\nStep 6: Assign intensity for BII land class 6 (untransformed). In progress\nIteratively improve decision rules\n\n\n\nProvisional 6 step workflow for generation of a land use intensity layer for South Africa"
   },
   {
     "objectID": "land-use-reclassification.html",
@@ -201,5 +201,26 @@
     "title": "National segmentation",
     "section": "Output",
     "text": "Output\nGoogle Earth Engine asset:\nSegments_800m_SA\nThe raster contains an integer identifier for each segment. This identifier is used in subsequent calculations.\n\n\n\nNational 800m segmentation layer generated for the BII South Africa"
+  },
+  {
+    "objectID": "index.html#workflow-summary",
+    "href": "index.html#workflow-summary",
+    "title": "South African BII land use intensity workflow",
+    "section": "",
+    "text": "This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.\nThe unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:\n\none dominant BII land use class; and\none land use intensity score between 0 and 1.\n\nThe pages are split into four sections with an additional case study:\n\nNational segmentation\nNational land use reclassification\nNational segment land use and intensity allocation\nContext-specific land use intensity score refinement of “untransformed”\n\nCase study for Thicket-specific intensity refinement"
+  },
+  {
+    "objectID": "index.html#next-steps",
+    "href": "index.html#next-steps",
+    "title": "South African BII land use intensity workflow",
+    "section": "Next steps",
+    "text": "Next steps\n\nDifferent datasets are now being tested as an additional source of intensity information.\nFinalise priority of decision tree and thresholds for second iteration\nCheck broad land use class distribution in segments in R (export from GEE)"
+  },
+  {
+    "objectID": "index.html#discussion-points",
+    "href": "index.html#discussion-points",
+    "title": "South African BII land use intensity workflow",
+    "section": "Discussion points",
+    "text": "Discussion points\n\nIs intensity for timber n/a because it is high?\nHow do we quantify low, med, high? 0-1?\nDoes protected area get priority over intensity data for untransformed? E.g. Addo North is protected but was heavily overbrowsed in past\nShould we calculate mean intensity only for pixels of the broad land use class?\nRelativity of land use intensity\nConfidence in NLC broad land use classes. Those not confident: additional data sources?"
   }
 ]

@@ -39,7 +39,7 @@ For each segment, the mapped area of the following candidate classes is calculat
 -   protected lands; and
 -   untransformed lands.
 
-For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately using ee.Reducer.sum(). And uses [ee.Image.pixelArea()](https://developers.google.com/earth-engine/apidocs/ee-image-pixelarea) for total segment area, rather than simply counting pixels.
+For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately and for total segment area, rather than simply counting pixels.
 
 For land use class (c) in segment (s), proportional cover is:
 
