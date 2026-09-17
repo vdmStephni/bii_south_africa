@@ -14,7 +14,7 @@ website:
         text: Land-use reclassification
       - href: segment-allocation.qmd
         text: Segment allocation
-      - href: thicket-intensity.qmd
+      - href: land-use-intensity.qmd
         text: Intensity explore
 format:
   html:
