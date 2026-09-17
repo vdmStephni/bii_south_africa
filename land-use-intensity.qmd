@@ -1,0 +1,69 @@
+---
+title: "Land use intensity"
+---
+
+Land cover classification inevitably contains uncertainty because different land uses can have similar spectral signatures, individual pixels can contain mixtures of vegetation and built surfaces, and seasonal changes can alter their appearance. Categories such as smallholdings, villages and urban recreational land are particularly difficult to distinguish because their defining differences involve land use and management, which are not always observable from satellite imagery. Correcting these errors nationally would require additional reference data and substantial reclassification, beyond the scope of this BII component. We therefore need an intensity approach that is robust to uncertainty in the underlying map.
+
+Confusion among subclasses belonging to the same broad land use leaves broad allocation unchanged, but can affect intensity estimates if those subclasses receive different scores. We are consequently comparing SANLC-based scores with additional data sources as indicators of land use pressure. These comparisons are exploratory; the final approach has not yet been selected.
+
+In particular the land cover classes that fall within the "low intensity" gradient, might fit according to the class description, but in reality the classifier struggles to discern these and it is where much of the SANLC misclassification occurs.
+
+### Linking intensity to the expert assessments
+
+The BII experts estimated the abundance remaining for each species group under specified landscape scenarios, relative to an intact reference. For four broad land uses, paired scenarios define the endpoints of an intensity gradient. Spatial intensity scores determine how the corresponding expert intactness estimates are interpolated.
+
+FOr the sub-Saharan African BII, relevant proxies were standardised to 0–1, averaged with equal weights, and the resulting average intensity rescaled within each broad land-use class. These are relative intensity scores, rather than direct measurements of biodiversity loss.
+
+Because there is such a detailed 73 class land cover classification available in South Africa, our "SANLC alternative approach" assigns provisional scores of **0, 0.5 and 1** to detailed subclasses and calculates their area-weighted mean **within the assigned land-cover class in each segment**. Where there is still uncertainty in subclass classification (i.e. where land cover is often misclassified), additional spatial data may be needed to estimate land use intensity.
+
+### Settlements
+
+**Endpoints: mixed settlements → dense urban.**
+
+**Sub-Saharan BII:** Settlement intensity combined mapped settlement extent from World Settlement Footprint with mean population density across each grid cell. These represented the transition from dispersed development interspersed with gardens and open vegetation to densely developed landscapes.
+
+**South African approach:** We are comparing this method with scores assigned to SANLC residential, village, smallholding, recreational, industrial and mining subclasses. Additional footprint and population information may reduce dependence on uncertain subclass distinctions.
+
+### Timber plantations
+
+**Single scenario: timber plantations.**
+
+**Sub-Saharan BII:** No variable intensity gradient was calculated. Experts assessed one plantation scenario encompassing timber production, harvesting and replanting, with some remnant natural vegetation.
+
+**South African approach:** We currently retain a single category. SANLC distinguishes standing, sparse and clear-felled plantations, but these may represent stages of the same rotation rather than distinct management intensities. Using these differences to adjust BII would require an additional ecological basis.
+
+### Tree croplands
+
+**Endpoints: non-intensive smallholder croplands → tree-crop plantations.**
+
+**Sub-Saharan BII:** Intensity combined tree-crop coverage, field-size scores and nitrogen fertiliser inputs. The smallholder scenario served as the low-intensity endpoint because these landscapes can contain both annual crops and useful trees; the other endpoint represented tree-crop plantations, including orchards and vineyards.
+
+**South African approach:** Both SANLC orchards and vines currently receive a high score, so their within-class average provides no intensity gradient. We are testing whether tree-crop coverage, field size and agricultural-input data provide meaningful differentiation. Their usefulness will depend on their spatial detail and relevance to South African production systems.
+
+### Croplands
+
+**Endpoints: non-intensive smallholder croplands → intensive large-scale croplands.**
+
+**Sub-Saharan BII:** Intensity combined crop coverage, field-size scores and nitrogen fertiliser inputs. Together, these represented differences in landscape composition, agricultural scale and input intensity.
+
+**South African approach:** The SANLC commercial temporary and permanent cropland subclasses correspond well to the intensive large scale croplands the intensive large-scale croplands end poitn, i.e. a score of 1. But the small-scale annual crops, which from the description of the class seems ideal for the low end point here, often have the same land use intensity signals as the commercial crops. We've given it a score of 0.5 for this comparison stage. We are comparing these scores with the proxy-based method and considering whether SANLC distinctions such as irrigation can provide further useful information.
+
+### Protected lands
+
+**Single scenario: strictly protected areas.**
+
+**Sub-Saharan BII:** No variable intensity gradient was calculated. The expert scenario described restricted settlement and resource use, limited recent human impacts, and some tourism infrastructure.
+
+**South African approach:** Protected-area coverage informs allocation, with priority above untransformed land. We retain underlying SANLC composition for assessment, but do not currently assign an intensity gradient. Legal protection does not necessarily imply effective management or intact ecological condition; accounting for those differences would require additional evidence.
+
+### Untransformed lands
+
+**Endpoints: near-natural lands → intensive rangelands.**
+
+**Sub-Saharan BII:** Intensity combined livestock density and nitrogen fertiliser inputs. Cattle, sheep and goat densities were summed and standardised within combinations of rainfall bands and soil-nutrient categories, recognising that environmental conditions influence the pressure associated with a given livestock density.
+
+**South African approach:** SANLC can identify broad vegettaion groups, mapped erosion and previous cultivation, but cannot establish grazing pressure or ecological intactness from these classes alone. We are exploring livestock information alongside degradation and condition datasets, potentially including the SANBI nine-class condition layer. These sources will need to be evaluated for the pressures they represent in relation to the landscape contexts the experts were given, distinguishing current land-use intensity from persistent effects of historical degradation. Provisional low scores for natural cover should therefore not be interpreted as evidence of low pressure.
+
+We could combine South Africa’s mapped livestock [carrying capacity](https://www.ajol.info/index.php/sajas/article/view/99337) with global [prediction](https://www.nature.com/articles/sdata2018227)s of cattle, sheep and goat densities to estimate **livestock pressure relative to the land’s capacity to support it**. Animal densities would first be converted to compatible large-stock units (LSU), using appropriate species-specific factors. Carrying capacity expressed in hectares per LSU would be converted to LSU per hectare, allowing estimated livestock demand and capacity to be compared over the same grazing area.
+
+This could provide a more locally relevant intensity proxy than livestock density alone. However, it would require checks on dataset dates, spatial resolution, supplementary feeding and the treatment of browsing animals and wildlife. The ratio would indicate potential land use pressure rather than demonstrate degradation, and would need evaluation against condition data and expert knowledge before being translated into the BII intensity gradient.

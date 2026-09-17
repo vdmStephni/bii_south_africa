@@ -4,6 +4,10 @@ subtitle: "Segment-based land use and intensity for Biodiversity Intactness Inde
 date: "23 July 2026"
 ---
 
+## Intention of webpage
+
+This page documents the progress toward creating a national Biodiversity Intactness Index for South Africa. It highlights current status in the land use intensity analysis workflow, describes potential next steps and decisions that still require discussion. At the top of each page we show what still needs to be done.
+
 ## Workflow summary
 
 This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.
@@ -12,9 +16,9 @@ The unit of assessment is a spatial segment rather than an individual raster pix
 
 -   one dominant BII land use class; and
 
--   one land use intensity score between 0 and 1.
+-   one land use intensity estimate between 0 and 1.
 
-The pages are split into four sections with an additional case study:
+The pages are split into four sections:
 
 -   [National segmentation](segmentation.qmd)
 
@@ -23,8 +27,6 @@ The pages are split into four sections with an additional case study:
 -   National [segment land use and intensity allocation](segment-allocation.qmd)
 
 -   Context-specific land use intensity score refinement of "untransformed"
-
-Case study for [Thicket-specific intensity refinement](thicket-intensity.qmd)
 
 ## Current status
 
@@ -44,30 +46,14 @@ The worflow is setup as three GEE scripts, with data saved as GEE assets and can
 
 -   Step 5: Assign intensity for BII land use classes 1-4 from NLC **first iteration completed**
 
--   Step 6: Assign intensity for BII land class 6 (untransformed). **In progress**
+-   Step 6: Assign intensity for BII land use class 6 (untransformed). **In progress**
 
--   Iteratively improve decision rules
-
-    ![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png){alt="Provisional 6 step workflow for generation of a land use intensity layer for South Africa" width="671" height="438"}
+    ![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png){width="671" height="438"}
 
 ## Next steps
 
 -   Different datasets are now being tested as an additional source of intensity information.
 
--   Finalise priority of decision tree and thresholds for second iteration
+-   Explore detection of low intensity SANLC classes
 
--   Check broad land use class distribution in segments in R (export from GEE)
-
-## Discussion points
-
--   Is intensity for timber n/a because it is high?
-
--   How do we quantify low, med, high? 0-1?
-
--   Does protected area get priority over intensity data for untransformed? E.g. Addo North is protected but was heavily overbrowsed in past
-
--   Should we calculate mean intensity only for pixels of the broad land use class?
-
--   Relativity of land use intensity
-
--   Confidence in NLC broad land use classes. Those not confident: additional data sources?
+## 

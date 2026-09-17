@@ -3,16 +3,21 @@ title: "NLC to BII crosswalk"
 bibliography: references.bib
 ---
 
+## To do 29 July 2026
+
+-   Ensure secondary natural merged correctly from NLC 7 class to the NLC 72 class
+
 ## Summary
 
 The NLC 2022 data were reclassified into broad land use classes required by the BII workflow [@clements2026]. A second band records the available low, medium or high intensity class associated with the original NLC category.
 
 ## Input data
 
--   NLC 2022.
+-   NLC 2022
+-   NLC 7 class data (to extract secondary natural)
 -   A BII reclassification table linking each NLC class to:
     1.  a broad BII land use class; and
-    2.  selected intensity class for each NLC class.
+    2.  selected intensity class for each NLC class
 
 The NLC thus is used for 2 classification frameworks: 1. broad land use classes and 2. the broad level classes' intensity gradients. The protected areas class is added later during segment allocation using the SAPAD layer.
 
@@ -69,7 +74,7 @@ The table below records the current preliminary assignment for every NLC class:
 ## Complete NLC lookup table
 
 | NLC code | NLC class                                            | BII land use        | NLC-based intensity | Current numeric treatment | Notes                                                                                                                       |
-|-------:|------------|------------------|------------|------------|------------|
+|---------:|------------------------------------------------------|---------------------|---------------------|---------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 |        1 | contiguous (indigenous) forest                       | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        2 | contiguous low forest & thicket                      | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |
 |        3 | dense forest & woodland                              | Untransformed lands | unknown             | Not yet assigned          | some likely to be degraded                                                                                                  |

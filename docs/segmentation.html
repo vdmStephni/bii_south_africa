@@ -159,8 +159,8 @@ div.csl-indent {
 <span class="menu-text">Segment allocation</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./thicket-intensity.html"> 
-<span class="menu-text">Thicket land use intensity</span></a>
+    <a class="nav-link" href="./thicket-intensity.qmd"> 
+<span class="menu-text">Intensity explore</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -180,8 +180,9 @@ div.csl-indent {
   <ul>
   <li><a href="#rationale" id="toc-rationale" class="nav-link active" data-scroll-target="#rationale">Rationale</a></li>
   <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
-  <li><a href="#parameter-selecetion-and-analysis" id="toc-parameter-selecetion-and-analysis" class="nav-link" data-scroll-target="#parameter-selecetion-and-analysis">Parameter selecetion and analysis</a></li>
+  <li><a href="#parameter-selection-and-analysis" id="toc-parameter-selection-and-analysis" class="nav-link" data-scroll-target="#parameter-selection-and-analysis">Parameter selection and analysis</a></li>
   <li><a href="#output" id="toc-output" class="nav-link" data-scroll-target="#output">Output</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
   </ul>
 </nav>
     </div>
@@ -209,7 +210,7 @@ div.csl-indent {
 
 <section id="rationale" class="level2">
 <h2 class="anchored" data-anchor-id="rationale">Rationale</h2>
-<p>A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation groups pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</p>
+<p>A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells may impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation tools provide an approach for extracting features from satellite imagery based on objects, potentially grouping pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. The objects can then be grouped into classes that represent real-world features. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</p>
 </section>
 <section id="input-data" class="level2">
 <h2 class="anchored" data-anchor-id="input-data">Input data</h2>
@@ -218,8 +219,8 @@ div.csl-indent {
 <li><p>Land and water masks used to restrict the analysis.</p></li>
 </ul>
 </section>
-<section id="parameter-selecetion-and-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="parameter-selecetion-and-analysis">Parameter selecetion and analysis</h2>
+<section id="parameter-selection-and-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="parameter-selection-and-analysis">Parameter selection and analysis</h2>
 <p>Segmentation was implemented in Google Earth Engine using the Simple Non-Iterative Clustering algorithm (<a href="https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic">SNIC,or superpixel clustering</a>) applied to the <a href="https://arxiv.org/abs/2507.22291">AlphaEarth Foundations Embeddings</a> (Brown et al., 2025). The embeddings provide a condensed representation of landscape characteristics derived from multiple sensors and environmental variables, including optical reflectance (e.g.&nbsp;Sentinel-2, Landsat 8 &amp; 9), radar backscatter (e.g.&nbsp;Sentinel-1, PALSAR-2 and GEDI), climate (e.g.&nbsp;ERA5-Land), land cover context (NLCD), and topographic (GLO-30 DEM) information. Rather than representing a single spectral index or satellite band, each embedding dimension, of which there are 64, captures complex spatial, spectral and temporal patterns learned from large volumes of EO data. &nbsp;So, instead of asking do these pixels have similar spectral values, it asks do these pixels have similar embedding signatures or landscape “fingerprints” (vegetation, soil, topography etc.)?</p>
 <p>The key parameter: “<strong>size</strong>” controls how large each segment is, with smaller values producing numerous small, detailed segments and larger values producing fewer, larger segments that represent broader landscape units. The “<strong>compactness”</strong> parameter controls whether segments follow natural patterns in the data (low values, more irregular and realistic shapes) or form more regular, uniform shapes (high values). This was set to 1 to allow segments to follow natural landscape boundaries while maintaining some spatial regularity.”<strong>Connectivit</strong>y” controls how pixels are considered connected, where 8 allows diagonal connections (on top of the 4 direct neighbours) and results in smoother, more continuous segments. We tested three sizes: fine (size = 15; <em>c.</em> 150 m), medium (size = 40; <em>c.</em> 400 m), and coarse (size = 100; <em>c.</em> 1 km), to evaluate how segment size influences the representation of landscape heterogeneity and land-use systems. Smaller segments captured fine-scale variation such as field boundaries and patchy vegetation but over-fragmented the landscape (e.g.&nbsp;detect small mosaiced plant communities within a wetland), whereas larger segments represented broader land-use systems but merged some distinct land uses (different crops). An intermediate scale (800m) was selected for further analysis as it best balanced ecological realism and spatial coherence. The neighbourhood size was scaled proportionally to segment size (size × 4) to ensure stable region growth and minimise edge artefacts. Projection and scale were fixed before segmentation to reduce zoom-dependent behaviour in GEE visualisation and to improve reproducibility of the exported outputs.</p>
 <p>The segmentation was generated once for the national extent and saved as a reusable asset. The same segment identifiers are used for all subsequent land use proportion and intensity calculations.</p>
@@ -235,6 +236,9 @@ div.csl-indent {
 <figcaption>National 800m segmentation layer generated for the BII South Africa</figcaption>
 </figure>
 </div>
+</section>
+<section id="section" class="level2">
+
 
 
 <!-- -->
@@ -722,7 +726,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">## Rationale</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation groups pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells may impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation tools provide an approach for extracting features from satellite imagery based on objects, potentially grouping pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. The objects can then be grouped into classes that represent real-world features. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
@@ -730,7 +734,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land and water masks used to restrict the analysis.</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Parameter selecetion and analysis</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Parameter selection and analysis</span></span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>Segmentation was implemented in Google Earth Engine using the Simple Non-Iterative Clustering algorithm (<span class="co">[</span><span class="ot">SNIC,or superpixel clustering</span><span class="co">](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic)</span>) applied to the <span class="co">[</span><span class="ot">AlphaEarth Foundations Embeddings</span><span class="co">](https://arxiv.org/abs/2507.22291)</span> (Brown et al., 2025). The embeddings provide a condensed representation of landscape characteristics derived from multiple sensors and environmental variables, including optical reflectance (e.g. Sentinel-2, Landsat 8 &amp; 9), radar backscatter (e.g. Sentinel-1, PALSAR-2 and GEDI), climate (e.g. ERA5-Land), land cover context (NLCD), and topographic (GLO-30 DEM) information. Rather than representing a single spectral index or satellite band, each embedding dimension, of which there are 64, captures complex spatial, spectral and temporal patterns learned from large volumes of EO data. &nbsp;So, instead of asking do these pixels have similar spectral values, it asks do these pixels have similar embedding signatures or landscape “fingerprints” (vegetation, soil, topography etc.)?</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -748,7 +752,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>The raster contains an integer identifier for each segment. This identifier is used in subsequent calculations.</span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="al">![National 800m segmentation layer generated for the BII South Africa](images/segments.png)</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="al">![National 800m segmentation layer generated for the BII South Africa](images/segments.png)</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## </span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

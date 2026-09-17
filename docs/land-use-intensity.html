@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-07-23">
 
-<title>South African BII land use intensity workflow</title>
+<title>Land use intensity – South African BII land use intensity workflow</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -124,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Overview</span></a>
   </li>  
   <li class="nav-item">
@@ -159,11 +158,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#intention-of-webpage" id="toc-intention-of-webpage" class="nav-link active" data-scroll-target="#intention-of-webpage">Intention of webpage</a></li>
-  <li><a href="#workflow-summary" id="toc-workflow-summary" class="nav-link" data-scroll-target="#workflow-summary">Workflow summary</a></li>
-  <li><a href="#current-status" id="toc-current-status" class="nav-link" data-scroll-target="#current-status">Current status</a></li>
-  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next steps</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#linking-intensity-to-the-expert-assessments" id="toc-linking-intensity-to-the-expert-assessments" class="nav-link active" data-scroll-target="#linking-intensity-to-the-expert-assessments">Linking intensity to the expert assessments</a></li>
+  <li><a href="#settlements" id="toc-settlements" class="nav-link" data-scroll-target="#settlements">Settlements</a></li>
+  <li><a href="#timber-plantations" id="toc-timber-plantations" class="nav-link" data-scroll-target="#timber-plantations">Timber plantations</a></li>
+  <li><a href="#tree-croplands" id="toc-tree-croplands" class="nav-link" data-scroll-target="#tree-croplands">Tree croplands</a></li>
+  <li><a href="#croplands" id="toc-croplands" class="nav-link" data-scroll-target="#croplands">Croplands</a></li>
+  <li><a href="#protected-lands" id="toc-protected-lands" class="nav-link" data-scroll-target="#protected-lands">Protected lands</a></li>
+  <li><a href="#untransformed-lands" id="toc-untransformed-lands" class="nav-link" data-scroll-target="#untransformed-lands">Untransformed lands</a></li>
   </ul>
 </nav>
     </div>
@@ -172,8 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">South African BII land use intensity workflow</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
-<p class="subtitle lead">Segment-based land use and intensity for Biodiversity Intactness Index calculations</p>
+<div class="quarto-title-block"><div><h1 class="title">Land use intensity</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -181,12 +181,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-title-meta">
 
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">July 23, 2026</p>
-    </div>
-  </div>
   
     
   </div>
@@ -196,57 +190,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="intention-of-webpage" class="level2">
-<h2 class="anchored" data-anchor-id="intention-of-webpage">Intention of webpage</h2>
-<p>This page documents the progress toward creating a national Biodiversity Intactness Index for South Africa. It highlights current status in the land use intensity analysis workflow, describes potential next steps and decisions that still require discussion. At the top of each page we show what still needs to be done.</p>
+<p>Land cover classification inevitably contains uncertainty because different land uses can have similar spectral signatures, individual pixels can contain mixtures of vegetation and built surfaces, and seasonal changes can alter their appearance. Categories such as smallholdings, villages and urban recreational land are particularly difficult to distinguish because their defining differences involve land use and management, which are not always observable from satellite imagery. Correcting these errors nationally would require additional reference data and substantial reclassification, beyond the scope of this BII component. We therefore need an intensity approach that is robust to uncertainty in the underlying map.</p>
+<p>Confusion among subclasses belonging to the same broad land use leaves broad allocation unchanged, but can affect intensity estimates if those subclasses receive different scores. We are consequently comparing SANLC-based scores with additional data sources as indicators of land use pressure. These comparisons are exploratory; the final approach has not yet been selected.</p>
+<p>In particular the land cover classes that fall within the “low intensity” gradient, might fit according to the class description, but in reality the classifier struggles to discern these and it is where much of the SANLC misclassification occurs.</p>
+<section id="linking-intensity-to-the-expert-assessments" class="level3">
+<h3 class="anchored" data-anchor-id="linking-intensity-to-the-expert-assessments">Linking intensity to the expert assessments</h3>
+<p>The BII experts estimated the abundance remaining for each species group under specified landscape scenarios, relative to an intact reference. For four broad land uses, paired scenarios define the endpoints of an intensity gradient. Spatial intensity scores determine how the corresponding expert intactness estimates are interpolated.</p>
+<p>FOr the sub-Saharan African BII, relevant proxies were standardised to 0–1, averaged with equal weights, and the resulting average intensity rescaled within each broad land-use class. These are relative intensity scores, rather than direct measurements of biodiversity loss.</p>
+<p>Because there is such a detailed 73 class land cover classification available in South Africa, our “SANLC alternative approach” assigns provisional scores of <strong>0, 0.5 and 1</strong> to detailed subclasses and calculates their area-weighted mean <strong>within the assigned land-cover class in each segment</strong>. Where there is still uncertainty in subclass classification (i.e.&nbsp;where land cover is often misclassified), additional spatial data may be needed to estimate land use intensity.</p>
 </section>
-<section id="workflow-summary" class="level2">
-<h2 class="anchored" data-anchor-id="workflow-summary">Workflow summary</h2>
-<p>This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.</p>
-<p>The unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:</p>
-<ul>
-<li><p>one dominant BII land use class; and</p></li>
-<li><p>one land use intensity estimate between 0 and 1.</p></li>
-</ul>
-<p>The pages are split into four sections:</p>
-<ul>
-<li><p><a href="./segmentation.html">National segmentation</a></p></li>
-<li><p>National <a href="./land-use-reclassification.html">land use reclassification</a></p></li>
-<li><p>National <a href="./segment-allocation.html">segment land use and intensity allocation</a></p></li>
-<li><p>Context-specific land use intensity score refinement of “untransformed”</p></li>
-</ul>
+<section id="settlements" class="level3">
+<h3 class="anchored" data-anchor-id="settlements">Settlements</h3>
+<p><strong>Endpoints: mixed settlements → dense urban.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> Settlement intensity combined mapped settlement extent from World Settlement Footprint with mean population density across each grid cell. These represented the transition from dispersed development interspersed with gardens and open vegetation to densely developed landscapes.</p>
+<p><strong>South African approach:</strong> We are comparing this method with scores assigned to SANLC residential, village, smallholding, recreational, industrial and mining subclasses. Additional footprint and population information may reduce dependence on uncertain subclass distinctions.</p>
 </section>
-<section id="current-status" class="level2">
-<h2 class="anchored" data-anchor-id="current-status">Current status</h2>
-<p>The worflow is setup as three GEE scripts, with data saved as GEE assets and can be updated iteratively.</p>
-<ul>
-<li><p>Step 1: National segmentation tested and <strong>completed.</strong></p></li>
-<li><p>Step 2: NLC reclassification steps <strong>completed</strong></p>
-<ul>
-<li><p>NLC classes crosswalked to BII broad land use classes</p></li>
-<li><p>SAPAD appropriate BII classes selected and cleaned</p></li>
-</ul></li>
-<li><p>Step 3: Calculate proportions of broad land use classes within each segment <strong>completed</strong></p></li>
-<li><p>Step 4 : Assign dominant land use class using sequential decision tree <strong>first iteration completed</strong></p></li>
-<li><p>Step 5: Assign intensity for BII land use classes 1-4 from NLC <strong>first iteration completed</strong></p></li>
-<li><p>Step 6: Assign intensity for BII land use class 6 (untransformed). <strong>In progress</strong></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/workflow.png" width="671" height="438" class="figure-img"></p>
-<figcaption>Provisional 6 step workflow for generation of a land use intensity layer for South Africa</figcaption>
-</figure>
-</div></li>
-</ul>
+<section id="timber-plantations" class="level3">
+<h3 class="anchored" data-anchor-id="timber-plantations">Timber plantations</h3>
+<p><strong>Single scenario: timber plantations.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> No variable intensity gradient was calculated. Experts assessed one plantation scenario encompassing timber production, harvesting and replanting, with some remnant natural vegetation.</p>
+<p><strong>South African approach:</strong> We currently retain a single category. SANLC distinguishes standing, sparse and clear-felled plantations, but these may represent stages of the same rotation rather than distinct management intensities. Using these differences to adjust BII would require an additional ecological basis.</p>
 </section>
-<section id="next-steps" class="level2">
-<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
-<ul>
-<li><p>Different datasets are now being tested as an additional source of intensity information.</p></li>
-<li><p>Explore detection of low intensity SANLC classes</p></li>
-</ul>
+<section id="tree-croplands" class="level3">
+<h3 class="anchored" data-anchor-id="tree-croplands">Tree croplands</h3>
+<p><strong>Endpoints: non-intensive smallholder croplands → tree-crop plantations.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> Intensity combined tree-crop coverage, field-size scores and nitrogen fertiliser inputs. The smallholder scenario served as the low-intensity endpoint because these landscapes can contain both annual crops and useful trees; the other endpoint represented tree-crop plantations, including orchards and vineyards.</p>
+<p><strong>South African approach:</strong> Both SANLC orchards and vines currently receive a high score, so their within-class average provides no intensity gradient. We are testing whether tree-crop coverage, field size and agricultural-input data provide meaningful differentiation. Their usefulness will depend on their spatial detail and relevance to South African production systems.</p>
 </section>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section"></h2>
+<section id="croplands" class="level3">
+<h3 class="anchored" data-anchor-id="croplands">Croplands</h3>
+<p><strong>Endpoints: non-intensive smallholder croplands → intensive large-scale croplands.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> Intensity combined crop coverage, field-size scores and nitrogen fertiliser inputs. Together, these represented differences in landscape composition, agricultural scale and input intensity.</p>
+<p><strong>South African approach:</strong> The SANLC commercial temporary and permanent cropland subclasses correspond well to the intensive large scale croplands the intensive large-scale croplands end poitn, i.e.&nbsp;a score of 1. But the small-scale annual crops, which from the description of the class seems ideal for the low end point here, often have the same land use intensity signals as the commercial crops. We’ve given it a score of 0.5 for this comparison stage. We are comparing these scores with the proxy-based method and considering whether SANLC distinctions such as irrigation can provide further useful information.</p>
+</section>
+<section id="protected-lands" class="level3">
+<h3 class="anchored" data-anchor-id="protected-lands">Protected lands</h3>
+<p><strong>Single scenario: strictly protected areas.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> No variable intensity gradient was calculated. The expert scenario described restricted settlement and resource use, limited recent human impacts, and some tourism infrastructure.</p>
+<p><strong>South African approach:</strong> Protected-area coverage informs allocation, with priority above untransformed land. We retain underlying SANLC composition for assessment, but do not currently assign an intensity gradient. Legal protection does not necessarily imply effective management or intact ecological condition; accounting for those differences would require additional evidence.</p>
+</section>
+<section id="untransformed-lands" class="level3">
+<h3 class="anchored" data-anchor-id="untransformed-lands">Untransformed lands</h3>
+<p><strong>Endpoints: near-natural lands → intensive rangelands.</strong></p>
+<p><strong>Sub-Saharan BII:</strong> Intensity combined livestock density and nitrogen fertiliser inputs. Cattle, sheep and goat densities were summed and standardised within combinations of rainfall bands and soil-nutrient categories, recognising that environmental conditions influence the pressure associated with a given livestock density.</p>
+<p><strong>South African approach:</strong> SANLC can identify broad vegettaion groups, mapped erosion and previous cultivation, but cannot establish grazing pressure or ecological intactness from these classes alone. We are exploring livestock information alongside degradation and condition datasets, potentially including the SANBI nine-class condition layer. These sources will need to be evaluated for the pressures they represent in relation to the landscape contexts the experts were given, distinguishing current land-use intensity from persistent effects of historical degradation. Provisional low scores for natural cover should therefore not be interpreted as evidence of low pressure.</p>
+<p>We could combine South Africa’s mapped livestock <a href="https://www.ajol.info/index.php/sajas/article/view/99337">carrying capacity</a> with global <a href="https://www.nature.com/articles/sdata2018227">prediction</a>s of cattle, sheep and goat densities to estimate <strong>livestock pressure relative to the land’s capacity to support it</strong>. Animal densities would first be converted to compatible large-stock units (LSU), using appropriate species-specific factors. Carrying capacity expressed in hectares per LSU would be converted to LSU per hectare, allowing estimated livestock demand and capacity to be compared over the same grazing area.</p>
+<p>This could provide a more locally relevant intensity proxy than livestock density alone. However, it would require checks on dataset dates, spatial resolution, supplementary feeding and the treatment of browsing animals and wildlife. The ratio would indicate potential land use pressure rather than demonstrate degradation, and would need evaluation against condition data and expert knowledge before being translated into the BII intensity gradient.</p>
 
 
 <!-- -->
@@ -723,64 +712,74 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "South African BII land use intensity workflow"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Segment-based land use and intensity for Biodiversity Intactness Index calculations"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "23 July 2026"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Land use intensity"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Land cover classification inevitably contains uncertainty because different land uses can have similar spectral signatures, individual pixels can contain mixtures of vegetation and built surfaces, and seasonal changes can alter their appearance. Categories such as smallholdings, villages and urban recreational land are particularly difficult to distinguish because their defining differences involve land use and management, which are not always observable from satellite imagery. Correcting these errors nationally would require additional reference data and substantial reclassification, beyond the scope of this BII component. We therefore need an intensity approach that is robust to uncertainty in the underlying map.</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Intention of webpage</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Confusion among subclasses belonging to the same broad land use leaves broad allocation unchanged, but can affect intensity estimates if those subclasses receive different scores. We are consequently comparing SANLC-based scores with additional data sources as indicators of land use pressure. These comparisons are exploratory; the final approach has not yet been selected.</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>This page documents the progress toward creating a national Biodiversity Intactness Index for South Africa. It highlights current status in the land use intensity analysis workflow, describes potential next steps and decisions that still require discussion. At the top of each page we show what still needs to be done.</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>In particular the land cover classes that fall within the "low intensity" gradient, might fit according to the class description, but in reality the classifier struggles to discern these and it is where much of the SANLC misclassification occurs.</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Workflow summary</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### Linking intensity to the expert assessments</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>This workflow combines the South African National Land Cover (NLC) 2022, the South African National Protected Area Database (SAPAD) and biome-specific ecocsystem condition data to produce segment-based land use and land use intensity layers to develop a South African Biodiversity Intactness Index.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>The BII experts estimated the abundance remaining for each species group under specified landscape scenarios, relative to an intact reference. For four broad land uses, paired scenarios define the endpoints of an intensity gradient. Spatial intensity scores determine how the corresponding expert intactness estimates are interpolated.</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>The unit of assessment is a spatial segment rather than an individual raster pixel. At the end of the workflow, each segment receives:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>FOr the sub-Saharan African BII, relevant proxies were standardised to 0–1, averaged with equal weights, and the resulting average intensity rescaled within each broad land-use class. These are relative intensity scores, rather than direct measurements of biodiversity loss.</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>one dominant BII land use class; and</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>Because there is such a detailed 73 class land cover classification available in South Africa, our "SANLC alternative approach" assigns provisional scores of **0, 0.5 and 1** to detailed subclasses and calculates their area-weighted mean **within the assigned land-cover class in each segment**. Where there is still uncertainty in subclass classification (i.e. where land cover is often misclassified), additional spatial data may be needed to estimate land use intensity.</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>one land use intensity estimate between 0 and 1.</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">### Settlements</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>The pages are split into four sections:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>**Endpoints: mixed settlements → dense urban.**</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">National segmentation</span><span class="co">](segmentation.qmd)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** Settlement intensity combined mapped settlement extent from World Settlement Footprint with mean population density across each grid cell. These represented the transition from dispersed development interspersed with gardens and open vegetation to densely developed landscapes.</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National <span class="co">[</span><span class="ot">land use reclassification</span><span class="co">](land-use-reclassification.qmd)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>**South African approach:** We are comparing this method with scores assigned to SANLC residential, village, smallholding, recreational, industrial and mining subclasses. Additional footprint and population information may reduce dependence on uncertain subclass distinctions.</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>National <span class="co">[</span><span class="ot">segment land use and intensity allocation</span><span class="co">](segment-allocation.qmd)</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">### Timber plantations</span></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Context-specific land use intensity score refinement of "untransformed"</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>**Single scenario: timber plantations.**</span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## Current status</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** No variable intensity gradient was calculated. Experts assessed one plantation scenario encompassing timber production, harvesting and replanting, with some remnant natural vegetation.</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>The worflow is setup as three GEE scripts, with data saved as GEE assets and can be updated iteratively.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>**South African approach:** We currently retain a single category. SANLC distinguishes standing, sparse and clear-felled plantations, but these may represent stages of the same rotation rather than distinct management intensities. Using these differences to adjust BII would require an additional ecological basis.</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 1: National segmentation tested and **completed.**</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tree croplands</span></span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 2: NLC reclassification steps **completed**</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → tree-crop plantations.**</span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>NLC classes crosswalked to BII broad land use classes</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** Intensity combined tree-crop coverage, field-size scores and nitrogen fertiliser inputs. The smallholder scenario served as the low-intensity endpoint because these landscapes can contain both annual crops and useful trees; the other endpoint represented tree-crop plantations, including orchards and vineyards.</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>SAPAD appropriate BII classes selected and cleaned</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>**South African approach:** Both SANLC orchards and vines currently receive a high score, so their within-class average provides no intensity gradient. We are testing whether tree-crop coverage, field size and agricultural-input data provide meaningful differentiation. Their usefulness will depend on their spatial detail and relevance to South African production systems.</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 3: Calculate proportions of broad land use classes within each segment **completed**</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### Croplands</span></span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 4 : Assign dominant land use class using sequential decision tree **first iteration completed**</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → intensive large-scale croplands.**</span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 5: Assign intensity for BII land use classes 1-4 from NLC **first iteration completed**</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** Intensity combined crop coverage, field-size scores and nitrogen fertiliser inputs. Together, these represented differences in landscape composition, agricultural scale and input intensity.</span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Step 6: Assign intensity for BII land use class 6 (untransformed). **In progress**</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>**South African approach:** The SANLC commercial temporary and permanent cropland subclasses correspond well to the intensive large scale croplands the intensive large-scale croplands end poitn, i.e. a score of 1. But the small-scale annual crops, which from the description of the class seems ideal for the low end point here, often have the same land use intensity signals as the commercial crops. We've given it a score of 0.5 for this comparison stage. We are comparing these scores with the proxy-based method and considering whether SANLC distinctions such as irrigation can provide further useful information.</span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="al">![Provisional 6 step workflow for generation of a land use intensity layer for South Africa](images/workflow.png)</span>{width="671" height="438"}</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="fu">### Protected lands</span></span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## Next steps</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>**Single scenario: strictly protected areas.**</span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different datasets are now being tested as an additional source of intensity information.</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** No variable intensity gradient was calculated. The expert scenario described restricted settlement and resource use, limited recent human impacts, and some tourism infrastructure.</span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Explore detection of low intensity SANLC classes</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>**South African approach:** Protected-area coverage informs allocation, with priority above untransformed land. We retain underlying SANLC composition for assessment, but do not currently assign an intensity gradient. Legal protection does not necessarily imply effective management or intact ecological condition; accounting for those differences would require additional evidence.</span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="fu">## </span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### Untransformed lands</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>**Endpoints: near-natural lands → intensive rangelands.**</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>**Sub-Saharan BII:** Intensity combined livestock density and nitrogen fertiliser inputs. Cattle, sheep and goat densities were summed and standardised within combinations of rainfall bands and soil-nutrient categories, recognising that environmental conditions influence the pressure associated with a given livestock density.</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>**South African approach:** SANLC can identify broad vegettaion groups, mapped erosion and previous cultivation, but cannot establish grazing pressure or ecological intactness from these classes alone. We are exploring livestock information alongside degradation and condition datasets, potentially including the SANBI nine-class condition layer. These sources will need to be evaluated for the pressures they represent in relation to the landscape contexts the experts were given, distinguishing current land-use intensity from persistent effects of historical degradation. Provisional low scores for natural cover should therefore not be interpreted as evidence of low pressure.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>We could combine South Africa’s mapped livestock <span class="co">[</span><span class="ot">carrying capacity</span><span class="co">](https://www.ajol.info/index.php/sajas/article/view/99337)</span> with global <span class="co">[</span><span class="ot">prediction</span><span class="co">](https://www.nature.com/articles/sdata2018227)</span>s of cattle, sheep and goat densities to estimate **livestock pressure relative to the land’s capacity to support it**. Animal densities would first be converted to compatible large-stock units (LSU), using appropriate species-specific factors. Carrying capacity expressed in hectares per LSU would be converted to LSU per hectare, allowing estimated livestock demand and capacity to be compared over the same grazing area.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>This could provide a more locally relevant intensity proxy than livestock density alone. However, it would require checks on dataset dates, spatial resolution, supplementary feeding and the treatment of browsing animals and wildlife. The ratio would indicate potential land use pressure rather than demonstrate degradation, and would need evaluation against condition data and expert knowledge before being translated into the BII intensity gradient.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

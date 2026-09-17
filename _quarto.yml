@@ -15,7 +15,7 @@ website:
       - href: segment-allocation.qmd
         text: Segment allocation
       - href: thicket-intensity.qmd
-        text: Thicket land use intensity
+        text: Intensity explore
 format:
   html:
     theme: cosmo

@@ -194,6 +194,8 @@ where:
 
 ## 4. Protected area treatment
 
+The SANBI_PA_Mar2025 data set was used to select Protected Areas (PAs) listed below. The selected PAs were dissolved in ArcGIS Pro prior to upload to GEE to avoid dealing with complex and pontially overlapping polygons in GEE.
+
 The following terrestrial protected area types are currently included:
 
 -   Nature Reserve;
@@ -253,3 +255,15 @@ An integer value from 1 to 6 representing the dominant BII land use class assign
 A continuous value from 0 to 1 representing land use intensity within the assigned class.
 
 The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes.
+
+## Segment vs. grid broad land cover composition
+
+We examined land cover composition in a northern Limpopo case study in a mixed use landscape to assess whether segments capture more coherent land use units than a regular 1 × 1 km grid. For each unit, we calculated the proportion of mapped terrestrial area occupied by each broad NLC category and applied the same \>20% allocation thresholds and priority rules. Composition was then averaged within each assigned class, giving each unit equal weight.
+
+Segments contained higher mean proportions of their assigned land cover (FIg. 1) than grid cells for settlements, timber plantations, tree croplands and croplands. Both approaches produced predominantly untransformed cover within Protected and Untransformed units. These preliminary results suggest that segments better separate broad land uses in this landscape.
+
+![Figure 1. Mean broad land cover composition of segments and 1 × 1 km grid cells by assigned BII land use class in the Limpopo case study. Colours represent underlying land cover; protected status is applied separately during allocation and therefore does not appear as a land-cover category.](images/02_mean_composition.png)
+
+The assigned land use class also matched the dominant underlying land cover more frequently in segments than in grid cells, particularly for croplands, tree croplands and settlements. This indicates that segment-based labels more often represent the largest land cover component within an assessment unit. The comparison measures agreement between allocation and mapped composition, rather than classification accuracy.
+
+![Figure 2. Percentage of segments and 1 × 1 km grid cells in which the assigned BII land use class matches the dominant underlying land cover in the Limpopo case study. Dominance denotes the largest share of mapped terrestrial area. Protected lands are excluded because protection is an overlapping management designation rather than a land cover category.](images/04_assignment_dominance_agreement.png)

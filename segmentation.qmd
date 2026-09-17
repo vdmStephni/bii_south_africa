@@ -5,7 +5,7 @@ bibliography: references.bib
 
 ## Rationale
 
-A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation groups pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.
+A national segmentation layer was created to provide the spatial unit of assessment for the BII land use and intensity layers. Regular grid cells may impose artificial boundaries on the landscape and frequently contain mixtures of land uses, particularly in heterogeneous landscapes, which can obscure the ecological meaning of assigned classes. In contrast, segmentation tools provide an approach for extracting features from satellite imagery based on objects, potentially grouping pixels into spatially contiguous units based on similarity, producing units that more closely align with underlying vegetation structure, land use patterns, and management units. The objects can then be grouped into classes that represent real-world features. BII land use classes are intended to represent landscape-scale land use contexts linked to species responses, rather than individual pixels. Defining analysis units that better reflect real-world landscape “organisation” therefore improves the ecological interpretability of land use classification and provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.
 
 ## Input data
 
@@ -13,7 +13,7 @@ A national segmentation layer was created to provide the spatial unit of assessm
 
 -   Land and water masks used to restrict the analysis.
 
-## Parameter selecetion and analysis
+## Parameter selection and analysis
 
 Segmentation was implemented in Google Earth Engine using the Simple Non-Iterative Clustering algorithm ([SNIC,or superpixel clustering](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic)) applied to the [AlphaEarth Foundations Embeddings](https://arxiv.org/abs/2507.22291) (Brown et al., 2025). The embeddings provide a condensed representation of landscape characteristics derived from multiple sensors and environmental variables, including optical reflectance (e.g. Sentinel-2, Landsat 8 & 9), radar backscatter (e.g. Sentinel-1, PALSAR-2 and GEDI), climate (e.g. ERA5-Land), land cover context (NLCD), and topographic (GLO-30 DEM) information. Rather than representing a single spectral index or satellite band, each embedding dimension, of which there are 64, captures complex spatial, spectral and temporal patterns learned from large volumes of EO data.  So, instead of asking do these pixels have similar spectral values, it asks do these pixels have similar embedding signatures or landscape “fingerprints” (vegetation, soil, topography etc.)?
 
@@ -32,3 +32,5 @@ Segments_800m_SA
 The raster contains an integer identifier for each segment. This identifier is used in subsequent calculations.
 
 ![National 800m segmentation layer generated for the BII South Africa](images/segments.png)
+
+## 
