@@ -4,16 +4,9 @@ title: "Segment land use and intensity allocation"
 
 ## Summary
 
-The aim of this section of the workflow is to assign each segment:
+We used the South African National Land Cover (SANLC) dataset to assign broad land use and estimate land use intensity because it provides a nationally consistent and high-resolution representation of land cover that was not available across sub-Saharan Africa for the original BII assessment. SANLC is already used by SANBI in the National Biodiversity Assessment and other national biodiversity monitoring applications, providing consistency with established South African biodiversity products. Its regular update cycle (approximately every four years) also means that the BII land use and intensity layers can be updated using the same underlying national dataset, supporting repeatable monitoring of changes through time.
 
-1.  one dominant BII land use class; and
-2.  one land use intensity score between 0 and 1, where applicable.
-
-The segment allocation has three steps:
-
-1.  calculate the proportion of each land use class in every segment;
-2.  assign one dominant land use class using a sequential decision tree;
-3.  calculate the segment intensity as the mean intensity of all valid pixels belonging to the chosen class
+The aim of this section of the workflow is to assign each segment one dominant BII land use class following an expert decision tree.
 
 ## Input data
 
@@ -21,12 +14,11 @@ Script: <https://code.earthengine.google.com/b24c2eb0480039c2c13c32a0e9cd7a53>
 
 The following spatial layers are used in GEE:
 
-| Input                                | Description                                                                                        |
+| Input               | Description                                                                           |
 |------------------------------------|------------------------------------|
-| `Segments_800m_SA`                   | National segmentation raster containing a unique integer identifier for every segment              |
-| `NLC_reclass_BII_land_use_intensity` | South African National Land Cover reclassified into BII land use and preliminary intensity classes |
-| `SANBI_PA_2025_BII`                  | Gazetted and managed terrestrial protected areas retained for BII                                  |
-| Pixel-area image                     | Pixel area in square metres, generated using `ee.Image.pixelArea()`                                |
+| `Segments_800m_SA`  | National segmentation raster containing a unique integer identifier for every segment |
+| `SANBI_PA_2025_BII` | Gazetted and managed terrestrial protected areas retained for BII                     |
+| Pixel-area image    | Pixel area in square metres, generated using `ee.Image.pixelArea()`                   |
 
 ## 1. Calculate land use proportions
 
@@ -39,7 +31,7 @@ For each segment, the mapped area of the following candidate classes is calculat
 -   protected lands; and
 -   untransformed lands.
 
-For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately and for total segment area, rather than simply counting pixels.
+For each segment, the script sums the area (in square meters) of all pixels belonging to each class separately and for total segment area.
 
 For land use class (c) in segment (s), proportional cover is:
 
@@ -132,67 +124,7 @@ var assignedLandUse = ee.Image(BII_UNTRANSFORMED)
   .rename('bii_land_use');
 ```
 
-## 3. Assign land use intensity
-
-Land use class and land use intensity are separate attributes. For example, two segments may both be assigned to Settlements, but one may contain mainly smallholdings while the other contains industrial land. They therefore have the same broad land use class but different intensity scores.
-
-The preliminary NLC intensity categories are converted to the following numeric scale:
-
-| Intensity category |               Score | Interpretation                                           |
-|----------------------|---------------------------:|----------------------|
-| Low                |                   0 | Lowest mapped intensity within that broad land use class |
-| Medium             |                 0.5 | Intermediate mapped intensity                            |
-| High               |                   1 | Highest mapped intensity                                 |
-| Unknown            |    Not yet assigned | Requires an additional intensity layer or decision       |
-| `n/a`              | Class-specific rule | No within-class gradient is currently used               |
-
-### Current class-level rules
-
-| BII land use        | Current intensity treatment                                                                         |
-|------------------------------------|------------------------------------|
-| Settlements         | Mean of valid low, medium and high settlement-intensity pixels in the segment                       |
-| Timber plantations  | Fixed provisionally at 1                                                                            |
-| Tree croplands      | Mean of valid tree-crop intensity pixels in the segment                                             |
-| Croplands           | Mean of valid cropland intensity pixels in the segment                                              |
-| Protected lands     | Fixed provisionally at 0; effectiveness may be assessed separately by biome                         |
-| Untransformed lands | Assigned from available NLC indicators or additional biome-specific condition and pressure datasets |
-
-### How the segment mean is calculated
-
-Only pixels belonging to the **assigned BII land use class** are included in the intensity calculation.
-
-For example, suppose a segment is assigned to Settlements and contains 20 valid settlement pixels:
-
-| Settlement intensity | Number of pixels |        Contribution |
-|----------------------|-----------------:|--------------------:|
-| Low, score 0         |                5 |    (5 \times 0 = 0) |
-| Medium, score 0.5    |               10 | (10 \times 0.5 = 5) |
-| High, score 1        |                5 |    (5 \times 1 = 5) |
-
-The segment intensity is:
-
-$$
-I_s = \frac{0 + 5 + 5}{20} = 0.5
-$$
-
-Cropland, protected and untransformed pixels occurring in the same segment are not included because the assigned class is Settlements.
-
-More generally:
-
-$$
-I_s =
-\frac{\sum_{i=1}^{n} a_i I_i}
-     {\sum_{i=1}^{n} a_i}
-$$
-
-where:
-
--   (I_s) is the intensity assigned to segment (s);
--   (I_i) is the intensity score of valid pixel (i);
--   (a_i) is the area of pixel (i); and
--   only pixels belonging to the assigned land use class are included.
-
-## 4. Protected area treatment
+## 3. Protected area treatment
 
 The SANBI_PA_Mar2025 data set was used to select Protected Areas (PAs) listed below. The selected PAs were dissolved in ArcGIS Pro prior to upload to GEE to avoid dealing with complex and pontially overlapping polygons in GEE.
 
@@ -231,12 +163,6 @@ A segment is assigned to Protected lands only when:
 
 Protected intensity is provisionally fixed at 0. This represents the low-intensity endpoint of land use, not a direct measurement of protected area effectiveness. The assumption should be reviewed using biome-specific information where available.
 
-## 5. Untransformed intensity
-
-**In Progress**
-
-The NLC identifies whether land is broadly untransformed, but generally does not distinguish the intensity of use within natural vegetation, often used as rangelands. For this reason, most natural NLC classes are currently marked `unknown`. Additional information is required to distinguish land use intensity here. These intensity refinements will be added separately for each biome where suitable spatial data are available. For example, in Thicket, random-forest probabilities of intact, moderately degraded and severely degraded vegetation are being tested as a proxy for rangeland use intensity in segments assigned as Untransformed. Recent global products such as Livestock density at 1km resolution are being explored.
-
 ## Output
 
 The final spatial product is a two-band raster:
@@ -252,9 +178,9 @@ An integer value from 1 to 6 representing the dominant BII land use class assign
 
 ### Band 2: `bii_land_use_intensity`
 
-A continuous value from 0 to 1 representing land use intensity within the assigned class.
+A continuous value from 0 to 1 representing segment-level land use intensity. For non-natural classes, this combines the within-class intensity of the assigned land use with the proportion of the terrestrial segment covered by all non-natural land uses. See "land use intensity" for more detail.
 
-The two bands must be interpreted together. An intensity of 0 for a settlement and an intensity of 0 for an untransformed segment represent the low-intensity endpoints of two different land use classes.
+The two bands must be interpreted together. The intensity value is conditional on the broad land use assigned to the segment, and the intensity of Untransformed lands will be refined separately using ecological pressure and condition information.
 
 ## Segment vs. grid broad land cover composition
 
