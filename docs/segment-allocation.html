@@ -237,8 +237,8 @@ window.Quarto = {
 <p>The following spatial layers are used in GEE:</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 19%">
+<col style="width: 80%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -314,9 +314,9 @@ p_{c,s} = \frac{A_{c,s}}{A_s}
 <h3 class="anchored" data-anchor-id="examples">Examples</h3>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 41%">
+<col style="width: 14%">
+<col style="width: 43%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -942,7 +942,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>The following spatial layers are used in GEE:</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>| Input               | Description                                                                           |</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>|---------------------|---------------------------------------------------------------------------------------|</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>| <span class="in">`Segments_800m_SA`</span>  | National segmentation raster containing a unique integer identifier for every segment |</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>| <span class="in">`SANBI_PA_2025_BII`</span> | Gazetted and managed terrestrial protected areas retained for BII                     |</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>| Pixel-area image    | Pixel area in square metres, generated using <span class="in">`ee.Image.pixelArea()`</span>                   |</span>
@@ -1009,7 +1009,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="fu">### Examples</span></span>
 <span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>| Segment composition                                        | Assigned class      | Reason                                                        |</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>|------------------------------------------------------------|---------------------|---------------------------------------------------------------|</span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>| 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |</span>
 <span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>| 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |</span>
 <span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>| 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |</span>
