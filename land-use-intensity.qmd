@@ -21,7 +21,7 @@ The South African implementation differs slightly because the 73-class SANLC pro
 For transparency, the SANLC subclasses used to characterise within-class land use intensity were assigned to low, medium and high intensity categories and converted to scores of 0, 0.5 and 1, respectively. Timber plantations were treated as a single high-intensity class with a fixed score of 1.
 
 | Broad BII land use | SANLC subclass                                       | Intensity category | Score |
-|-----------------|-----------------|------------------:|------------------:|
+|--------------------|------------------------------------------------------|-------------------:|------:|
 | Timber plantations | contiguous & dense plantation forest                 |               high |     1 |
 | Timber plantations | open & sparse plantation forest                      |               high |     1 |
 | Timber plantations | temporary unplanted (clear-felled) plantation forest |               high |     1 |
