@@ -179,24 +179,18 @@ div.csl-indent {
    
   <ul>
   <li><a href="#rationale-and-objective" id="toc-rationale-and-objective" class="nav-link active" data-scroll-target="#rationale-and-objective">Rationale and objective</a></li>
-  <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
-  <li><a href="#projection-and-analysis-grid" id="toc-projection-and-analysis-grid" class="nav-link" data-scroll-target="#projection-and-analysis-grid">Projection and analysis grid</a></li>
-  <li><a href="#algorithm-and-parameters" id="toc-algorithm-and-parameters" class="nav-link" data-scroll-target="#algorithm-and-parameters">Algorithm and parameters</a>
+  <li><a href="#data-and-segmentation-methods" id="toc-data-and-segmentation-methods" class="nav-link" data-scroll-target="#data-and-segmentation-methods">Data and segmentation methods</a>
   <ul class="collapse">
-  <li><a href="#why-four-sizes" id="toc-why-four-sizes" class="nav-link" data-scroll-target="#why-four-sizes">Why four sizes?</a></li>
+  <li><a href="#inputs-and-projection" id="toc-inputs-and-projection" class="nav-link" data-scroll-target="#inputs-and-projection">Inputs and projection</a></li>
+  <li><a href="#sensitivity-design" id="toc-sensitivity-design" class="nav-link" data-scroll-target="#sensitivity-design">Sensitivity design</a></li>
   </ul></li>
-  <li><a href="#selection-of-two-test-landscapes" id="toc-selection-of-two-test-landscapes" class="nav-link" data-scroll-target="#selection-of-two-test-landscapes">Selection of two test landscapes</a></li>
-  <li><a href="#export-workflow" id="toc-export-workflow" class="nav-link" data-scroll-target="#export-workflow">Export workflow</a>
+  <li><a href="#sensitivity-results" id="toc-sensitivity-results" class="nav-link" data-scroll-target="#sensitivity-results">Sensitivity results</a>
   <ul class="collapse">
-  <li><a href="#exact-gee-export-script" id="toc-exact-gee-export-script" class="nav-link" data-scroll-target="#exact-gee-export-script">Exact GEE export script</a></li>
+  <li><a href="#seed-spacing" id="toc-seed-spacing" class="nav-link" data-scroll-target="#seed-spacing">1. Seed spacing</a></li>
+  <li><a href="#embedding-resolution" id="toc-embedding-resolution" class="nav-link" data-scroll-target="#embedding-resolution">2. Embedding resolution</a></li>
   </ul></li>
-  <li><a href="#sensitivity-analysis-and-validation-plan" id="toc-sensitivity-analysis-and-validation-plan" class="nav-link" data-scroll-target="#sensitivity-analysis-and-validation-plan">Sensitivity analysis and validation plan</a>
-  <ul class="collapse">
-  <li><a href="#criteria-for-deciding-the-national-size" id="toc-criteria-for-deciding-the-national-size" class="nav-link" data-scroll-target="#criteria-for-deciding-the-national-size">Criteria for deciding the national size</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
-  </ul></li>
-  <li><a href="#national-production-and-version-control" id="toc-national-production-and-version-control" class="nav-link" data-scroll-target="#national-production-and-version-control">National production and version control</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#national-segmentation" id="toc-national-segmentation" class="nav-link" data-scroll-target="#national-segmentation">National segmentation</a></li>
+  <li><a href="#exploratory-comparison-with-a-regular-grid" id="toc-exploratory-comparison-with-a-regular-grid" class="nav-link" data-scroll-target="#exploratory-comparison-with-a-regular-grid">Exploratory comparison with a regular grid</a></li>
   </ul>
 </nav>
     </div>
@@ -229,511 +223,424 @@ div.csl-indent {
 <p>A regular grid (also called a fishnet), that is typically used in broad scale spatial workflows, is straightforward to reproduce, but its boundaries are imposed without reference to the landscape. A grid cell can therefore split fields or plantations, or combine very different land uses, imposing artificial boundaries on the landscape. Segmentation can follow landscape variation more closely, potentially producing units that more closely align with underlying vegetation structure, land use patterns, and management units, which provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</p>
 <p>Our aim in this part of the workflow is to select one nationally applicable segmentation configuration that balances land-cover homogeneity, recognisable landscape structure, consistency with the approximately 1 km analysis scale used in the regional BII, and a manageable number of units for national modelling. We tested various options for segmentation below.</p>
 </section>
-<section id="input-data" class="level2">
-<h2 class="anchored" data-anchor-id="input-data">Input data</h2>
-<p><strong>Satellite representation.</strong> Segmentation uses the 2022 annual <a href="https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL">Google Satellite Embedding V1</a> image collection (AlphaEarth Foundations; <span class="citation" data-cites="brown">Brown et al. (<a href="#ref-brown" role="doc-biblioref">n.d.</a>)</span>). This dataset provides a 64-dimensional vector, or <em>landscape fingerprint</em>, for each 10 m pixel, combining patterns learned from multiple Earth-observation sources. The dimensions are not separate land-cover categories or individually interpreted physical measurements. SNIC used all 64 bands simultaneously to group pixels with similar signatures.</p>
-<p>The exact Google Earth Engine (GEE) input is:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> embeddings <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL'</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">.</span><span class="fu">filterDate</span>(<span class="st">'2022-01-01'</span><span class="op">,</span> <span class="st">'2023-01-01'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>For each test region, the collection is filtered to the region (drawn in GEE), mosaicked and clipped to a 5 km buffer. The comparison runs SNIC on this <strong>embedding mosaic</strong>, not on the classified SANLC raster: the latter is retained as independent <em>composition data</em> for evaluating the resulting segments. No separate land/water mask is applied in the test-segmentation export script. Terrestrial masks is applied when calculating land-cover proportions in the next processing stage.</p>
-<p><strong>Composition data for subsequent evaluation.</strong> We will intersect each segment with (1) the broad BII land-use classification derived from 2022 SANLC, and (2) the original detailed SANLC subclasses. The intended GEE sources are:</p>
-<pre class="text"><code>projects/thicket-ecological-condition/assets/BII_SA/NLC_reclass_BII_land_use_intensity
-projects/thicket-ecological-condition/assets/SA_NLC_2022_GEO</code></pre>
-<p>The reclassified layer provides the broad BII classes; the detailed SANLC layer allows homogeneity to be assessed within those classes. Protected-area cover will be assessed separately, because it is a management overlay that may overlap other land covers. <strong>The exact bands, masks and crosswalk versions are recorded in the separate pages under Land Use Intensity and Segment Allocation.</strong></p>
+<section id="data-and-segmentation-methods" class="level2">
+<h2 class="anchored" data-anchor-id="data-and-segmentation-methods">Data and segmentation methods</h2>
+<section id="inputs-and-projection" class="level3">
+<h3 class="anchored" data-anchor-id="inputs-and-projection">Inputs and projection</h3>
+<p>We used the 2022 <a href="https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL">Google Satellite Embedding V1</a> collection (<span class="citation" data-cites="brown">Brown et al. (<a href="#ref-brown" role="doc-biblioref">n.d.</a>)</span>). Each native 10 m pixel contained a 64-dimensional landscape representation. All 64 bands were supplied to <a href="https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic">Simple Non-Iterative Clustering (SNIC)</a>; i.e.&nbsp;they were not averaged across dimensions. SNIC formed connected objects from regularly spaced seeds according to feature similarity and spatial proximity.</p>
+<p>Processing used SANBI’s South African Albers Equal Area CRS (<code>AEA_RSA_WGS84</code>; WGS84 datum, central meridian 25° E, standard parallels 24° S and 33° S). The 10 m and 30 m grids shared a fixed origin and affine transforms of <code>[10, 0, 0, 0, -10, 0]</code> and <code>[30, 0, 0, 0, -30, 0]</code>, respectively. A fixed projection prevented GEE display scale from determining SNIC resolution.</p>
+<p>The 2022 South African National Land Cover (SANLC) classification was used <strong>to evaluate</strong>, not generate, segments. Broad land-cover proportions were obtained from the BII crosswalk (<code>NLC_reclass_BII_land_use_intensity</code>), with protected-area overlap calculated separately. SANLC was assessed on the 10 m extraction grid during the sensitivity tests; its underlying land-cover information originated from the 20 m product.</p>
 </section>
-<section id="projection-and-analysis-grid" class="level2">
-<h2 class="anchored" data-anchor-id="projection-and-analysis-grid">Projection and analysis grid</h2>
-<p>The processing grid is held fixed for all scenarios. A <strong>projected coordinate reference system</strong> converts locations on the curved Earth into planar coordinates that can be expressed in metres. Without a fixed projection and pixel grid, the size of an SNIC seed measured in pixels could correspond to different ground distances, and the calculated segmentation could change with the resolution requested by GEE’s map display.</p>
-<p>We use SANBI’s South African Albers Equal Area projection, <code>AEA_RSA_WGS84</code>, with the following parameters:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Projection</td>
-<td>Albers Equal Area (custom WGS84)</td>
-</tr>
-<tr class="even">
-<td>Datum / ellipsoid</td>
-<td>WGS84</td>
-</tr>
-<tr class="odd">
-<td>Central meridian</td>
-<td>25° E</td>
-</tr>
-<tr class="even">
-<td>Latitude of origin</td>
-<td>0°</td>
-</tr>
-<tr class="odd">
-<td>Standard parallel 1</td>
-<td>24° S (<code>-24</code>)</td>
-</tr>
-<tr class="even">
-<td>Standard parallel 2</td>
-<td>33° S (<code>-33</code>)</td>
-</tr>
-<tr class="odd">
-<td>False easting and false northing</td>
-<td>0 m, 0 m</td>
-</tr>
-<tr class="even">
-<td>Map units</td>
-<td>metres</td>
-</tr>
-<tr class="odd">
-<td>Pixel size</td>
-<td>10 × 10 m</td>
-</tr>
-<tr class="even">
-<td>Affine transform</td>
-<td><code>[10, 0, 0, 0, -10, 0]</code></td>
-</tr>
-</tbody>
-</table>
-<p>The two standard parallels are latitudes where this projection’s area-preserving transformation is anchored. The <strong>equal-area</strong> property is useful for calculating and comparing land-use areas and proportions throughout South Africa. The specific affine transform additionally fixes the origin and orientation of the 10 m pixel grid, so tests do not shift relative to one another.</p>
-<p>The GEE code uses a <strong>custom WKT CRS definition</strong>, not a generic Web Mercator or geographic latitude/longitude CRS. The exact WKT used in the test is preserved in the reproducible code below. The grid is explicitly assigned to the embedding mosaic using <code>setDefaultProjection(proj)</code>; the SNIC result is then forced onto the same grid using <code>.reproject({crs: proj})</code>. Lastly, every export specifies the same <code>crs</code> and <code>crsTransform</code>.</p>
-<p>This matters because <a href="https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic">GEE documents that SNIC can produce different results at different interactive map zoom levels</a>. Forcing a 10 m processing projection prevents the viewer’s zoom level from determining the algorithm’s working resolution. As <code>reproject()</code> can be computationally expensive, it is applied only to the bounded test areas; results were exported as assets before downstream processing. The final selected segment size was then run nationally and used as the fixed segmentation layer for later stages.</p>
+<section id="sensitivity-design" class="level3">
+<h3 class="anchored" data-anchor-id="sensitivity-design">Sensitivity design</h3>
+<p>Two contrasting mixed-use rectangles were drawn in GEE: CT (Cape Town, including urban, industrial, tree croplands and mountain landscapes) and EC (Eastern Cape, including settlements, agriculture, plantations and natural vegetation). Each was buffered by 5 km during segmentation. Segments intersecting the test-area boundaries were excluded from comparisons.</p>
+<p>We compared SNIC seed spacings of 600, 800, 1,000 and 1,200 m using 10 m embeddings. We then compared 10 m and 30 m embedding inputs at approximately 1,000 m seed spacing. For the 30 m scenario, each embedding band was spatially averaged from 10 m, and <code>size = 33</code> gave 990 m nominal spacing. Seed spacing controlled initial seed separation rather than final segment area.</p>
+<p><code>compactness = 1</code>, <code>connectivity = 8</code> and a 5 km buffer were held constant. The tests used <code>neighborhoodSize = 4 × size</code>; the subsequent national run used 66 pixels (<code>2 × 33</code>, the GEE default) to reduce processing demands. This change was not separately sensitivity-tested.</p>
+<p>For each segment, we calculated the proportions of settlements, timber plantations, tree crops, croplands and untransformed land. The assigned BII class followed the first qualifying &gt;20% proportion in that order, followed by protected land (&gt;20% protected-area overlap), otherwise untransformed land. Protected land was an overlapping designation rather than a mutually exclusive cover type.</p>
+<p>We assessed segment count, median area, area-weighted homogeneity (largest broad land-cover share), the proportion of assessed area in segments ≥80% homogeneous, and allocation retention (mapped area of a class occurring within segments assigned to that class). Composition figures represented pooled mapped hectares within each assigned class, not the mean segment. Repeated IDs in the test CSVs were combined using area-weighted proportions and boundary segments excluded; this procedure did not independently verify national ID uniqueness yet.</p>
 </section>
-<section id="algorithm-and-parameters" class="level2">
-<h2 class="anchored" data-anchor-id="algorithm-and-parameters">Algorithm and parameters</h2>
-<p>We use <a href="https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic">Simple Non-Iterative Clustering (SNIC)</a>, an object-based segmentation algorithm that starts from seed locations and grows connected clusters of spectrally/embedding-similar pixels. SNIC returns a raster in which pixels belonging to a cluster share an integer ID.</p>
+</section>
+<section id="sensitivity-results" class="level2">
+<h2 class="anchored" data-anchor-id="sensitivity-results">Sensitivity results</h2>
+<section id="seed-spacing" class="level3">
+<h3 class="anchored" data-anchor-id="seed-spacing">1. Seed spacing</h3>
+<p>Increasing seed spacing reduced segment counts but increased land-cover mixing (Table 1). Moving from 800 to 1,000 m reduced segments by 36.9% in CT and 37.0% in EC, with homogeneity declining by only 1.1 and 2.1%, respectively. Median areas at 1,000 m were 91.0 ha (CT) and 89.8 ha (EC), close to the regional BII’s 100 ha grid scale. We therefore selected approximately 1,000 m seed spacing.</p>
+<p>Table 1. Segmentation metrics for four seed spacings. Counts and assessed areas excluded test-boundary segments. Homogeneity was the area-weighted dominant land-cover share; retention combined the four transformed covers. {#tbl-seed-spacing}</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 23%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Parameter</th>
-<th>Current value</th>
-<th>Reasoning</th>
+<th style="text-align: left;">Site</th>
+<th style="text-align: right;">Seed (m)</th>
+<th style="text-align: right;">Segments</th>
+<th style="text-align: right;">Median (ha)</th>
+<th style="text-align: right;">Assessed (ha)</th>
+<th style="text-align: right;">Homogeneity (%)</th>
+<th style="text-align: right;">≥80% area (%)</th>
+<th style="text-align: right;">Transformed retained (%)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Input</td>
-<td>2022 annual Satellite Embeddings, all 64 bands</td>
-<td>Captures multiple landscape characteristics in a consistent national dataset rather than relying on one spectral band.</td>
-</tr>
-<tr class="even">
-<td>Processing CRS</td>
-<td><code>AEA_RSA_WGS84</code></td>
-<td>Metre-based, equal-area reference appropriate for South African area calculations.</td>
-</tr>
-<tr class="odd">
-<td>Processing pixel size</td>
-<td>10 m</td>
-<td>Matches the nominal resolution of the embedding data and fixes the interpretation of pixel-based settings.</td>
-</tr>
-<tr class="even">
-<td><code>size</code></td>
-<td><strong>60, 80, 100, 120 pixels</strong></td>
-<td>Four seed spacings centred around the approximately 1 km landscape scale of the regional BII. This is the <strong>only intentionally varied SNIC parameter</strong>.</td>
-</tr>
-<tr class="odd">
-<td><code>compactness</code></td>
-<td><code>1</code></td>
-<td>Balances similarity of the embedding signatures and spatial compactness of the segments.</td>
-</tr>
-<tr class="even">
-<td><code>connectivity</code></td>
-<td><code>8</code></td>
-<td>Allows side-adjacent and diagonally adjacent pixels to be grouped.</td>
-</tr>
-<tr class="odd">
-<td><code>neighborhoodSize</code></td>
-<td><code>size * 4</code></td>
-<td>Provides a processing neighbourhood larger than the seed spacing to reduce tile-edge artefacts; scaled consistently in all test scenarios.</td>
-</tr>
-<tr class="even">
-<td><code>seeds</code></td>
-<td>Not supplied</td>
-<td>SNIC generates its default regularly spaced seed grid; no random seed locations are specified.</td>
-</tr>
-<tr class="odd">
-<td>Region buffer</td>
-<td>5,000 m</td>
-<td>Reduces the risk that artificial clipping boundaries influence segments within the test rectangle.</td>
-</tr>
-<tr class="even">
-<td>Export ID band</td>
-<td><code>clusters</code> → <code>unit_id</code></td>
-<td>Stores the calculated cluster identifier as an integer raster.</td>
-</tr>
-<tr class="odd">
-<td>Asset pyramiding</td>
-<td><code>mode</code></td>
-<td>Preserves categorical IDs when assets are viewed at coarser display resolutions.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Important:</strong> <code>size</code> specifies <em>initial seed spacing in pixels</em>, <strong>not the final segment diameter or area</strong>. Actual segment sizes and shapes depend on the embedding patterns and growth of clusters. The nominal meter values are useful scenario labels, but actual segment areas will be measured and reported.</p>
-<section id="why-four-sizes" class="level3">
-<h3 class="anchored" data-anchor-id="why-four-sizes">Why four sizes?</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Scenario name</th>
-<th style="text-align: right;"><code>size</code> in 10 m pixels</th>
-<th style="text-align: right;">Nominal seed spacing</th>
-<th style="text-align: right;">Regular-square area for scale comparison only</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>600 m</td>
-<td style="text-align: right;">60</td>
-<td style="text-align: right;">600 m</td>
-<td style="text-align: right;">36 ha</td>
-</tr>
-<tr class="even">
-<td>800 m</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">800 m</td>
-<td style="text-align: right;">64 ha</td>
-</tr>
-<tr class="odd">
-<td>1,000 m</td>
-<td style="text-align: right;">100</td>
-<td style="text-align: right;">1,000 m</td>
-<td style="text-align: right;">100 ha</td>
-</tr>
-<tr class="even">
-<td>1,200 m</td>
-<td style="text-align: right;">120</td>
-<td style="text-align: right;">1,200 m</td>
-<td style="text-align: right;">144 ha</td>
-</tr>
-</tbody>
-</table>
-<p>Preliminary exploration showed that connectivity of 8 and compactness settlings of 1 followed natural shapes in the landscape. We thus generated 4 segment “scenarios” with the same parameters settings, only varying size. This isolates the effect of the size parameter more cleanly and makes the eventual national product reproducible.</p>
-<ul>
-<li><strong>600 m</strong> tests whether finer units capture settlement edges, agricultural fields and small, contrasting land-cover patches sufficiently better to justify the extra segment count.</li>
-<li><strong>800 m</strong> was included as a candidate segment scale to assess whether it provides an appropriate balance between spatial detail and landscape-scale representation.</li>
-<li><strong>1,000 m</strong> approximates the linear scale of the original regional BII’s 1 × 1 km mapping grid, while allowing SNIC boundaries to follow spatial patterns rather than fixed squares.</li>
-<li><strong>1,200 m</strong> tests whether a somewhat coarser representation reduces processing demands without merging ecologically different land uses excessively.</li>
-</ul>
-<p>A 1,000 m <strong>SNIC seed spacing is not the same as a fixed 1 × 1 km grid</strong>. A grid can be retained as an additional reference comparison, but it is not one of the four SNIC sensitivity scenarios.</p>
-<p>Earlier exploratory segmentation at other scales suggested that small segments could follow very fine land-cover variation while losing the broader landscape context. Those trials motivated the provisional 800 m layer but were not a controlled four-size comparison. The sensitivity test documented here is intended to provide the quantitative justification for a final choice, rather than assume the earlier choice was optimal.</p>
-</section>
-</section>
-<section id="selection-of-two-test-landscapes" class="level2">
-<h2 class="anchored" data-anchor-id="selection-of-two-test-landscapes">Selection of two test landscapes</h2>
-<p>We use two heterogeneous mixed-use landscapes, rather than comparing segment sizes only in predominantly natural terrain. Both were chosen because they contain land uses that are easy to combine unintentionally within a large assessment unit, but their spatial configurations differ substantially.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Test site</th>
-<th>GEE geometry name</th>
-<th>Landscape composition and motivation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Cape Town / surrounding landscape</td>
-<td><code>CT</code></td>
-<td>A well-known mosaic of urban and industrial areas, timber plantations, mountainous natural vegetation, and smallholdings. It tests segmentation at sharp land-use boundaries, along natural–built-up interfaces, and in terrain with strong topographic variation.</td>
-</tr>
-<tr class="even">
-<td>Eastern Cape mixed landscape</td>
-<td><code>EC</code></td>
-<td>A fine-grained mosaic of villages, croplands and natural vegetation. It tests whether small, interspersed land uses are separated adequately without creating an excessive number of small fragments.</td>
-</tr>
-</tbody>
-</table>
-<p>Testing these contrasting landscapes makes the sensitivity analysis more informative than using only one urban or rural landscape. The samples are purposeful test sites, not statistically representative samples of South Africa; conclusions should be framed as evidence of the method’s behaviour in two challenging land-use mosaics.</p>
-<p>The rectangles are drawn in the GEE Code Editor and named <code>CT</code> and <code>EC</code>. Each rectangle is buffered by 5 km for segmentation; the central, unbuffered rectangle is the evaluation area. In particular, segments intersecting the central rectangle boundary will be flagged and can be excluded from summaries that require complete segments. The wider buffered assets can still be displayed for a map figure.</p>
-</section>
-<section id="export-workflow" class="level2">
-<h2 class="anchored" data-anchor-id="export-workflow">Export workflow</h2>
-<p>The export step creates eight 10 m integer <code>unit_id</code> rasters: the four seed spacings for each of the two sites. All are saved as separate GEE assets.</p>
-<p>Asset root:</p>
-<pre class="text"><code>projects/thicket-ecological-condition/assets/BII_SA/</code></pre>
-<p>Asset naming:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Site</th>
-<th>600 m</th>
-<th>800 m</th>
-<th>1,000 m</th>
-<th>1,200 m</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>CT</td>
-<td><code>Segments_600m_CT_AEA10m_v1</code></td>
-<td><code>Segments_800m_CT_AEA10m_v1</code></td>
-<td><code>Segments_1000m_CT_AEA10m_v1</code></td>
-<td><code>Segments_1200m_CT_AEA10m_v1</code></td>
-</tr>
-<tr class="even">
-<td>EC</td>
-<td><code>Segments_600m_EC_AEA10m_v1</code></td>
-<td><code>Segments_800m_EC_AEA10m_v1</code></td>
-<td><code>Segments_1000m_EC_AEA10m_v1</code></td>
-<td><code>Segments_1200m_EC_AEA10m_v1</code></td>
-</tr>
-</tbody>
-</table>
-<p>The test assets are saved once and then called as inputs to the subsequent composition calculations. This separates expensive segmentation from lighter repeated analyses and ensures that all statistics and map figures refer to the same pixel-to-segment allocation.</p>
-<section id="exact-gee-export-script" class="level3">
-<h3 class="anchored" data-anchor-id="exact-gee-export-script">Exact GEE export script</h3>
-<p>The following is the agreed 2026-10-17 sensitivity-test script. <strong>Prerequisite:</strong> draw or import the two geometries as <code>CT</code> and <code>EC</code> (and preserve their coordinates for final reproduction).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// BII segmentation sensitivity: CT + EC; 600/800/1000/1200 m</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> <span class="bu">root</span> <span class="op">=</span> <span class="st">'projects/thicket-ecological-condition/assets/BII_SA/'</span><span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> crs <span class="op">=</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PROJCS["AEA_RSA_WGS84",'</span> <span class="op">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",'</span> <span class="op">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'SPHEROID["WGS_1984",6378137,298.257223563]],'</span> <span class="op">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],'</span> <span class="op">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PROJECTION["Albers"],'</span> <span class="op">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["false_easting",0],'</span> <span class="op">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["false_northing",0],'</span> <span class="op">+</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["central_meridian",25],'</span> <span class="op">+</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["standard_parallel_1",-24],'</span> <span class="op">+</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["standard_parallel_2",-33],'</span> <span class="op">+</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["latitude_of_origin",0],UNIT["Meter",1]]'</span><span class="op">;</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> transform <span class="op">=</span> [<span class="dv">10</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> proj <span class="op">=</span> ee<span class="op">.</span><span class="fu">Projection</span>(crs<span class="op">,</span> transform)<span class="op">;</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> embeddings <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL'</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>)<span class="op">.</span><span class="fu">filterDate</span>(<span class="st">'2022-01-01'</span><span class="op">,</span> <span class="st">'2023-01-01'</span>)<span class="op">;</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">exportSegments</span>(region<span class="op">,</span> name) {</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> aoi <span class="op">=</span> region<span class="op">.</span><span class="fu">buffer</span>(<span class="dv">5000</span>)<span class="op">;</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> input <span class="op">=</span> embeddings<span class="op">.</span><span class="fu">filterBounds</span>(aoi)<span class="op">.</span><span class="fu">mosaic</span>()</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">clip</span>(aoi)<span class="op">.</span><span class="fu">setDefaultProjection</span>(proj)<span class="op">;</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">60</span><span class="op">,</span> <span class="dv">80</span><span class="op">,</span> <span class="dv">100</span><span class="op">,</span> <span class="dv">120</span>]<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(size) {</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> metres <span class="op">=</span> size <span class="op">*</span> <span class="dv">10</span><span class="op">;</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> id <span class="op">=</span> <span class="st">'Segments_'</span> <span class="op">+</span> metres <span class="op">+</span> <span class="st">'m_'</span> <span class="op">+</span> name <span class="op">+</span> <span class="st">'_AEA10m_v1'</span><span class="op">;</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> clusters <span class="op">=</span> ee<span class="op">.</span><span class="at">Algorithms</span><span class="op">.</span><span class="at">Image</span><span class="op">.</span><span class="at">Segmentation</span><span class="op">.</span><span class="fu">SNIC</span>({</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">image</span><span class="op">:</span> input<span class="op">,</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>      <span class="dt">size</span><span class="op">:</span> size<span class="op">,</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>      <span class="dt">compactness</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>      <span class="dt">connectivity</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>      <span class="dt">neighborhoodSize</span><span class="op">:</span> size <span class="op">*</span> <span class="dv">4</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    })<span class="op">.</span><span class="fu">select</span>(<span class="st">'clusters'</span>)</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">reproject</span>({<span class="dt">crs</span><span class="op">:</span> proj})</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">rename</span>(<span class="st">'unit_id'</span>)<span class="op">.</span><span class="fu">toInt64</span>()<span class="op">;</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    Export<span class="op">.</span><span class="at">image</span><span class="op">.</span><span class="fu">toAsset</span>({</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>      <span class="dt">image</span><span class="op">:</span> clusters<span class="op">,</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>      <span class="dt">description</span><span class="op">:</span> id<span class="op">,</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>      <span class="dt">assetId</span><span class="op">:</span> <span class="bu">root</span> <span class="op">+</span> id<span class="op">,</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>      <span class="dt">region</span><span class="op">:</span> aoi<span class="op">,</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>      <span class="dt">crs</span><span class="op">:</span> crs<span class="op">,</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>      <span class="dt">crsTransform</span><span class="op">:</span> transform<span class="op">,</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>      <span class="dt">pyramidingPolicy</span><span class="op">:</span> {<span class="st">'.default'</span><span class="op">:</span> <span class="st">'mode'</span>}<span class="op">,</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>      <span class="dt">maxPixels</span><span class="op">:</span> <span class="fl">1e10</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="fu">exportSegments</span>(CT<span class="op">,</span> <span class="st">'CT'</span>)<span class="op">;</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="fu">exportSegments</span>(EC<span class="op">,</span> <span class="st">'EC'</span>)<span class="op">;</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co">// Record rectangle coordinates alongside the script.</span></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'CT rectangle vertices:'</span><span class="op">,</span> CT<span class="op">.</span><span class="fu">coordinates</span>())<span class="op">;</span></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'EC rectangle vertices:'</span><span class="op">,</span> EC<span class="op">.</span><span class="fu">coordinates</span>())<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Only the <code>size</code> argument changes between scenarios. No random seed image is supplied. The exported assets should be inspected for successful completion, valid 10 m projection metadata, coverage and integer IDs before they are used in any composition analysis.</p>
-</section>
-</section>
-<section id="sensitivity-analysis-and-validation-plan" class="level2">
-<h2 class="anchored" data-anchor-id="sensitivity-analysis-and-validation-plan">Sensitivity analysis and validation plan</h2>
-<p>The goal of this evaluation is not to validate the broad land use group calculation. It tests whether the <em>spatial units</em> retain meaningful land-use composition, which is the intended input to the BII.</p>
-<p>For each of the eight segment assets, we calculated the area and proportion of every mapped broad BII land-use class and, separately, every detailed SANLC subclass within each segment. Pixel areas were summed using <code>ee.Image.pixelArea()</code> and divided by the mapped terrestrial area of the segment. The protected-area proportion was extracted as a separate overlapping attribute, not added to land-cover proportions.</p>
-<p>A segment-level CSV export contained:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Field</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>site</code>, <code>scenario</code>, <code>unit_id</code></td>
-<td>Test landscape, nominal seed spacing and segment identifier; IDs are only compared <em>within</em> a given site/scenario.</td>
-</tr>
-<tr class="even">
-<td><code>area_ha</code></td>
-<td>Terrestrial mapped area in hectares.</td>
-</tr>
-<tr class="odd">
-<td><code>p_settlement</code>, <code>p_timber</code>, <code>p_treecrop</code>, <code>p_cropland</code>, <code>p_untrans</code></td>
-<td>Proportion of terrestrial area occupied by each mapped broad BII land-use class.</td>
-</tr>
-<tr class="even">
-<td><code>p_protected</code></td>
-<td>Protected-area overlap (not part of the land-cover proportions sum).</td>
-</tr>
-<tr class="odd">
-<td><code>assigned_class</code></td>
-<td>Broad class under the agreed &gt;20% sequential allocation rule.</td>
-</tr>
-<tr class="even">
-<td><code>boundary</code></td>
-<td>Flag identifying segments that intersect the core test-rectangle boundary.</td>
-</tr>
-</tbody>
-</table>
-<p>A second long-format subclass CSV (<code>site</code>, <code>scenario</code>, <code>unit_id</code>, <code>sanlc_class</code>, <code>area_ha</code>, <code>proportion</code>) retained the full SANLC composition for detailed checks in R. Raster-to-vector conversion of the buffered test IDs (for example to GeoJSON) will supply segment outlines for GIS map figures. The CSV is the analysis output; vectorisation is primarily for cartographic comparison.</p>
-<p>We will calculate and compare:</p>
-<ol type="1">
-<li><strong>Broad-class homogeneity:</strong> the largest land-use proportion in each segment (a value of 1 indicates only one broad class).</li>
-<li><strong>Detailed-class homogeneity:</strong> the largest original SANLC subclass proportion, distinguishing variation hidden within a broad class.</li>
-<li><strong>Mixed-segment frequency:</strong> the proportion of segments containing substantial amounts of more than one broad class.</li>
-<li><strong>Allocation:</strong> for each broad class, the proportion of its mapped area that occurs in segments ultimately assigned to the same class under the 20% decision tree.</li>
-<li><strong>Segment-area distribution and counts:</strong> the real distribution of segment size and the computational consequences of a finer or coarser assessment unit.</li>
-</ol>
-<p>Summaries were calculated both <strong>by segment</strong> and <strong>area-weighted</strong>, separately for CT and EC and where relevant by land-use class. These complementary summaries are important: a large number of small fragments should not overwhelm the total mapped landscape, while a few very large natural segments should not conceal poor representation of settlements or croplands.</p>
-<p>Planned figures include (a) four identical-scale maps of segment boundaries over the same basemap per study area, (b) homogeneity distributions by scenario, and (c) differences in composition/allocation fidelity by land use. The regular 1 × 1 km grid may be retained as a contextual reference from earlier analyses, but it will not be conflated with the 1,000 m SNIC scenario.</p>
-<section id="criteria-for-deciding-the-national-size" class="level3">
-<h3 class="anchored" data-anchor-id="criteria-for-deciding-the-national-size">Criteria for deciding the national size</h3>
-<p>The preferred scenario should show a reasonable balance between higher within-segment homogeneity, preserving small transformed land-use mosaics, recognisable landscape boundaries and national processing feasibility. If the 600 m results provide only limited improvement over 800 m while substantially increasing segment counts, 800 m would remain a reasonable compromise. If results contradict that expectation, the final choice should reflect the evidence. We will report the observed trade-offs and record the final selected size after analysis, rather than present a preferred size as an already validated result.</p>
-</section>
-<section id="results" class="level3">
-<h3 class="anchored" data-anchor-id="results">Results</h3>
-<p>Land-cover homogeneity declined progressively with increasing SNIC seed spacing across both study areas (Table <strong>?@tbl-segmentation-comparison</strong>). The 600 m scenario produced the highest homogeneity but substantially more assessment units, while the 1,200 m scenario showed greater mixing of land-cover classes and reduced retention of transformed land uses. The 800 m and 1,000 m scenarios were therefore considered the most suitable compromises between spatial detail and computational efficiency.</p>
-<p>Increasing seed spacing from 800 to 1,000 m reduced the number of segments by 36.9% in CT and 37.6% in EC, with only modest reductions in mean land-cover homogeneity (1.1 and 1.9%, respectively). The proportion of terrestrial area within segments containing at least 80% of a single land-cover class declined by approximately 3 percentage points in both areas. Class-specific allocation also remained broadly comparable, with some reduction in the retention of transformed land uses at larger segment sizes. A 1,000 m seed spacing was therefore selected, providing substantially fewer assessment units with relatively little loss of land-cover homogeneity. The resulting median segment areas (90.2 ha in CT and 88.8 ha in EC) were also broadly comparable to the 100 ha grid cells used in the original sub-Saharan African BII assessment, while retaining the advantage of image-derived segment boundaries. The <strong>1000m segment size is the most practical compromise between land-cover homogeneity, ecological representation and computation efficiency among the tested scenarios.</strong></p>
-<p><img src="images/Fig2_pooled_composition.png" class="img-fluid" width="665"></p>
-<p>Table 2. Comparison of segmentation characteristics across four SNIC seed spacings in Cape Town (CT) and the Eastern Cape (EC). Mean homogeneity represents the area-weighted mean proportion of each segment occupied by its dominant broad BII land-cover class. The final column gives the percentage of assessed terrestrial area occurring in segments with at least 80% homogeneous land cover. Segment counts and areas exclude boundary segments and combine repeated segment IDs assumed to represent fragmented segments. {#tbl-segmentation-comparison}</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Study area</th>
-<th style="text-align: right;">Seed spacing (m)</th>
-<th style="text-align: right;">Number of segments</th>
-<th style="text-align: right;">Median segment area (ha)</th>
-<th style="text-align: right;">Mean homogeneity (%)</th>
-<th style="text-align: right;">Area ≥80% homogeneous (%)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>CT</td>
+<td style="text-align: left;">CT</td>
 <td style="text-align: right;">600</td>
-<td style="text-align: right;">5,807</td>
-<td style="text-align: right;">33.9</td>
-<td style="text-align: right;">86.6</td>
-<td style="text-align: right;">73.9</td>
+<td style="text-align: right;">5,805</td>
+<td style="text-align: right;">33.7</td>
+<td style="text-align: right;">206,697</td>
+<td style="text-align: right;">86.5</td>
+<td style="text-align: right;">74.1</td>
+<td style="text-align: right;">92.2</td>
 </tr>
 <tr class="even">
-<td>CT</td>
+<td style="text-align: left;">CT</td>
 <td style="text-align: right;">800</td>
-<td style="text-align: right;">3,201</td>
-<td style="text-align: right;">58.2</td>
-<td style="text-align: right;">84.8</td>
-<td style="text-align: right;">69.3</td>
+<td style="text-align: right;">3,209</td>
+<td style="text-align: right;">58.4</td>
+<td style="text-align: right;">202,547</td>
+<td style="text-align: right;">84.6</td>
+<td style="text-align: right;">69.1</td>
+<td style="text-align: right;">91.2</td>
 </tr>
 <tr class="odd">
-<td>CT</td>
-<td style="text-align: right;"><strong>1,000</strong></td>
-<td style="text-align: right;"><strong>2,020</strong></td>
-<td style="text-align: right;"><strong>90.2</strong></td>
-<td style="text-align: right;"><strong>83.7</strong></td>
-<td style="text-align: right;"><strong>66.5</strong></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">2,024</td>
+<td style="text-align: right;">91.0</td>
+<td style="text-align: right;">198,480</td>
+<td style="text-align: right;">83.5</td>
+<td style="text-align: right;">66.3</td>
+<td style="text-align: right;">90.0</td>
 </tr>
 <tr class="even">
-<td>CT</td>
+<td style="text-align: left;">CT</td>
 <td style="text-align: right;">1,200</td>
-<td style="text-align: right;">1,377</td>
-<td style="text-align: right;">131.2</td>
-<td style="text-align: right;">82.5</td>
-<td style="text-align: right;">63.8</td>
+<td style="text-align: right;">1,396</td>
+<td style="text-align: right;">128.4</td>
+<td style="text-align: right;">193,667</td>
+<td style="text-align: right;">82.4</td>
+<td style="text-align: right;">64.8</td>
+<td style="text-align: right;">88.8</td>
 </tr>
 <tr class="odd">
-<td>EC</td>
+<td style="text-align: left;">EC</td>
 <td style="text-align: right;">600</td>
-<td style="text-align: right;">3,233</td>
-<td style="text-align: right;">33.3</td>
-<td style="text-align: right;">83.2</td>
+<td style="text-align: right;">6,168</td>
+<td style="text-align: right;">33.6</td>
+<td style="text-align: right;">220,284</td>
+<td style="text-align: right;">84.9</td>
+<td style="text-align: right;">67.0</td>
+<td style="text-align: right;">88.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: right;">800</td>
+<td style="text-align: right;">3,409</td>
+<td style="text-align: right;">57.8</td>
+<td style="text-align: right;">215,810</td>
+<td style="text-align: right;">82.5</td>
+<td style="text-align: right;">61.5</td>
+<td style="text-align: right;">86.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">2,146</td>
+<td style="text-align: right;">89.8</td>
+<td style="text-align: right;">211,269</td>
+<td style="text-align: right;">80.4</td>
+<td style="text-align: right;">57.6</td>
+<td style="text-align: right;">83.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: right;">1,200</td>
+<td style="text-align: right;">1,463</td>
+<td style="text-align: right;">127.1</td>
+<td style="text-align: right;">207,434</td>
+<td style="text-align: right;">78.6</td>
+<td style="text-align: right;">51.4</td>
+<td style="text-align: right;">81.6</td>
+</tr>
+</tbody>
+</table>
+<p>Table 2. Percentage of each mapped land-cover class retained in segments assigned to the same BII class. Protected land was excluded because it overlapped the land-cover categories.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Site</th>
+<th style="text-align: left;">Cover</th>
+<th style="text-align: right;">600 m</th>
+<th style="text-align: right;">800 m</th>
+<th style="text-align: right;">1,000 m</th>
+<th style="text-align: right;">1,200 m</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Settlements</td>
+<td style="text-align: right;">69.5</td>
+<td style="text-align: right;">66.6</td>
+<td style="text-align: right;">65.6</td>
+<td style="text-align: right;">64.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Timber</td>
+<td style="text-align: right;">74.2</td>
+<td style="text-align: right;">69.9</td>
+<td style="text-align: right;">68.6</td>
+<td style="text-align: right;">66.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Tree crops</td>
+<td style="text-align: right;">93.4</td>
+<td style="text-align: right;">90.9</td>
+<td style="text-align: right;">88.3</td>
+<td style="text-align: right;">85.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Croplands</td>
+<td style="text-align: right;">94.0</td>
+<td style="text-align: right;">93.6</td>
+<td style="text-align: right;">92.7</td>
+<td style="text-align: right;">91.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Untransformed</td>
+<td style="text-align: right;">50.9</td>
+<td style="text-align: right;">46.6</td>
+<td style="text-align: right;">44.2</td>
+<td style="text-align: right;">44.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Settlements</td>
+<td style="text-align: right;">88.3</td>
+<td style="text-align: right;">85.8</td>
+<td style="text-align: right;">83.5</td>
+<td style="text-align: right;">79.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Timber</td>
+<td style="text-align: right;">96.2</td>
+<td style="text-align: right;">95.5</td>
+<td style="text-align: right;">94.1</td>
+<td style="text-align: right;">94.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Tree crops</td>
+<td style="text-align: right;">63.6</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Croplands</td>
+<td style="text-align: right;">80.8</td>
+<td style="text-align: right;">76.6</td>
+<td style="text-align: right;">72.9</td>
+<td style="text-align: right;">69.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Untransformed</td>
+<td style="text-align: right;">68.9</td>
+<td style="text-align: right;">65.1</td>
+<td style="text-align: right;">62.2</td>
+<td style="text-align: right;">58.7</td>
+</tr>
+</tbody>
+</table>
+<p>At coarser spacings, class retention generally declined. Tree crops were rare in EC, so their zero retention at 800–1,200 m was not considered representative of national performance. The pooled composition also showed substantial untransformed cover within assigned transformed classes, reflecting mixed land use and the 20% allocation threshold (<a href="#fig-seed-composition" class="quarto-xref">Figure&nbsp;1</a>).</p>
+<div id="fig-seed-composition" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-seed-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Fig5_composition_sizes.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-seed-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Pooled mapped land-cover composition within each assigned BII class at four SNIC seed spacings in CT and EC. Each bar represents total mapped area pooled across segments; protected is an allocation class, not a separate mapped cover.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="embedding-resolution" class="level3">
+<h3 class="anchored" data-anchor-id="embedding-resolution">2. Embedding resolution</h3>
+<p>At approximately 1,000 m spacing, moving from 10 m to 30 m reduced the SNIC input pixel count by 88.9% (ninefold fewer pixels). Mean homogeneity changed by −0.5 percentage points in CT and +0.2 in EC, with similarly small differences in transformed-cover retention (<strong>?@tbl-resolution</strong>). The 30 m input therefore offered a substantial computational saving without materially reducing the evaluated land-cover homogeneity. Its seed spacing was 990 m, compared with 1,000 m for the 10 m input.</p>
+<p>Table 3. Comparison of segmentation metrics for 10 m and spatially averaged 30 m embeddings at approximately 1 km seed spacing.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 13%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Site</th>
+<th style="text-align: left;">Input</th>
+<th style="text-align: right;">Segments</th>
+<th style="text-align: right;">Median (ha)</th>
+<th style="text-align: right;">Assessed (ha)</th>
+<th style="text-align: right;">Homogeneity (%)</th>
+<th style="text-align: right;">≥80% area (%)</th>
+<th style="text-align: right;">Transformed retained (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">10m</td>
+<td style="text-align: right;">2,024</td>
+<td style="text-align: right;">91.0</td>
+<td style="text-align: right;">198,480</td>
+<td style="text-align: right;">83.5</td>
+<td style="text-align: right;">66.3</td>
+<td style="text-align: right;">90.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">30m</td>
+<td style="text-align: right;">2,084</td>
+<td style="text-align: right;">93.9</td>
+<td style="text-align: right;">201,091</td>
+<td style="text-align: right;">83.0</td>
+<td style="text-align: right;">65.8</td>
+<td style="text-align: right;">89.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">10m</td>
+<td style="text-align: right;">2,146</td>
+<td style="text-align: right;">89.8</td>
+<td style="text-align: right;">211,269</td>
+<td style="text-align: right;">80.4</td>
+<td style="text-align: right;">57.6</td>
+<td style="text-align: right;">83.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">30m</td>
+<td style="text-align: right;">2,218</td>
+<td style="text-align: right;">92.4</td>
+<td style="text-align: right;">214,558</td>
+<td style="text-align: right;">80.6</td>
+<td style="text-align: right;">57.4</td>
+<td style="text-align: right;">84.2</td>
+</tr>
+</tbody>
+</table>
+<p>Class-specific retention remained similar between resolutions (<strong>?@tbl-resolution-retention</strong>), as did the pooled composition of the assigned BII classes (<a href="#fig-resolution-composition" class="quarto-xref">Figure&nbsp;2</a>).</p>
+<p>Table 4. Percentage of original mapped land cover retained within its assigned BII class, for the two embedding resolutions. {#tbl-resolution-retention}</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Site</th>
+<th style="text-align: left;">Cover</th>
+<th style="text-align: right;">10 m</th>
+<th style="text-align: right;">30 m</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Settlements</td>
+<td style="text-align: right;">65.6</td>
+<td style="text-align: right;">64.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Timber</td>
+<td style="text-align: right;">68.6</td>
+<td style="text-align: right;">65.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Tree crops</td>
+<td style="text-align: right;">88.3</td>
+<td style="text-align: right;">90.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Croplands</td>
+<td style="text-align: right;">92.7</td>
+<td style="text-align: right;">91.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">Untransformed</td>
+<td style="text-align: right;">44.2</td>
+<td style="text-align: right;">45.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Settlements</td>
+<td style="text-align: right;">83.5</td>
+<td style="text-align: right;">83.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Timber</td>
+<td style="text-align: right;">94.1</td>
+<td style="text-align: right;">94.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Tree crops</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Croplands</td>
+<td style="text-align: right;">72.9</td>
+<td style="text-align: right;">74.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EC</td>
+<td style="text-align: left;">Untransformed</td>
+<td style="text-align: right;">62.2</td>
 <td style="text-align: right;">63.1</td>
 </tr>
-<tr class="even">
-<td>EC</td>
-<td style="text-align: right;">800</td>
-<td style="text-align: right;">1,784</td>
-<td style="text-align: right;">56.8</td>
-<td style="text-align: right;">80.5</td>
-<td style="text-align: right;">57.3</td>
-</tr>
-<tr class="odd">
-<td>EC</td>
-<td style="text-align: right;"><strong>1,000</strong></td>
-<td style="text-align: right;"><strong>1,114</strong></td>
-<td style="text-align: right;"><strong>88.8</strong></td>
-<td style="text-align: right;"><strong>78.6</strong></td>
-<td style="text-align: right;"><strong>54.2</strong></td>
-</tr>
-<tr class="even">
-<td>EC</td>
-<td style="text-align: right;">1,200</td>
-<td style="text-align: right;">756</td>
-<td style="text-align: right;">123.3</td>
-<td style="text-align: right;">76.9</td>
-<td style="text-align: right;">48.4</td>
-</tr>
 </tbody>
 </table>
-<p><img src="images/Fig1_homogeneity.png" class="img-fluid" width="688"></p>
+<div id="fig-resolution-composition" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-resolution-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Fig6_composition_resolution.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-resolution-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Pooled land-cover composition within assigned BII classes using 10 m and 30 m embeddings at approximately 1 km seed spacing, shown separately for CT and EC.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
-<section id="national-production-and-version-control" class="level2">
-<h2 class="anchored" data-anchor-id="national-production-and-version-control">National production and version control</h2>
-<p>The national layer was generated with the selected size, fixed 10 m Albers settings. The test-area IDs are not presumed to match the eventual national IDs because processing extent and tiling can affect cluster numbering and potentially boundaries.</p>
-<p>Before transferring a national segmentation layer to the collaborator who links species information to the segments, we will “froze” the final raster, checked its coverage and unique IDs, preserved its original 10 m grid and CRS, and recorded the exact asset path and generation code. Land-use assignment and intensity can subsequently be updated as attributes without altering the frozen segment geometry or IDs.</p>
+<section id="national-segmentation" class="level2">
+<h2 class="anchored" data-anchor-id="national-segmentation">National segmentation</h2>
+<p>We selected 2022 embeddings, all 64 dimensions, spatially averaged to 30 m, and ran SNIC with <code>size = 33</code> (990 m), <code>compactness = 1</code>, 8-connectivity and <code>neighborhoodSize = 66</code>. The national run used a 5 km buffer around the South African country boundary and exported the original SNIC <code>clusters</code> labels as a single-band Int64 raster, aligned to the 30 m Albers grid. The country boundary in the GEE data catalogue was use.</p>
+<p>Before using the segments in species-level spatial joins, the raster was to be checked for coverage and duplicate IDs among disconnected objects, then vectorised and assigned stable geometries. Land-use classes and intensity would subsequently be linked to the validated segment IDs.</p>
 </section>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section"></h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/segments.png" class="img-fluid figure-img"></p>
-<figcaption>Preliminary national 800 m segmentation for the South African BII</figcaption>
+<section id="exploratory-comparison-with-a-regular-grid" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-comparison-with-a-regular-grid">Exploratory comparison with a regular grid</h2>
+<p>In an earlier northern Limpopo case study, image-derived segments were compared with regular 1 × 1 km cells using broad land-cover proportions and the same BII assignment rules. Segments more often contained a higher proportion of their assigned cover, and their assigned class more often matched the dominant cover, particularly for transformed land uses. This was an exploratory comparison, separate from the CT/EC parameter selection, and did not measure classification accuracy. We further explored what typically co-occurs with each broad land use class within each segments (Fig. 3).</p>
+<div id="fig-grid-composition" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grid-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/02_mean_composition.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grid-composition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Mean broad land-cover composition within assigned BII classes for image-derived segments and 1 × 1 km grid cells in the Limpopo case study. Protected status was assessed separately.
+</figcaption>
+</figure>
+</div>
+<div id="fig-grid-dominance" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grid-dominance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/04_assignment_dominance_agreement.png" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grid-dominance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Percentage of units whose assigned BII class matched the dominant mapped land cover, comparing segments with 1 × 1 km grid cells in Limpopo. Protected land was omitted because it was an overlay.
+</figcaption>
 </figure>
 </div>
 
@@ -1216,278 +1123,126 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "National segmentation"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>The page documents the technical decisions made during the segmentation process.</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Rationale and objective</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>The South African Biodiversity Intactness Index (BII) requires a consistent **spatial unit of assessment** to which a broad land-use class, land-use intensity, and eventually species information can be linked. Here, that unit is an image-derived *segment*: a group of neighbouring 10 m pixels with similar landscape characteristics.</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>A regular grid (also called a fishnet), that is typically used in broad scale spatial workflows, is straightforward to reproduce, but its boundaries are imposed without reference to the landscape. A grid cell can therefore split fields or plantations, or combine very different land uses, imposing artificial boundaries on the landscape. Segmentation can follow landscape variation more closely, potentially producing units that more closely align with underlying vegetation structure, land use patterns, and management units, which provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>Our aim in this part of the workflow is to select one nationally applicable segmentation configuration that balances land-cover homogeneity, recognisable landscape structure, consistency with the approximately 1 km analysis scale used in the regional BII, and a manageable number of units for national modelling. We tested various options for segmentation below.</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Input data</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>**Satellite representation.** Segmentation uses the 2022 annual <span class="co">[</span><span class="ot">Google Satellite Embedding V1</span><span class="co">](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL)</span> image collection (AlphaEarth Foundations; @brown). This dataset provides a 64-dimensional vector, or *landscape fingerprint*, for each 10 m pixel, combining patterns learned from multiple Earth-observation sources. The dimensions are not separate land-cover categories or individually interpreted physical measurements. SNIC used all 64 bands simultaneously to group pixels with similar signatures.</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>The exact Google Earth Engine (GEE) input is:</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> embeddings <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL'</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>)<span class="op">.</span><span class="fu">filterDate</span>(<span class="st">'2022-01-01'</span><span class="op">,</span> <span class="st">'2023-01-01'</span>)<span class="op">;</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>For each test region, the collection is filtered to the region (drawn in GEE), mosaicked and clipped to a 5 km buffer. The comparison runs SNIC on this **embedding mosaic**, not on the classified SANLC raster: the latter is retained as independent *composition data* for evaluating the resulting segments. No separate land/water mask is applied in the test-segmentation export script. Terrestrial masks is applied when calculating land-cover proportions in the next processing stage.</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>**Composition data for subsequent evaluation.** We will intersect each segment with (1) the broad BII land-use classification derived from 2022 SANLC, and (2) the original detailed SANLC subclasses. The intended GEE sources are:</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/BII_SA/NLC_reclass_BII_land_use_intensity</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/SA_NLC_2022_GEO</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>The reclassified layer provides the broad BII classes; the detailed SANLC layer allows homogeneity to be assessed within those classes. Protected-area cover will be assessed separately, because it is a management overlay that may overlap other land covers. **The exact bands, masks and crosswalk versions are recorded in the separate pages under Land Use Intensity and Segment Allocation.**</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## Projection and analysis grid</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>The processing grid is held fixed for all scenarios. A **projected coordinate reference system** converts locations on the curved Earth into planar coordinates that can be expressed in metres. Without a fixed projection and pixel grid, the size of an SNIC seed measured in pixels could correspond to different ground distances, and the calculated segmentation could change with the resolution requested by GEE's map display.</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>We use SANBI's South African Albers Equal Area projection, <span class="in">`AEA_RSA_WGS84`</span>, with the following parameters:</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>| Property                         | Value                            |</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>|----------------------------------|----------------------------------|</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>| Projection                       | Albers Equal Area (custom WGS84) |</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>| Datum / ellipsoid                | WGS84                            |</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>| Central meridian                 | 25° E                            |</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>| Latitude of origin               | 0°                               |</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>| Standard parallel 1              | 24° S (<span class="in">`-24`</span>)                    |</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>| Standard parallel 2              | 33° S (<span class="in">`-33`</span>)                    |</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>| False easting and false northing | 0 m, 0 m                         |</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>| Map units                        | metres                           |</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>| Pixel size                       | 10 × 10 m                        |</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>| Affine transform                 | <span class="in">`[10, 0, 0, 0, -10, 0]`</span>          |</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>The two standard parallels are latitudes where this projection's area-preserving transformation is anchored. The **equal-area** property is useful for calculating and comparing land-use areas and proportions throughout South Africa. The specific affine transform additionally fixes the origin and orientation of the 10 m pixel grid, so tests do not shift relative to one another.</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>The GEE code uses a **custom WKT CRS definition**, not a generic Web Mercator or geographic latitude/longitude CRS. The exact WKT used in the test is preserved in the reproducible code below. The grid is explicitly assigned to the embedding mosaic using <span class="in">`setDefaultProjection(proj)`</span>; the SNIC result is then forced onto the same grid using <span class="in">`.reproject({crs: proj})`</span>. Lastly, every export specifies the same <span class="in">`crs`</span> and <span class="in">`crsTransform`</span>.</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>This matters because <span class="co">[</span><span class="ot">GEE documents that SNIC can produce different results at different interactive map zoom levels</span><span class="co">](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic)</span>. Forcing a 10 m processing projection prevents the viewer's zoom level from determining the algorithm's working resolution. As <span class="in">`reproject()`</span> can be computationally expensive, it is applied only to the bounded test areas; results were exported as assets before downstream processing. The final selected segment size was then run nationally and used as the fixed segmentation layer for later stages.</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="fu">## Algorithm and parameters</span></span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>We use <span class="co">[</span><span class="ot">Simple Non-Iterative Clustering (SNIC)</span><span class="co">](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic)</span>, an object-based segmentation algorithm that starts from seed locations and grows connected clusters of spectrally/embedding-similar pixels. SNIC returns a raster in which pixels belonging to a cluster share an integer ID.</span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>| Parameter             | Current value                                  | Reasoning                                                                                                                                               |</span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>| Input                 | 2022 annual Satellite Embeddings, all 64 bands | Captures multiple landscape characteristics in a consistent national dataset rather than relying on one spectral band.                                  |</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>| Processing CRS        | <span class="in">`AEA_RSA_WGS84`</span>                                | Metre-based, equal-area reference appropriate for South African area calculations.                                                                      |</span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>| Processing pixel size | 10 m                                           | Matches the nominal resolution of the embedding data and fixes the interpretation of pixel-based settings.                                              |</span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>| <span class="in">`size`</span>                | **60, 80, 100, 120 pixels**                    | Four seed spacings centred around the approximately 1 km landscape scale of the regional BII. This is the **only intentionally varied SNIC parameter**. |</span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>| <span class="in">`compactness`</span>         | <span class="in">`1`</span>                                            | Balances similarity of the embedding signatures and spatial compactness of the segments.                                                                |</span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>| <span class="in">`connectivity`</span>        | <span class="in">`8`</span>                                            | Allows side-adjacent and diagonally adjacent pixels to be grouped.                                                                                      |</span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>| <span class="in">`neighborhoodSize`</span>    | <span class="in">`size * 4`</span>                                     | Provides a processing neighbourhood larger than the seed spacing to reduce tile-edge artefacts; scaled consistently in all test scenarios.              |</span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>| <span class="in">`seeds`</span>               | Not supplied                                   | SNIC generates its default regularly spaced seed grid; no random seed locations are specified.                                                          |</span>
-<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>| Region buffer         | 5,000 m                                        | Reduces the risk that artificial clipping boundaries influence segments within the test rectangle.                                                      |</span>
-<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>| Export ID band        | <span class="in">`clusters`</span> → <span class="in">`unit_id`</span>                         | Stores the calculated cluster identifier as an integer raster.                                                                                          |</span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>| Asset pyramiding      | <span class="in">`mode`</span>                                         | Preserves categorical IDs when assets are viewed at coarser display resolutions.                                                                        |</span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>**Important:** `size` specifies *initial seed spacing in pixels*, **not the final segment diameter or area**. Actual segment sizes and shapes depend on the embedding patterns and growth of clusters. The nominal meter values are useful scenario labels, but actual segment areas will be measured and reported.</span>
-<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a><span class="fu">### Why four sizes?</span></span>
-<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>| Scenario name | <span class="in">`size`</span> in 10 m pixels | Nominal seed spacing | Regular-square area for scale comparison only |</span>
-<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>|------------------|-----------------:|-----------------:|-----------------:|</span>
-<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>| 600 m         |                    60 |                600 m |                                         36 ha |</span>
-<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>| 800 m         |                    80 |                800 m |                                         64 ha |</span>
-<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>| 1,000 m       |                   100 |              1,000 m |                                        100 ha |</span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>| 1,200 m       |                   120 |              1,200 m |                                        144 ha |</span>
-<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>Preliminary exploration showed that connectivity of 8 and compactness settlings of 1 followed natural shapes in the landscape. We thus generated 4 segment "scenarios" with the same parameters settings, only varying size. This isolates the effect of the size parameter more cleanly and makes the eventual national product reproducible.</span>
-<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**600 m** tests whether finer units capture settlement edges, agricultural fields and small, contrasting land-cover patches sufficiently better to justify the extra segment count.</span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**800 m** was included as a candidate segment scale to assess whether it provides an appropriate balance between spatial detail and landscape-scale representation.</span>
-<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**1,000 m** approximates the linear scale of the original regional BII's 1 × 1 km mapping grid, while allowing SNIC boundaries to follow spatial patterns rather than fixed squares.</span>
-<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>**1,200 m** tests whether a somewhat coarser representation reduces processing demands without merging ecologically different land uses excessively.</span>
-<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>A 1,000 m **SNIC seed spacing is not the same as a fixed 1 × 1 km grid**. A grid can be retained as an additional reference comparison, but it is not one of the four SNIC sensitivity scenarios.</span>
-<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>Earlier exploratory segmentation at other scales suggested that small segments could follow very fine land-cover variation while losing the broader landscape context. Those trials motivated the provisional 800 m layer but were not a controlled four-size comparison. The sensitivity test documented here is intended to provide the quantitative justification for a final choice, rather than assume the earlier choice was optimal.</span>
-<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## Selection of two test landscapes</span></span>
-<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>We use two heterogeneous mixed-use landscapes, rather than comparing segment sizes only in predominantly natural terrain. Both were chosen because they contain land uses that are easy to combine unintentionally within a large assessment unit, but their spatial configurations differ substantially.</span>
-<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>| Test site                         | GEE geometry name | Landscape composition and motivation                                                                                                                                                                                                                               |</span>
-<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>|------------------------|------------------------|------------------------|</span>
-<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>| Cape Town / surrounding landscape | <span class="in">`CT`</span>              | A well-known mosaic of urban and industrial areas, timber plantations, mountainous natural vegetation, and smallholdings. It tests segmentation at sharp land-use boundaries, along natural–built-up interfaces, and in terrain with strong topographic variation. |</span>
-<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>| Eastern Cape mixed landscape      | <span class="in">`EC`</span>              | A fine-grained mosaic of villages, croplands and natural vegetation. It tests whether small, interspersed land uses are separated adequately without creating an excessive number of small fragments.                                                              |</span>
-<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>Testing these contrasting landscapes makes the sensitivity analysis more informative than using only one urban or rural landscape. The samples are purposeful test sites, not statistically representative samples of South Africa; conclusions should be framed as evidence of the method's behaviour in two challenging land-use mosaics.</span>
-<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>The rectangles are drawn in the GEE Code Editor and named <span class="in">`CT`</span> and <span class="in">`EC`</span>. Each rectangle is buffered by 5 km for segmentation; the central, unbuffered rectangle is the evaluation area. In particular, segments intersecting the central rectangle boundary will be flagged and can be excluded from summaries that require complete segments. The wider buffered assets can still be displayed for a map figure.</span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Export workflow</span></span>
-<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a>The export step creates eight 10 m integer <span class="in">`unit_id`</span> rasters: the four seed spacings for each of the two sites. All are saved as separate GEE assets.</span>
-<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a>Asset root:</span>
-<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="in">``` text</span></span>
-<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="in">projects/thicket-ecological-condition/assets/BII_SA/</span></span>
-<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a>Asset naming:</span>
-<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>| Site | 600 m                        | 800 m                        | 1,000 m                       | 1,200 m                       |</span>
-<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a>|---------------|---------------|---------------|---------------|---------------|</span>
-<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>| CT   | <span class="in">`Segments_600m_CT_AEA10m_v1`</span> | <span class="in">`Segments_800m_CT_AEA10m_v1`</span> | <span class="in">`Segments_1000m_CT_AEA10m_v1`</span> | <span class="in">`Segments_1200m_CT_AEA10m_v1`</span> |</span>
-<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a>| EC   | <span class="in">`Segments_600m_EC_AEA10m_v1`</span> | <span class="in">`Segments_800m_EC_AEA10m_v1`</span> | <span class="in">`Segments_1000m_EC_AEA10m_v1`</span> | <span class="in">`Segments_1200m_EC_AEA10m_v1`</span> |</span>
-<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a>The test assets are saved once and then called as inputs to the subsequent composition calculations. This separates expensive segmentation from lighter repeated analyses and ensures that all statistics and map figures refer to the same pixel-to-segment allocation.</span>
-<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exact GEE export script</span></span>
-<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>The following is the agreed 2026-10-17 sensitivity-test script. **Prerequisite:** draw or import the two geometries as <span class="in">`CT`</span> and <span class="in">`EC`</span> (and preserve their coordinates for final reproduction).</span>
-<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
-<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a><span class="co">// BII segmentation sensitivity: CT + EC; 600/800/1000/1200 m</span></span>
-<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> <span class="bu">root</span> <span class="op">=</span> <span class="st">'projects/thicket-ecological-condition/assets/BII_SA/'</span><span class="op">;</span></span>
-<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> crs <span class="op">=</span></span>
-<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PROJCS["AEA_RSA_WGS84",'</span> <span class="op">+</span></span>
-<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",'</span> <span class="op">+</span></span>
-<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a>  <span class="st">'SPHEROID["WGS_1984",6378137,298.257223563]],'</span> <span class="op">+</span></span>
-<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],'</span> <span class="op">+</span></span>
-<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PROJECTION["Albers"],'</span> <span class="op">+</span></span>
-<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["false_easting",0],'</span> <span class="op">+</span></span>
-<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["false_northing",0],'</span> <span class="op">+</span></span>
-<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["central_meridian",25],'</span> <span class="op">+</span></span>
-<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["standard_parallel_1",-24],'</span> <span class="op">+</span></span>
-<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["standard_parallel_2",-33],'</span> <span class="op">+</span></span>
-<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a>  <span class="st">'PARAMETER["latitude_of_origin",0],UNIT["Meter",1]]'</span><span class="op">;</span></span>
-<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> transform <span class="op">=</span> [<span class="dv">10</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> proj <span class="op">=</span> ee<span class="op">.</span><span class="fu">Projection</span>(crs<span class="op">,</span> transform)<span class="op">;</span></span>
-<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> embeddings <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(</span>
-<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>  <span class="st">'GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL'</span></span>
-<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>)<span class="op">.</span><span class="fu">filterDate</span>(<span class="st">'2022-01-01'</span><span class="op">,</span> <span class="st">'2023-01-01'</span>)<span class="op">;</span></span>
-<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">exportSegments</span>(region<span class="op">,</span> name) {</span>
-<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> aoi <span class="op">=</span> region<span class="op">.</span><span class="fu">buffer</span>(<span class="dv">5000</span>)<span class="op">;</span></span>
-<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a>  <span class="kw">var</span> input <span class="op">=</span> embeddings<span class="op">.</span><span class="fu">filterBounds</span>(aoi)<span class="op">.</span><span class="fu">mosaic</span>()</span>
-<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">clip</span>(aoi)<span class="op">.</span><span class="fu">setDefaultProjection</span>(proj)<span class="op">;</span></span>
-<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">60</span><span class="op">,</span> <span class="dv">80</span><span class="op">,</span> <span class="dv">100</span><span class="op">,</span> <span class="dv">120</span>]<span class="op">.</span><span class="fu">forEach</span>(<span class="kw">function</span>(size) {</span>
-<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> metres <span class="op">=</span> size <span class="op">*</span> <span class="dv">10</span><span class="op">;</span></span>
-<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> id <span class="op">=</span> <span class="st">'Segments_'</span> <span class="op">+</span> metres <span class="op">+</span> <span class="st">'m_'</span> <span class="op">+</span> name <span class="op">+</span> <span class="st">'_AEA10m_v1'</span><span class="op">;</span></span>
-<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> clusters <span class="op">=</span> ee<span class="op">.</span><span class="at">Algorithms</span><span class="op">.</span><span class="at">Image</span><span class="op">.</span><span class="at">Segmentation</span><span class="op">.</span><span class="fu">SNIC</span>({</span>
-<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>      <span class="dt">image</span><span class="op">:</span> input<span class="op">,</span></span>
-<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>      <span class="dt">size</span><span class="op">:</span> size<span class="op">,</span></span>
-<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>      <span class="dt">compactness</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
-<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a>      <span class="dt">connectivity</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span></span>
-<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a>      <span class="dt">neighborhoodSize</span><span class="op">:</span> size <span class="op">*</span> <span class="dv">4</span></span>
-<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a>    })<span class="op">.</span><span class="fu">select</span>(<span class="st">'clusters'</span>)</span>
-<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">reproject</span>({<span class="dt">crs</span><span class="op">:</span> proj})</span>
-<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">rename</span>(<span class="st">'unit_id'</span>)<span class="op">.</span><span class="fu">toInt64</span>()<span class="op">;</span></span>
-<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a>    Export<span class="op">.</span><span class="at">image</span><span class="op">.</span><span class="fu">toAsset</span>({</span>
-<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a>      <span class="dt">image</span><span class="op">:</span> clusters<span class="op">,</span></span>
-<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a>      <span class="dt">description</span><span class="op">:</span> id<span class="op">,</span></span>
-<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a>      <span class="dt">assetId</span><span class="op">:</span> <span class="bu">root</span> <span class="op">+</span> id<span class="op">,</span></span>
-<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a>      <span class="dt">region</span><span class="op">:</span> aoi<span class="op">,</span></span>
-<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a>      <span class="dt">crs</span><span class="op">:</span> crs<span class="op">,</span></span>
-<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a>      <span class="dt">crsTransform</span><span class="op">:</span> transform<span class="op">,</span></span>
-<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a>      <span class="dt">pyramidingPolicy</span><span class="op">:</span> {<span class="st">'.default'</span><span class="op">:</span> <span class="st">'mode'</span>}<span class="op">,</span></span>
-<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a>      <span class="dt">maxPixels</span><span class="op">:</span> <span class="fl">1e10</span></span>
-<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
-<span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a><span class="fu">exportSegments</span>(CT<span class="op">,</span> <span class="st">'CT'</span>)<span class="op">;</span></span>
-<span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a><span class="fu">exportSegments</span>(EC<span class="op">,</span> <span class="st">'EC'</span>)<span class="op">;</span></span>
-<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-199"><a href="#cb5-199" aria-hidden="true" tabindex="-1"></a><span class="co">// Record rectangle coordinates alongside the script.</span></span>
-<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'CT rectangle vertices:'</span><span class="op">,</span> CT<span class="op">.</span><span class="fu">coordinates</span>())<span class="op">;</span></span>
-<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">'EC rectangle vertices:'</span><span class="op">,</span> EC<span class="op">.</span><span class="fu">coordinates</span>())<span class="op">;</span></span>
-<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a>Only the <span class="in">`size`</span> argument changes between scenarios. No random seed image is supplied. The exported assets should be inspected for successful completion, valid 10 m projection metadata, coverage and integer IDs before they are used in any composition analysis.</span>
-<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a><span class="fu">## Sensitivity analysis and validation plan</span></span>
-<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a>The goal of this evaluation is not to validate the broad land use group calculation. It tests whether the *spatial units* retain meaningful land-use composition, which is the intended input to the BII.</span>
-<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a>For each of the eight segment assets, we calculated the area and proportion of every mapped broad BII land-use class and, separately, every detailed SANLC subclass within each segment. Pixel areas were summed using <span class="in">`ee.Image.pixelArea()`</span> and divided by the mapped terrestrial area of the segment. The protected-area proportion was extracted as a separate overlapping attribute, not added to land-cover proportions.</span>
-<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a>A segment-level CSV export contained:</span>
-<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a>| Field                                                               | Meaning                                                                                                            |</span>
-<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
-<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a>| <span class="in">`site`</span>, <span class="in">`scenario`</span>, <span class="in">`unit_id`</span>                                       | Test landscape, nominal seed spacing and segment identifier; IDs are only compared *within* a given site/scenario. |</span>
-<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a>| <span class="in">`area_ha`</span>                                                           | Terrestrial mapped area in hectares.                                                                               |</span>
-<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a>| <span class="in">`p_settlement`</span>, <span class="in">`p_timber`</span>, <span class="in">`p_treecrop`</span>, <span class="in">`p_cropland`</span>, <span class="in">`p_untrans`</span> | Proportion of terrestrial area occupied by each mapped broad BII land-use class.                                   |</span>
-<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a>| <span class="in">`p_protected`</span>                                                       | Protected-area overlap (not part of the land-cover proportions sum).                                               |</span>
-<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a>| <span class="in">`assigned_class`</span>                                                    | Broad class under the agreed <span class="sc">\&gt;</span>20% sequential allocation rule.                                                     |</span>
-<span id="cb5-221"><a href="#cb5-221" aria-hidden="true" tabindex="-1"></a>| <span class="in">`boundary`</span>                                                          | Flag identifying segments that intersect the core test-rectangle boundary.                                         |</span>
-<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-223"><a href="#cb5-223" aria-hidden="true" tabindex="-1"></a>A second long-format subclass CSV (<span class="in">`site`</span>, <span class="in">`scenario`</span>, <span class="in">`unit_id`</span>, <span class="in">`sanlc_class`</span>, <span class="in">`area_ha`</span>, <span class="in">`proportion`</span>) retained the full SANLC composition for detailed checks in R. Raster-to-vector conversion of the buffered test IDs (for example to GeoJSON) will supply segment outlines for GIS map figures. The CSV is the analysis output; vectorisation is primarily for cartographic comparison.</span>
-<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a>We will calculate and compare:</span>
-<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Broad-class homogeneity:** the largest land-use proportion in each segment (a value of 1 indicates only one broad class).</span>
-<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Detailed-class homogeneity:** the largest original SANLC subclass proportion, distinguishing variation hidden within a broad class.</span>
-<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Mixed-segment frequency:** the proportion of segments containing substantial amounts of more than one broad class.</span>
-<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Allocation:** for each broad class, the proportion of its mapped area that occurs in segments ultimately assigned to the same class under the 20% decision tree.</span>
-<span id="cb5-231"><a href="#cb5-231" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Segment-area distribution and counts:** the real distribution of segment size and the computational consequences of a finer or coarser assessment unit.</span>
-<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-233"><a href="#cb5-233" aria-hidden="true" tabindex="-1"></a>Summaries were calculated both **by segment** and **area-weighted**, separately for CT and EC and where relevant by land-use class. These complementary summaries are important: a large number of small fragments should not overwhelm the total mapped landscape, while a few very large natural segments should not conceal poor representation of settlements or croplands.</span>
-<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a>Planned figures include (a) four identical-scale maps of segment boundaries over the same basemap per study area, (b) homogeneity distributions by scenario, and (c) differences in composition/allocation fidelity by land use. The regular 1 × 1 km grid may be retained as a contextual reference from earlier analyses, but it will not be conflated with the 1,000 m SNIC scenario.</span>
-<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a><span class="fu">### Criteria for deciding the national size</span></span>
-<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-239"><a href="#cb5-239" aria-hidden="true" tabindex="-1"></a>The preferred scenario should show a reasonable balance between higher within-segment homogeneity, preserving small transformed land-use mosaics, recognisable landscape boundaries and national processing feasibility. If the 600 m results provide only limited improvement over 800 m while substantially increasing segment counts, 800 m would remain a reasonable compromise. If results contradict that expectation, the final choice should reflect the evidence. We will report the observed trade-offs and record the final selected size after analysis, rather than present a preferred size as an already validated result.</span>
-<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a><span class="fu">### Results</span></span>
-<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a>Land-cover homogeneity declined progressively with increasing SNIC seed spacing across both study areas (Table @tbl-segmentation-comparison). The 600 m scenario produced the highest homogeneity but substantially more assessment units, while the 1,200 m scenario showed greater mixing of land-cover classes and reduced retention of transformed land uses. The 800 m and 1,000 m scenarios were therefore considered the most suitable compromises between spatial detail and computational efficiency.</span>
-<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a>Increasing seed spacing from 800 to 1,000 m reduced the number of segments by 36.9% in CT and 37.6% in EC, with only modest reductions in mean land-cover homogeneity (1.1 and 1.9%, respectively). The proportion of terrestrial area within segments containing at least 80% of a single land-cover class declined by approximately 3 percentage points in both areas. Class-specific allocation also remained broadly comparable, with some reduction in the retention of transformed land uses at larger segment sizes. A 1,000 m seed spacing was therefore selected, providing substantially fewer assessment units with relatively little loss of land-cover homogeneity. The resulting median segment areas (90.2 ha in CT and 88.8 ha in EC) were also broadly comparable to the 100 ha grid cells used in the original sub-Saharan African BII assessment, while retaining the advantage of image-derived segment boundaries. The **1000m segment size is the most practical compromise between land-cover homogeneity, ecological representation and computation efficiency among the tested scenarios.**</span>
-<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/Fig2_pooled_composition.png)</span>{width="665"}</span>
-<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a>Table 2. Comparison of segmentation characteristics across four SNIC seed spacings in Cape Town (CT) and the Eastern Cape (EC). Mean homogeneity represents the area-weighted mean proportion of each segment occupied by its dominant broad BII land-cover class. The final column gives the percentage of assessed terrestrial area occurring in segments with at least 80% homogeneous land cover. Segment counts and areas exclude boundary segments and combine repeated segment IDs assumed to represent fragmented segments. {#tbl-segmentation-comparison}</span>
-<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a>| Study area | Seed spacing (m) | Number of segments | Median segment area (ha) | Mean homogeneity (%) | Area ≥80% homogeneous (%) |</span>
-<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a>|------------|-----------:|-----------:|-----------:|-----------:|-----------:|</span>
-<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a>| CT         |              600 |              5,807 |                     33.9 |                 86.6 |                      73.9 |</span>
-<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a>| CT         |              800 |              3,201 |                     58.2 |                 84.8 |                      69.3 |</span>
-<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a>| CT         |        **1,000** |          **2,020** |                 **90.2** |             **83.7** |                  **66.5** |</span>
-<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a>| CT         |            1,200 |              1,377 |                    131.2 |                 82.5 |                      63.8 |</span>
-<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a>| EC         |              600 |              3,233 |                     33.3 |                 83.2 |                      63.1 |</span>
-<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a>| EC         |              800 |              1,784 |                     56.8 |                 80.5 |                      57.3 |</span>
-<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a>| EC         |        **1,000** |          **1,114** |                 **88.8** |             **78.6** |                  **54.2** |</span>
-<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a>| EC         |            1,200 |                756 |                    123.3 |                 76.9 |                      48.4 |</span>
-<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/Fig1_homogeneity.png)</span>{width="688"}</span>
-<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## National production and version control</span></span>
-<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a>The national layer was generated with the selected size, fixed 10 m Albers settings. The test-area IDs are not presumed to match the eventual national IDs because processing extent and tiling can affect cluster numbering and potentially boundaries.</span>
-<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a>Before transferring a national segmentation layer to the collaborator who links species information to the segments, we will "froze" the final raster, checked its coverage and unique IDs, preserved its original 10 m grid and CRS, and recorded the exact asset path and generation code. Land-use assignment and intensity can subsequently be updated as attributes without altering the frozen segment geometry or IDs.</span>
-<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a><span class="fu">## </span></span>
-<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-272"><a href="#cb5-272" aria-hidden="true" tabindex="-1"></a><span class="al">![Preliminary national 800 m segmentation for the South African BII](images/segments.png)</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "National segmentation"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>The page documents the technical decisions made during the segmentation process.</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">## Rationale and objective</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>The South African Biodiversity Intactness Index (BII) requires a consistent **spatial unit of assessment** to which a broad land-use class, land-use intensity, and eventually species information can be linked. Here, that unit is an image-derived *segment*: a group of neighbouring 10 m pixels with similar landscape characteristics.</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>A regular grid (also called a fishnet), that is typically used in broad scale spatial workflows, is straightforward to reproduce, but its boundaries are imposed without reference to the landscape. A grid cell can therefore split fields or plantations, or combine very different land uses, imposing artificial boundaries on the landscape. Segmentation can follow landscape variation more closely, potentially producing units that more closely align with underlying vegetation structure, land use patterns, and management units, which provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Our aim in this part of the workflow is to select one nationally applicable segmentation configuration that balances land-cover homogeneity, recognisable landscape structure, consistency with the approximately 1 km analysis scale used in the regional BII, and a manageable number of units for national modelling. We tested various options for segmentation below.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data and segmentation methods</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inputs and projection</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>We used the 2022 <span class="co">[</span><span class="ot">Google Satellite Embedding V1</span><span class="co">](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL)</span> collection (@brown). Each native 10 m pixel contained a 64-dimensional landscape representation. All 64 bands were supplied to <span class="co">[</span><span class="ot">Simple Non-Iterative Clustering (SNIC)</span><span class="co">](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic)</span>; i.e. they were not averaged across dimensions. SNIC formed connected objects from regularly spaced seeds according to feature similarity and spatial proximity.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>Processing used SANBI's South African Albers Equal Area CRS (<span class="in">`AEA_RSA_WGS84`</span>; WGS84 datum, central meridian 25° E, standard parallels 24° S and 33° S). The 10 m and 30 m grids shared a fixed origin and affine transforms of <span class="in">`[10, 0, 0, 0, -10, 0]`</span> and <span class="in">`[30, 0, 0, 0, -30, 0]`</span>, respectively. A fixed projection prevented GEE display scale from determining SNIC resolution.</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>The 2022 South African National Land Cover (SANLC) classification was used **to evaluate**, not generate, segments. Broad land-cover proportions were obtained from the BII crosswalk (<span class="in">`NLC_reclass_BII_land_use_intensity`</span>), with protected-area overlap calculated separately. SANLC was assessed on the 10 m extraction grid during the sensitivity tests; its underlying land-cover information originated from the 20 m product.</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">### Sensitivity design</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>Two contrasting mixed-use rectangles were drawn in GEE: CT (Cape Town, including urban, industrial, tree croplands and mountain landscapes) and EC (Eastern Cape, including settlements, agriculture, plantations and natural vegetation). Each was buffered by 5 km during segmentation. Segments intersecting the test-area boundaries were excluded from comparisons.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>We compared SNIC seed spacings of 600, 800, 1,000 and 1,200 m using 10 m embeddings. We then compared 10 m and 30 m embedding inputs at approximately 1,000 m seed spacing. For the 30 m scenario, each embedding band was spatially averaged from 10 m, and <span class="in">`size = 33`</span> gave 990 m nominal spacing. Seed spacing controlled initial seed separation rather than final segment area.</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="in">`compactness = 1`</span>, <span class="in">`connectivity = 8`</span> and a 5 km buffer were held constant. The tests used <span class="in">`neighborhoodSize = 4 × size`</span>; the subsequent national run used 66 pixels (<span class="in">`2 × 33`</span>, the GEE default) to reduce processing demands. This change was not separately sensitivity-tested.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>For each segment, we calculated the proportions of settlements, timber plantations, tree crops, croplands and untransformed land. The assigned BII class followed the first qualifying <span class="sc">\&gt;</span>20% proportion in that order, followed by protected land (<span class="sc">\&gt;</span>20% protected-area overlap), otherwise untransformed land. Protected land was an overlapping designation rather than a mutually exclusive cover type.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>We assessed segment count, median area, area-weighted homogeneity (largest broad land-cover share), the proportion of assessed area in segments ≥80% homogeneous, and allocation retention (mapped area of a class occurring within segments assigned to that class). Composition figures represented pooled mapped hectares within each assigned class, not the mean segment. Repeated IDs in the test CSVs were combined using area-weighted proportions and boundary segments excluded; this procedure did not independently verify national ID uniqueness yet.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## Sensitivity results</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Seed spacing</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>Increasing seed spacing reduced segment counts but increased land-cover mixing (Table 1). Moving from 800 to 1,000 m reduced segments by 36.9% in CT and 37.0% in EC, with homogeneity declining by only 1.1 and 2.1%, respectively. Median areas at 1,000 m were 91.0 ha (CT) and 89.8 ha (EC), close to the regional BII's 100 ha grid scale. We therefore selected approximately 1,000 m seed spacing.</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>Table 1. Segmentation metrics for four seed spacings. Counts and assessed areas excluded test-boundary segments. Homogeneity was the area-weighted dominant land-cover share; retention combined the four transformed covers. {#tbl-seed-spacing}</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>| Site | Seed (m) | Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>|:-----|---------:|---------:|------------:|--------------:|----------------:|--------------:|-------------------------:|</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>| CT   |      600 |    5,805 |        33.7 |       206,697 |            86.5 |          74.1 |                     92.2 |</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>| CT   |      800 |    3,209 |        58.4 |       202,547 |            84.6 |          69.1 |                     91.2 |</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>| CT   |    1,000 |    2,024 |        91.0 |       198,480 |            83.5 |          66.3 |                     90.0 |</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>| CT   |    1,200 |    1,396 |       128.4 |       193,667 |            82.4 |          64.8 |                     88.8 |</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>| EC   |      600 |    6,168 |        33.6 |       220,284 |            84.9 |          67.0 |                     88.5 |</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>| EC   |      800 |    3,409 |        57.8 |       215,810 |            82.5 |          61.5 |                     86.1 |</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>| EC   |    1,000 |    2,146 |        89.8 |       211,269 |            80.4 |          57.6 |                     83.7 |</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>| EC   |    1,200 |    1,463 |       127.1 |       207,434 |            78.6 |          51.4 |                     81.6 |</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>Table 2. Percentage of each mapped land-cover class retained in segments assigned to the same BII class. Protected land was excluded because it overlapped the land-cover categories.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>| Site | Cover         | 600 m | 800 m | 1,000 m | 1,200 m |</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>|:-----|:--------------|------:|------:|--------:|--------:|</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>| CT   | Settlements   |  69.5 |  66.6 |    65.6 |    64.5 |</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>| CT   | Timber        |  74.2 |  69.9 |    68.6 |    66.7 |</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>| CT   | Tree crops    |  93.4 |  90.9 |    88.3 |    85.3 |</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>| CT   | Croplands     |  94.0 |  93.6 |    92.7 |    91.9 |</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>| CT   | Untransformed |  50.9 |  46.6 |    44.2 |    44.1 |</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>| EC   | Settlements   |  88.3 |  85.8 |    83.5 |    79.8 |</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>| EC   | Timber        |  96.2 |  95.5 |    94.1 |    94.0 |</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>| EC   | Tree crops    |  63.6 |   0.0 |     0.0 |     0.0 |</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>| EC   | Croplands     |  80.8 |  76.6 |    72.9 |    69.2 |</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>| EC   | Untransformed |  68.9 |  65.1 |    62.2 |    58.7 |</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>At coarser spacings, class retention generally declined. Tree crops were rare in EC, so their zero retention at 800–1,200 m was not considered representative of national performance. The pooled composition also showed substantial untransformed cover within assigned transformed classes, reflecting mixed land use and the 20% allocation threshold (@fig-seed-composition).</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="al">![Pooled mapped land-cover composition within each assigned BII class at four SNIC seed spacings in CT and EC. Each bar represents total mapped area pooled across segments; protected is an allocation class, not a separate mapped cover.](images/Fig5_composition_sizes.png)</span>{#fig-seed-composition width="100%"}</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Embedding resolution</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>At approximately 1,000 m spacing, moving from 10 m to 30 m reduced the SNIC input pixel count by 88.9% (ninefold fewer pixels). Mean homogeneity changed by −0.5 percentage points in CT and +0.2 in EC, with similarly small differences in transformed-cover retention (@tbl-resolution). The 30 m input therefore offered a substantial computational saving without materially reducing the evaluated land-cover homogeneity. Its seed spacing was 990 m, compared with 1,000 m for the 10 m input.</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>Table 3. Comparison of segmentation metrics for 10 m and spatially averaged 30 m embeddings at approximately 1 km seed spacing.</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>| Site | Input | Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>|:-----|:------|---------:|------------:|--------------:|----------------:|--------------:|-------------------------:|</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>| CT   | 10m   |    2,024 |        91.0 |       198,480 |            83.5 |          66.3 |                     90.0 |</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>| CT   | 30m   |    2,084 |        93.9 |       201,091 |            83.0 |          65.8 |                     89.3 |</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>| EC   | 10m   |    2,146 |        89.8 |       211,269 |            80.4 |          57.6 |                     83.7 |</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>| EC   | 30m   |    2,218 |        92.4 |       214,558 |            80.6 |          57.4 |                     84.2 |</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>Class-specific retention remained similar between resolutions (@tbl-resolution-retention), as did the pooled composition of the assigned BII classes (@fig-resolution-composition).</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>Table 4. Percentage of original mapped land cover retained within its assigned BII class, for the two embedding resolutions. {#tbl-resolution-retention}</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>| Site | Cover         | 10 m | 30 m |</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>|:-----|:--------------|-----:|-----:|</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>| CT   | Settlements   | 65.6 | 64.3 |</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>| CT   | Timber        | 68.6 | 65.6 |</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>| CT   | Tree crops    | 88.3 | 90.1 |</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>| CT   | Croplands     | 92.7 | 91.5 |</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>| CT   | Untransformed | 44.2 | 45.8 |</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>| EC   | Settlements   | 83.5 | 83.3 |</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>| EC   | Timber        | 94.1 | 94.4 |</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>| EC   | Tree crops    |  0.0 |  0.0 |</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>| EC   | Croplands     | 72.9 | 74.3 |</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>| EC   | Untransformed | 62.2 | 63.1 |</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="al">![Pooled land-cover composition within assigned BII classes using 10 m and 30 m embeddings at approximately 1 km seed spacing, shown separately for CT and EC.](images/Fig6_composition_resolution.png)</span>{#fig-resolution-composition width="100%"}</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a><span class="fu">## National segmentation</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>We selected 2022 embeddings, all 64 dimensions, spatially averaged to 30 m, and ran SNIC with <span class="in">`size = 33`</span> (990 m), <span class="in">`compactness = 1`</span>, 8-connectivity and <span class="in">`neighborhoodSize = 66`</span>. The national run used a 5 km buffer around the South African country boundary and exported the original SNIC <span class="in">`clusters`</span> labels as a single-band Int64 raster, aligned to the 30 m Albers grid. The country boundary in the GEE data catalogue was use.</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>Before using the segments in species-level spatial joins, the raster was to be checked for coverage and duplicate IDs among disconnected objects, then vectorised and assigned stable geometries. Land-use classes and intensity would subsequently be linked to the validated segment IDs.</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exploratory comparison with a regular grid</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>In an earlier northern Limpopo case study, image-derived segments were compared with regular 1 × 1 km cells using broad land-cover proportions and the same BII assignment rules. Segments more often contained a higher proportion of their assigned cover, and their assigned class more often matched the dominant cover, particularly for transformed land uses. This was an exploratory comparison, separate from the CT/EC parameter selection, and did not measure classification accuracy. We further explored what typically co-occurs with each broad land use class within each segments (Fig. 3).</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="al">![Mean broad land-cover composition within assigned BII classes for image-derived segments and 1 × 1 km grid cells in the Limpopo case study. Protected status was assessed separately.](images/02_mean_composition.png)</span>{#fig-grid-composition width="100%"}</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="al">![Percentage of units whose assigned BII class matched the dominant mapped land cover, comparing segments with 1 × 1 km grid cells in Limpopo. Protected land was omitted because it was an overlay.](images/04_assignment_dominance_agreement.png)</span>{#fig-grid-dominance width="100%"}</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

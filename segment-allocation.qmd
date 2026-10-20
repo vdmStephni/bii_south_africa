@@ -1,5 +1,5 @@
 ---
-title: "Segment land use and intensity allocation"
+title: "Broad land use allocation"
 ---
 
 ## Summary
@@ -15,7 +15,7 @@ Script: <https://code.earthengine.google.com/b24c2eb0480039c2c13c32a0e9cd7a53>
 The following spatial layers are used in GEE:
 
 | Input               | Description                                                                           |
-|---------------------|---------------------------------------------------------------------------------------|
+|-----------------|-------------------------------------------------------|
 | `Segments_800m_SA`  | National segmentation raster containing a unique integer identifier for every segment |
 | `SANBI_PA_2025_BII` | Gazetted and managed terrestrial protected areas retained for BII                     |
 | Pixel-area image    | Pixel area in square metres, generated using `ee.Image.pixelArea()`                   |
@@ -82,7 +82,7 @@ The segment is assigned to **Settlements**, because settlements have higher prio
 ### Examples
 
 | Segment composition                                        | Assigned class      | Reason                                                        |
-|------------------------------------------------------------|---------------------|---------------------------------------------------------------|
+|---------------------------|----------------|-----------------------------|
 | 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |
 | 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |
 | 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |
@@ -182,18 +182,4 @@ A continuous value from 0 to 1 representing segment-level land use intensity. Fo
 
 The two bands must be interpreted together. The intensity value is conditional on the broad land use assigned to the segment, and the intensity of Untransformed lands will be refined separately using ecological pressure and condition information.
 
-## Segment vs. grid broad land cover composition
-
-We examined land cover composition in a northern Limpopo case study in a mixed use landscape to assess whether segments capture more coherent land use units than a regular 1 × 1 km grid. For each unit, we calculated the proportion of mapped terrestrial area occupied by each broad NLC category and applied the same \>20% allocation thresholds and priority rules. Composition was then averaged within each assigned class, giving each unit equal weight.
-
-Segments contained higher mean proportions of their assigned land cover (FIg. 1) than grid cells for settlements, timber plantations, tree croplands and croplands. Both approaches produced predominantly untransformed cover within Protected and Untransformed units. These preliminary results suggest that segments better separate broad land uses in this landscape.
-
-![Figure 1. Mean broad land cover composition of segments and 1 × 1 km grid cells by assigned BII land use class in the Limpopo case study. Colours represent underlying land cover; protected status is applied separately during allocation and therefore does not appear as a land-cover category.](images/02_mean_composition.png)
-
-The assigned land use class also matched the dominant underlying land cover more frequently in segments than in grid cells, particularly for croplands, tree croplands and settlements. This indicates that segment-based labels more often represent the largest land cover component within an assessment unit. The comparison measures agreement between allocation and mapped composition, rather than classification accuracy.
-
-![Figure 2. Percentage of segments and 1 × 1 km grid cells in which the assigned BII land use class matches the dominant underlying land cover in the Limpopo case study. Dominance denotes the largest share of mapped terrestrial area. Protected lands are excluded because protection is an overlapping management designation rather than a land cover category.](images/04_assignment_dominance_agreement.png)
-
-We further explored what typically co-occurs with each broad land use class within each segments (Fig. 3).In this case study, untransformed land accounts for approximately 75–100% of the pooled remainder within segments assigned to settlements, croplands, tree croplands and timber plantations. The remainder therefore mainly reflects mixtures of transformed and untransformed cover, although other agricultural uses also contribute, particularly within tree cropland segments. Conversely, the transformed remainder within untransformed-assigned segments consists mainly of croplands and settlements. These percentages describe the remainder rather than the whole segment, and highlight why the condition of untransformed cover may matter when estimating intensity across mixed landscapes.
-
-![Figure 3. Broad land cover composition of the pooled area remaining after excluding each segment’s assigned broad class. Panels show assigned classes, with segments grouped by the proportion of terrestrial area occupied by that class (\<50%, 50–\<80%, and 80–100%). Colours represent each remaining cover’s share of the pooled remainder hectares; segments with no remainder are excluded.](images/pooled_remainder_five_classes.png)
+## 

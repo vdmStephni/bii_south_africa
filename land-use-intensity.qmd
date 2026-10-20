@@ -2,6 +2,24 @@
 title: "Land use intensity"
 ---
 
+## October 2026 updates
+
+-   Updated SANLC crosswalk and assets
+
+    -   SANLC smallholder classes now Croplands in stead of Settlements
+
+-   Recalculated land use intensity with new equation
+
+-   Looked into ways of making segmentation layer more efficient without losing homogeneity
+
+    -   Downscaled embeddings from 10m to 30m
+
+    -   Selected \~990 m segment size (from 800 when using 10m embeddings)
+
+    -   Ensure unique IDs exported correctly from GEE to use in GIS
+
+-   Untransformed intensity: exploring grazing intensity estimates
+
 ## Summary
 
 We used the South African National Land Cover (SANLC) dataset to assign both the broad land use to each segment and estimate land use intensity because it provides a nationally consistent and high-resolution representation of land cover that was not available across sub-Saharan Africa for the original BII assessment. SANLC is already used by SANBI in the National Biodiversity Assessment and other national biodiversity monitoring applications, providing consistency with established South African biodiversity products. Its regular update cycle (approximately every four years) also means that the BII land use and intensity layers can be updated using the same underlying national dataset, supporting repeatable monitoring of changes through time.
@@ -14,14 +32,12 @@ For the sub-Saharan African BII, separate spatial proxies were used to estimate 
 
 The South African implementation differs slightly because the 73-class SANLC product provides substantially more detailed information on the composition of each landscape. We use those subclasses to represent the **within-class intensity** of the land use assigned to a segment, while also explicitly accounting for the **proportion of the segment converted to any non-natural land use**.
 
-### 
-
 ### SANLC intensity crosswalk
 
 For transparency, the SANLC subclasses used to characterise within-class land use intensity were assigned to low, medium and high intensity categories and converted to scores of 0, 0.5 and 1, respectively. Timber plantations were treated as a single high-intensity class with a fixed score of 1.
 
 | Broad BII land use | SANLC subclass                                       | Intensity category | Score |
-|--------------------|------------------------------------------------------|-------------------:|------:|
+|----------------|-------------------------|---------------:|---------------:|
 | Timber plantations | contiguous & dense plantation forest                 |               high |     1 |
 | Timber plantations | open & sparse plantation forest                      |               high |     1 |
 | Timber plantations | temporary unplanted (clear-felled) plantation forest |               high |     1 |
@@ -35,10 +51,10 @@ For transparency, the SANLC subclasses used to characterise within-class land us
 | Croplands          | commercial annual crops non-pivot irrigated          |               high |     1 |
 | Croplands          | commercial annual crops rain-fed / dryland           |               high |     1 |
 | Croplands          | subsistence / small-scale annual crops               |                low |     0 |
-| Croplands          | smallholdings (tree)                                 |                low |     0 |
-| Croplands          | smallholdings (bush)                                 |                low |     0 |
-| Croplands          | smallholdings (low veg / grass)                      |                low |     0 |
-| Croplands          | smallholdings (bare)                                 |                low |     0 |
+| **Croplands**      | **smallholdings (tree)**                             |                low |     0 |
+| **Croplands**      | **smallholdings (bush)**                             |                low |     0 |
+| **Croplands**      | **smallholdings (low veg / grass)**                  |                low |     0 |
+| **Croplands**      | **smallholdings (bare)**                             |                low |     0 |
 | Settlements        | residential formal (tree)                            |             medium |   0.5 |
 | Settlements        | residential formal (bush)                            |             medium |   0.5 |
 | Settlements        | residential formal (low veg / grass)                 |             medium |   0.5 |
@@ -65,14 +81,6 @@ For transparency, the SANLC subclasses used to characterise within-class land us
 These scores represent relative intensity within each broad land use class, rather than a common ecological impact scale across all classes. The final segment-level intensity for non-natural classes is therefore obtained by averaging the assigned-class mean intensity with the total proportion of the terrestrial segment occupied by all non-natural land uses.
 
 ### Segment intensity calculation
-
-For settlements, croplands and tree croplands, SANLC subclasses are assigned provisional intensity scores:
-
-| Intensity class | Score |
-|-----------------|------:|
-| Low             |     0 |
-| Medium          |   0.5 |
-| High            |     1 |
 
 For each segment, the first component is the area-weighted mean intensity of SANLC pixels belonging to the **broad land use assigned to that segment**:
 
@@ -118,7 +126,7 @@ $$
 This gives equal weight to:
 
 1.  **how intensive the assigned land use is**, based on its detailed SANLC subclasses; and
-2.  **how much of the surrounding segment has been converted away from intact land**.
+2.  **how much of the surrounding segment has been converted away from natural land**.
 
 For example, if a settlement-assigned segment has a mean settlement intensity of 0.8 and 90% of its terrestrial area is covered by settlements, croplands, tree croplands or timber plantations, its final intensity is:
 
@@ -159,7 +167,7 @@ Intensity for segments assigned to Untransformed lands will be calculated separa
 
 The sub-Saharan BII estimated intensity in untransformed lands primarily from livestock density and nitrogen inputs, with livestock pressure standardised within rainfall and soil nutrient contexts. For the South African implementation, additional pressure and condition datasets can be used where they improve on these broad proxies.
 
-Potential inputs include livestock pressure relative to carrying capacity and mapped degradation or condition products being developed at SANBI. For example, in the Thicket biome, remotely sensed estimates of intact, moderately degraded and severely degraded vegetation could help distinguish rangeland use intensity within segments otherwise classified as untransformed.
+Potential inputs include livestock pressure relative to carrying capacity and mapped degradation or condition products being developed at SANBI. For example, in the Thicket biome, remotely sensed estimates of grazing intensity could help distinguish rangeland use intensity within segments otherwise classified as untransformed.
 
 This component will be developed separately so that transformation intensity in the four non-natural classes is not conflated with ecological pressure or degradation in remaining natural vegetation.
 
@@ -181,7 +189,7 @@ The mean settlement score is then averaged with the total non-natural proportion
 
 ![](images/clipboard-3796882116.png){width="239"}
 
-![](images/clipboard-3582091583.png){width="226"}
+![](images/clipboard-3582091583.png){width="229"}
 
 Commercial annual crops, sugarcane and other intensive commercial crop classes are assigned high intensity. Subsistence/small-scale annual crops and SANLC smallholding classes are assigned to the Croplands broad class at low intensity, reflecting the non-intensive smallholder endpoint more closely.
 
