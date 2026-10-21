@@ -23,7 +23,7 @@ Processing used SANBI's South African Albers Equal Area CRS (`AEA_RSA_WGS84`; WG
 
 The 2022 South African National Land Cover (SANLC) classification was used **to evaluate**, not generate, segments. Broad land-cover proportions were obtained from the BII crosswalk (`NLC_reclass_BII_land_use_intensity`), with protected-area overlap calculated separately. SANLC was assessed on the 10 m extraction grid during the sensitivity tests; its underlying land-cover information originated from the 20 m product.
 
-### Sensitivity design
+### Sensitivity analysis
 
 Two contrasting mixed-use rectangles were drawn in GEE: CT (Cape Town, including urban, industrial, tree croplands and mountain landscapes) and EC (Eastern Cape, including settlements, agriculture, plantations and natural vegetation). Each was buffered by 5 km during segmentation. Segments intersecting the test-area boundaries were excluded from comparisons.
 
@@ -41,18 +41,18 @@ We assessed segment count, median area, area-weighted homogeneity (largest broad
 
 Increasing seed spacing reduced segment counts but increased land-cover mixing (Table 1). Moving from 800 to 1,000 m reduced segments by 36.9% in CT and 37.0% in EC, with homogeneity declining by only 1.1 and 2.1%, respectively. Median areas at 1,000 m were 91.0 ha (CT) and 89.8 ha (EC), close to the regional BII's 100 ha grid scale. We therefore selected approximately 1,000 m seed spacing.
 
-Table 1. Segmentation metrics for four seed spacings. Counts and assessed areas excluded test-boundary segments. Homogeneity was the area-weighted dominant land-cover share; retention combined the four transformed covers. {#tbl-seed-spacing}
+Table 1. Segmentation metrics for four seed spacings. Counts and assessed areas excluded test-boundary segments. Homogeneity was the area-weighted dominant land-cover share; retention combined the four transformed covers.
 
-| Site | Seed (m) | Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |
-|:-----|---------:|---------:|------------:|--------------:|----------------:|--------------:|-------------------------:|
-| CT   |      600 |    5,805 |        33.7 |       206,697 |            86.5 |          74.1 |                     92.2 |
-| CT   |      800 |    3,209 |        58.4 |       202,547 |            84.6 |          69.1 |                     91.2 |
-| CT   |    1,000 |    2,024 |        91.0 |       198,480 |            83.5 |          66.3 |                     90.0 |
-| CT   |    1,200 |    1,396 |       128.4 |       193,667 |            82.4 |          64.8 |                     88.8 |
-| EC   |      600 |    6,168 |        33.6 |       220,284 |            84.9 |          67.0 |                     88.5 |
-| EC   |      800 |    3,409 |        57.8 |       215,810 |            82.5 |          61.5 |                     86.1 |
-| EC   |    1,000 |    2,146 |        89.8 |       211,269 |            80.4 |          57.6 |                     83.7 |
-| EC   |    1,200 |    1,463 |       127.1 |       207,434 |            78.6 |          51.4 |                     81.6 |
+| Site   |  Seed (m) |  Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |
+|:--------|--------:|--------:|--------:|--------:|--------:|-------:|---------:|
+| CT     |       600 |     5,805 |        33.7 |       206,697 |            86.5 |          74.1 |                     92.2 |
+| CT     |       800 |     3,209 |        58.4 |       202,547 |            84.6 |          69.1 |                     91.2 |
+| **CT** | **1,000** | **2,024** |    **91.0** |   **198,480** |        **83.5** |      **66.3** |                 **90.0** |
+| CT     |     1,200 |     1,396 |       128.4 |       193,667 |            82.4 |          64.8 |                     88.8 |
+| EC     |       600 |     6,168 |        33.6 |       220,284 |            84.9 |          67.0 |                     88.5 |
+| EC     |       800 |     3,409 |        57.8 |       215,810 |            82.5 |          61.5 |                     86.1 |
+| **EC** | **1,000** | **2,146** |    **89.8** |   **211,269** |        **80.4** |      **57.6** |                 **83.7** |
+| EC     |     1,200 |     1,463 |       127.1 |       207,434 |            78.6 |          51.4 |                     81.6 |
 
 Table 2. Percentage of each mapped land-cover class retained in segments assigned to the same BII class. Protected land was excluded because it overlapped the land-cover categories.
 
@@ -80,15 +80,15 @@ At approximately 1,000 m spacing, moving from 10 m to 30 m reduced the SNIC inpu
 Table 3. Comparison of segmentation metrics for 10 m and spatially averaged 30 m embeddings at approximately 1 km seed spacing.
 
 | Site | Input | Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |
-|:-----|:------|---------:|------------:|--------------:|----------------:|--------------:|-------------------------:|
+|:--------|:--------|--------:|--------:|--------:|--------:|--------:|--------:|
 | CT   | 10m   |    2,024 |        91.0 |       198,480 |            83.5 |          66.3 |                     90.0 |
 | CT   | 30m   |    2,084 |        93.9 |       201,091 |            83.0 |          65.8 |                     89.3 |
 | EC   | 10m   |    2,146 |        89.8 |       211,269 |            80.4 |          57.6 |                     83.7 |
 | EC   | 30m   |    2,218 |        92.4 |       214,558 |            80.6 |          57.4 |                     84.2 |
 
-Class-specific retention remained similar between resolutions (@tbl-resolution-retention), as did the pooled composition of the assigned BII classes (@fig-resolution-composition).
+Class-specific retention remained similar between resolutions, as did the pooled composition of the assigned BII classes (@fig-resolution-composition).
 
-Table 4. Percentage of original mapped land cover retained within its assigned BII class, for the two embedding resolutions. {#tbl-resolution-retention}
+Table 4. Percentage of original mapped land cover retained within its assigned BII class, for the two embedding resolutions.
 
 | Site | Cover         | 10 m | 30 m |
 |:-----|:--------------|-----:|-----:|
@@ -110,6 +110,16 @@ Table 4. Percentage of original mapped land cover retained within its assigned B
 We selected 2022 embeddings, all 64 dimensions, spatially averaged to 30 m, and ran SNIC with `size = 33` (990 m), `compactness = 1`, 8-connectivity and `neighborhoodSize = 66`. The national run used a 5 km buffer around the South African country boundary and exported the original SNIC `clusters` labels as a single-band Int64 raster, aligned to the 30 m Albers grid. The country boundary in the GEE data catalogue was use.
 
 Before using the segments in species-level spatial joins, the raster was to be checked for coverage and duplicate IDs among disconnected objects, then vectorised and assigned stable geometries. Land-use classes and intensity would subsequently be linked to the validated segment IDs.
+
+## GEE export considerations
+
+Because GEE does batch processing, the SNIC algorithm is processed in tiles across the country. This means that the segment ids generated randomly may not be unique. Unique ids are essential for associating species information to the correct segment.
+
+`ee.Image.connectedComponents()` function is used to identify image objects and assign a unique ID to each; all pixels belonging to an object are assigned the same integer ID value. The result is a copy of the input image with an additional "labels" band associating pixels with an object ID value based on connectivity of pixels in the first band of the image.
+
+Earth Engine's connectedComponents() limits maxSize to 1,024. Which means it can consider only 1024 connected pixels, but 1,024 pixels at 30 m represent only 92.16 ha. If some segments exceed that, it masks them. 
+
+Checks are underway to ensure globally unique ids are used and no segments exceed the pixel threshold for masking.
 
 ## Exploratory comparison with a regular grid
 

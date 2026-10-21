@@ -15,7 +15,7 @@ Script: <https://code.earthengine.google.com/b24c2eb0480039c2c13c32a0e9cd7a53>
 The following spatial layers are used in GEE:
 
 | Input               | Description                                                                           |
-|-----------------|-------------------------------------------------------|
+|---------------------|---------------------------------------------------------------------------------------|
 | `Segments_800m_SA`  | National segmentation raster containing a unique integer identifier for every segment |
 | `SANBI_PA_2025_BII` | Gazetted and managed terrestrial protected areas retained for BII                     |
 | Pixel-area image    | Pixel area in square metres, generated using `ee.Image.pixelArea()`                   |
@@ -82,7 +82,7 @@ The segment is assigned to **Settlements**, because settlements have higher prio
 ### Examples
 
 | Segment composition                                        | Assigned class      | Reason                                                        |
-|---------------------------|----------------|-----------------------------|
+|------------------------------------------------------------|---------------------|---------------------------------------------------------------|
 | 15% settlement, 30% cropland, 55% untransformed            | Croplands           | Settlement does not exceed 20%, but cropland does             |
 | 22% timber, 35% cropland, 43% untransformed                | Timber plantations  | Both exceed 20%, but timber has higher priority               |
 | 10% cropland, 25% protected, 65% untransformed             | Protected lands     | Protected cover exceeds 20% and no higher-priority class does |

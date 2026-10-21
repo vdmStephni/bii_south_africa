@@ -261,10 +261,10 @@ window.Quarto = {
 <p>For transparency, the SANLC subclasses used to characterise within-class land use intensity were assigned to low, medium and high intensity categories and converted to scores of 0, 0.5 and 1, respectively. Timber plantations were treated as a single high-intensity class with a fixed score of 1.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 21%">
-<col style="width: 34%">
-<col style="width: 21%">
-<col style="width: 21%">
+<col style="width: 22%">
+<col style="width: 31%">
+<col style="width: 22%">
+<col style="width: 22%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -515,6 +515,7 @@ window.Quarto = {
 </section>
 <section id="segment-intensity-calculation" class="level3">
 <h3 class="anchored" data-anchor-id="segment-intensity-calculation">Segment intensity calculation</h3>
+<p>We calculated intensity for each segment by using the average of the proportion of non-natural land cover and mean intensity score of the assigned braod land use.</p>
 <p>For each segment, the first component is the area-weighted mean intensity of SANLC pixels belonging to the <strong>broad land use assigned to that segment</strong>:</p>
 <p><span class="math display">\[
 \bar{I}_{c,s}
@@ -553,7 +554,7 @@ P_{\mathrm{non-natural},s}
 <p>This gives equal weight to:</p>
 <ol type="1">
 <li><strong>how intensive the assigned land use is</strong>, based on its detailed SANLC subclasses; and</li>
-<li><strong>how much of the surrounding segment has been converted away from natural land</strong>.</li>
+<li><strong>how much of the rest of the segment has been converted away from natural land</strong>.</li>
 </ol>
 <p>For example, if a settlement-assigned segment has a mean settlement intensity of 0.8 and 90% of its terrestrial area is covered by settlements, croplands, tree croplands or timber plantations, its final intensity is:</p>
 <p><span class="math display">\[
@@ -1140,7 +1141,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>For transparency, the SANLC subclasses used to characterise within-class land use intensity were assigned to low, medium and high intensity categories and converted to scores of 0, 0.5 and 1, respectively. Timber plantations were treated as a single high-intensity class with a fixed score of 1.</span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>| Broad BII land use | SANLC subclass                                       | Intensity category | Score |</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>|----------------|-------------------------|---------------:|---------------:|</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>|-----------------|-----------------------|----------------:|----------------:|</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>| Timber plantations | contiguous &amp; dense plantation forest                 |               high |     1 |</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>| Timber plantations | open &amp; sparse plantation forest                      |               high |     1 |</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>| Timber plantations | temporary unplanted (clear-felled) plantation forest |               high |     1 |</span>
@@ -1185,146 +1186,148 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="fu">### Segment intensity calculation</span></span>
 <span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>For each segment, the first component is the area-weighted mean intensity of SANLC pixels belonging to the **broad land use assigned to that segment**:</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>We calculated intensity for each segment by using the average of the proportion of non-natural land cover and mean intensity score of the assigned braod land use.</span>
 <span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>\bar{I}_{c,s}</span>
-<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>=</span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>\frac{\sum_i a_i I_i}</span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>     {\sum_i a_i}</span>
-<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>For each segment, the first component is the area-weighted mean intensity of SANLC pixels belonging to the **broad land use assigned to that segment**:</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>\bar{I}_{c,s}</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>=</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>\frac{\sum_i a_i I_i}</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>     {\sum_i a_i}</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$\bar{I}_{c,s}$ is the mean subclass intensity for assigned class $c$ in segment $s$;</span>
-<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$I_i$ is the intensity score of pixel $i$;</span>
-<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$a_i$ is its area; and</span>
-<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>only valid pixels belonging to the assigned broad land use are included.</span>
-<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>The second component is the proportion of the terrestrial segment covered by **all non-natural BII land uses combined**:</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$\bar{I}_{c,s}$ is the mean subclass intensity for assigned class $c$ in segment $s$;</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$I_i$ is the intensity score of pixel $i$;</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$a_i$ is its area; and</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>only valid pixels belonging to the assigned broad land use are included.</span>
 <span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
-<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>=</span>
-<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{settlement},s}</span>
-<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>+</span>
-<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{timber},s}</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>The second component is the proportion of the terrestrial segment covered by **all non-natural BII land uses combined**:</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>=</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{settlement},s}</span>
 <span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>+</span>
-<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{treecrop},s}</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{timber},s}</span>
 <span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>+</span>
-<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{cropland},s}</span>
-<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>The final segment intensity for settlements, tree croplands and croplands is:</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{treecrop},s}</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>+</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{cropland},s}</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>I_s =</span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>\frac{</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>\bar{I}_{c,s}</span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>+</span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>}{2}</span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>This gives equal weight to:</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>The final segment intensity for settlements, tree croplands and croplands is:</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>I_s =</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>\frac{</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>\bar{I}_{c,s}</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>+</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>}{2}</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**how intensive the assigned land use is**, based on its detailed SANLC subclasses; and</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**how much of the surrounding segment has been converted away from natural land**.</span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>For example, if a settlement-assigned segment has a mean settlement intensity of 0.8 and 90% of its terrestrial area is covered by settlements, croplands, tree croplands or timber plantations, its final intensity is:</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>This gives equal weight to:</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**how intensive the assigned land use is**, based on its detailed SANLC subclasses; and</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**how much of the rest of the segment has been converted away from natural land**.</span>
 <span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>I_s = \frac{0.8 + 0.9}{2} = 0.85</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>For example, if a settlement-assigned segment has a mean settlement intensity of 0.8 and 90% of its terrestrial area is covered by settlements, croplands, tree croplands or timber plantations, its final intensity is:</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>This allows two segments assigned to the same broad land use to differ not only because their mapped subclasses differ, but also because one occurs in a more extensively transformed landscape.</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>I_s = \frac{0.8 + 0.9}{2} = 0.85</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a><span class="fu">### Timber plantations</span></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>This allows two segments assigned to the same broad land use to differ not only because their mapped subclasses differ, but also because one occurs in a more extensively transformed landscape.</span>
 <span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>Timber plantations are treated separately because the BII expert elicitation used a single plantation scenario rather than a low-to-high plantation gradient. Their assigned-class intensity is therefore fixed at **1**.</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a><span class="fu">### Timber plantations</span></span>
 <span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>The segment-level intensity is still adjusted for the total amount of non-natural land:</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>Timber plantations are treated separately because the BII expert elicitation used a single plantation scenario rather than a low-to-high plantation gradient. Their assigned-class intensity is therefore fixed at **1**.</span>
 <span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>I_s =</span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>\frac{</span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>1</span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>+</span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
-<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>}{2}</span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>Thus, a timber-assigned segment that is 80% non-natural receives an intensity of 0.9.</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>The segment-level intensity is still adjusted for the total amount of non-natural land:</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>I_s =</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>\frac{</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>1</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>+</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>P_{\mathrm{non-natural},s}</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>}{2}</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### Protected lands</span></span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>Thus, a timber-assigned segment that is 80% non-natural receives an intensity of 0.9.</span>
 <span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>Protected lands are currently assigned an intensity of **0**. Protected status is treated as a management designation rather than part of the non-natural proportion.</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a><span class="fu">### Protected lands</span></span>
 <span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>This value represents the low-pressure protected scenario used in the BII land use framework and should not be interpreted as a direct measurement of protected-area effectiveness or ecological condition.</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>Protected lands are currently assigned an intensity of **0**. Protected status is treated as a management designation rather than part of the non-natural proportion.</span>
 <span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a><span class="fu">### Untransformed lands</span></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>This value represents the low-pressure protected scenario used in the BII land use framework and should not be interpreted as a direct measurement of protected-area effectiveness or ecological condition.</span>
 <span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>**In progress**</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a><span class="fu">### Untransformed lands</span></span>
 <span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>Intensity for segments assigned to Untransformed lands will be calculated separately. The land use intensity of land that has not been converted cannot be inferred reliably from SANLC natural cover subclasses alone because natural vegetation may still experience substantial grazing, browsing, harvesting or other land use pressures.</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>**In progress**</span>
 <span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>The sub-Saharan BII estimated intensity in untransformed lands primarily from livestock density and nitrogen inputs, with livestock pressure standardised within rainfall and soil nutrient contexts. For the South African implementation, additional pressure and condition datasets can be used where they improve on these broad proxies.</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>Intensity for segments assigned to Untransformed lands will be calculated separately. The land use intensity of land that has not been converted cannot be inferred reliably from SANLC natural cover subclasses alone because natural vegetation may still experience substantial grazing, browsing, harvesting or other land use pressures.</span>
 <span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>Potential inputs include livestock pressure relative to carrying capacity and mapped degradation or condition products being developed at SANBI. For example, in the Thicket biome, remotely sensed estimates of grazing intensity could help distinguish rangeland use intensity within segments otherwise classified as untransformed.</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>The sub-Saharan BII estimated intensity in untransformed lands primarily from livestock density and nitrogen inputs, with livestock pressure standardised within rainfall and soil nutrient contexts. For the South African implementation, additional pressure and condition datasets can be used where they improve on these broad proxies.</span>
 <span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>This component will be developed separately so that transformation intensity in the four non-natural classes is not conflated with ecological pressure or degradation in remaining natural vegetation.</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>Potential inputs include livestock pressure relative to carrying capacity and mapped degradation or condition products being developed at SANBI. For example, in the Thicket biome, remotely sensed estimates of grazing intensity could help distinguish rangeland use intensity within segments otherwise classified as untransformed.</span>
 <span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a><span class="fu">## Class-specific implementation</span></span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>This component will be developed separately so that transformation intensity in the four non-natural classes is not conflated with ecological pressure or degradation in remaining natural vegetation.</span>
 <span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a><span class="fu">### Settlements</span></span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## Class-specific implementation</span></span>
 <span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>**Endpoints: mixed settlements → dense urban.**</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### Settlements</span></span>
 <span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-2306388899.png)</span>{width="278"}<span class="al">![](images/clipboard-2126497119.png)</span>{width="290"}</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>**Endpoints: mixed settlements → dense urban.**</span>
 <span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>The South African approach uses SANLC settlement subclasses to distinguish within-class intensity. Vegetated formal and informal residential areas and villages are assigned intermediate scores, highly transformed residential, commercial, industrial, transport and mining classes are assigned high scores, and urban recreational classes are assigned low scores.</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-2306388899.png)</span>{width="278"}<span class="al">![](images/clipboard-2126497119.png)</span>{width="290"}</span>
 <span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>The mean settlement score is then averaged with the total non-natural proportion of the segment.</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>The South African approach uses SANLC settlement subclasses to distinguish within-class intensity. Vegetated formal and informal residential areas and villages are assigned intermediate scores, highly transformed residential, commercial, industrial, transport and mining classes are assigned high scores, and urban recreational classes are assigned low scores.</span>
 <span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### Croplands</span></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>The mean settlement score is then averaged with the total non-natural proportion of the segment.</span>
 <span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → intensive large-scale croplands.**</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a><span class="fu">### Croplands</span></span>
 <span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-3796882116.png)</span>{width="239"}</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → intensive large-scale croplands.**</span>
 <span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-3582091583.png)</span>{width="229"}</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-3796882116.png)</span>{width="239"}</span>
 <span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>Commercial annual crops, sugarcane and other intensive commercial crop classes are assigned high intensity. Subsistence/small-scale annual crops and SANLC smallholding classes are assigned to the Croplands broad class at low intensity, reflecting the non-intensive smallholder endpoint more closely.</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-3582091583.png)</span>{width="229"}</span>
 <span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>The mean cropland score is then averaged with the total non-natural proportion of the segment.</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a>Commercial annual crops, sugarcane and other intensive commercial crop classes are assigned high intensity. Subsistence/small-scale annual crops and SANLC smallholding classes are assigned to the Croplands broad class at low intensity, reflecting the non-intensive smallholder endpoint more closely.</span>
 <span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tree croplands</span></span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a>The mean cropland score is then averaged with the total non-natural proportion of the segment.</span>
 <span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → tree-crop plantations.**</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tree croplands</span></span>
 <span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-4203331977.png)</span>{width="246"}</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>**Endpoints: non-intensive smallholder croplands → tree-crop plantations.**</span>
 <span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a>Commercial orchards and vines are currently assigned high intensity. Their mean assigned-class intensity is averaged with the total non-natural proportion of the segment.</span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-4203331977.png)</span>{width="246"}</span>
 <span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a><span class="fu">### Timber plantations</span></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>Commercial orchards and vines are currently assigned high intensity. Their mean assigned-class intensity is averaged with the total non-natural proportion of the segment.</span>
 <span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>**Single scenario: timber plantations.**</span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a><span class="fu">### Timber plantations</span></span>
 <span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-2277078423.png)</span>{width="242"}</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a>**Single scenario: timber plantations.**</span>
 <span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>All plantation subclasses are treated as the single intensive plantation scenario. Their assigned-class intensity is fixed at 1 and averaged with the total non-natural proportion.</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/clipboard-2277078423.png)</span>{width="242"}</span>
 <span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## Difference from the sub-Saharan BII approach</span></span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a>All plantation subclasses are treated as the single intensive plantation scenario. Their assigned-class intensity is fixed at 1 and averaged with the total non-natural proportion.</span>
 <span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a>The two approaches share the same conceptual aim: representing the intensity of human land use at a landscape scale so that mapped land uses correspond as closely as possible to the scenarios assessed by experts.</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="fu">## Difference from the sub-Saharan BII approach</span></span>
 <span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a>The main difference is how intensity is "spatialised".</span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a>The two approaches share the same conceptual aim: representing the intensity of human land use at a landscape scale so that mapped land uses correspond as closely as possible to the scenarios assessed by experts.</span>
 <span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>The **sub-Saharan BII** relied on separate pressure proxies such as population density, mapped land use extent, field size, nitrogen inputs and livestock density. These variables were standardised and combined to produce a relative intensity score within each broad class.</span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>The main difference is how intensity is "spatialised".</span>
 <span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a>The **South African BII** makes greater use of the detailed SANLC classification. The intensity of the assigned class is first estimated from its mapped subclasses and then combined with the total proportion of the segment occupied by non-natural land uses. This explicitly incorporates landscape transformation into the segment score and reduces the dependence on separate continental-scale intensity proxies where detailed national land-cover information is available.</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a>The **sub-Saharan BII** relied on separate pressure proxies such as population density, mapped land use extent, field size, nitrogen inputs and livestock density. These variables were standardised and combined to produce a relative intensity score within each broad class.</span>
 <span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>The approach remains consistent with the landscape-scale interpretation of the expert elicitation: intensity is intended to characterise the overall human modification represented by a segment, rather than the condition of an isolated land-cover pixel.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>The **South African BII** makes greater use of the detailed SANLC classification. The intensity of the assigned class is first estimated from its mapped subclasses and then combined with the total proportion of the segment occupied by non-natural land uses. This explicitly incorporates landscape transformation into the segment score and reduces the dependence on separate continental-scale intensity proxies where detailed national land-cover information is available.</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a>The approach remains consistent with the landscape-scale interpretation of the expert elicitation: intensity is intended to characterise the overall human modification represented by a segment, rather than the condition of an isolated land-cover pixel.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

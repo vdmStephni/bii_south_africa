@@ -37,7 +37,7 @@ The South African implementation differs slightly because the 73-class SANLC pro
 For transparency, the SANLC subclasses used to characterise within-class land use intensity were assigned to low, medium and high intensity categories and converted to scores of 0, 0.5 and 1, respectively. Timber plantations were treated as a single high-intensity class with a fixed score of 1.
 
 | Broad BII land use | SANLC subclass                                       | Intensity category | Score |
-|----------------|-------------------------|---------------:|---------------:|
+|-----------------|-----------------------|----------------:|----------------:|
 | Timber plantations | contiguous & dense plantation forest                 |               high |     1 |
 | Timber plantations | open & sparse plantation forest                      |               high |     1 |
 | Timber plantations | temporary unplanted (clear-felled) plantation forest |               high |     1 |
@@ -81,6 +81,8 @@ For transparency, the SANLC subclasses used to characterise within-class land us
 These scores represent relative intensity within each broad land use class, rather than a common ecological impact scale across all classes. The final segment-level intensity for non-natural classes is therefore obtained by averaging the assigned-class mean intensity with the total proportion of the terrestrial segment occupied by all non-natural land uses.
 
 ### Segment intensity calculation
+
+We calculated intensity for each segment by using the average of the proportion of non-natural land cover and mean intensity score of the assigned braod land use.
 
 For each segment, the first component is the area-weighted mean intensity of SANLC pixels belonging to the **broad land use assigned to that segment**:
 
@@ -126,7 +128,7 @@ $$
 This gives equal weight to:
 
 1.  **how intensive the assigned land use is**, based on its detailed SANLC subclasses; and
-2.  **how much of the surrounding segment has been converted away from natural land**.
+2.  **how much of the rest of the segment has been converted away from natural land**.
 
 For example, if a settlement-assigned segment has a mean settlement intensity of 0.8 and 90% of its terrestrial area is covered by settlements, croplands, tree croplands or timber plantations, its final intensity is:
 
