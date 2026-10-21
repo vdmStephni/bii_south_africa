@@ -37,6 +37,8 @@ We assessed segment count, median area, area-weighted homogeneity (largest broad
 
 ## Sensitivity results
 
+Segmentation scenarios were evaluated using five metrics: (1) **segment count**, indicating computational requirements; (2) **median segment area** (ha); (3) **mean homogeneity**, calculated as the area-weighted mean proportion of the dominant land-cover class within each segment; (4) **area ≥80% homogeneous**, representing the percentage of total assessed area within segments dominated by a single land-cover class (≥80%); and (5) **transformed land-cover retention**, representing the proportion of mapped settlements, croplands, tree croplands and plantations occurring within segments assigned to their corresponding BII land-use class. Additionally, pooled land-cover composition was calculated to assess the mixture of land covers within each assigned BII class. Together, these metrics assessed the trade-off between computational efficiency and land-use representation.
+
 ### 1. Seed spacing
 
 Increasing seed spacing reduced segment counts but increased land-cover mixing (Table 1). Moving from 800 to 1,000 m reduced segments by 36.9% in CT and 37.0% in EC, with homogeneity declining by only 1.1 and 2.1%, respectively. Median areas at 1,000 m were 91.0 ha (CT) and 89.8 ha (EC), close to the regional BII's 100 ha grid scale. We therefore selected approximately 1,000 m seed spacing.
