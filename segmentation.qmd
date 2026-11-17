@@ -7,9 +7,9 @@ The page documents the technical decisions made during the segmentation process.
 
 ## Rationale and objective
 
-The South African Biodiversity Intactness Index (BII) requires a consistent **spatial unit of assessment** to which a broad land-use class, land-use intensity, and eventually species information can be linked. Here, that unit is an image-derived *segment*: a group of neighbouring 10 m pixels with similar landscape characteristics.
+The South African Biodiversity Intactness Index (BII) requires a consistent **spatial unit of assessment** to which a broad land-use class, land-use intensity, and eventually species information can be linked. Here, that unit is an image-derived *segment*: a group of neighbouring 20 m pixels (10 m embeddings aggregated to the native SANLC 2022 grid) with similar landscape characteristics.
 
-A regular grid (also called a fishnet), that is typically used in broad scale spatial workflows, is straightforward to reproduce, but its boundaries are imposed without reference to the landscape. A grid cell can therefore split fields or plantations, or combine very different land uses, imposing artificial boundaries on the landscape. Segmentation can follow landscape variation more closely, potentially producing units that more closely align with underlying vegetation structure, land use patterns, and management units, which provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness.
+A regular grid (also called a fishnet), that is typically used in broad scale spatial workflows, is straightforward to reproduce, but its boundaries are imposed without reference to the landscape. A grid cell can therefore split fields or plantations, or combine very different land uses, imposing artificial boundaries on the landscape. Segmentation can follow landscape variation more closely, potentially producing units that more closely align with underlying vegetation structure, land use patterns, and management units, which provides a more appropriate basis for assigning land use intensity and estimating biodiversity intactness. In GEE land-cover studies, SNIC-based objects gave more accurate and spatially coherent maps than per-pixel classification of the same imagery [@tassi2020; @tassi2021].
 
 Our aim in this part of the workflow is to select one nationally applicable segmentation configuration that balances land-cover homogeneity, recognisable landscape structure, consistency with the approximately 1 km analysis scale used in the regional BII, and a manageable number of units for national modelling. We tested various options for segmentation below.
 
@@ -17,11 +17,13 @@ Our aim in this part of the workflow is to select one nationally applicable segm
 
 ### Inputs and projection
 
-We used the 2022 [Google Satellite Embedding V1](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL) collection (@brown). Each native 10 m pixel contained a 64-dimensional landscape representation. All 64 bands were supplied to [Simple Non-Iterative Clustering (SNIC)](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic); i.e. they were not averaged across dimensions. SNIC formed connected objects from regularly spaced seeds according to feature similarity and spatial proximity.
+We used the 2022 [Google Satellite Embedding V1](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL) collection (@brown). Each native 10 m pixel contained a 64-dimensional landscape representation. All 64 bands were supplied to [Simple Non-Iterative Clustering (SNIC)](https://developers.google.com/earth-engine/apidocs/ee-algorithms-image-segmentation-snic); i.e. they were not averaged across dimensions. SNIC formed connected objects from regularly spaced seeds according to feature similarity and spatial proximity [@achanta2017].
 
-Processing used SANBI's South African Albers Equal Area CRS (`AEA_RSA_WGS84`; WGS84 datum, central meridian 25° E, standard parallels 24° S and 33° S). The 10 m and 30 m grids shared a fixed origin and affine transforms of `[10, 0, 0, 0, -10, 0]` and `[30, 0, 0, 0, -30, 0]`, respectively. A fixed projection prevented GEE display scale from determining SNIC resolution.
+The sensitivity tests used SANBI's South African Albers Equal Area CRS (`AEA_RSA_WGS84`; WGS84 datum, central meridian 25° E, standard parallels 24° S and 33° S). The 10 m and 30 m grids shared a fixed origin and affine transforms of `[10, 0, 0, 0, -10, 0]` and `[30, 0, 0, 0, -30, 0]`, respectively. A fixed projection prevented GEE display scale from determining SNIC resolution.
 
-The 2022 South African National Land Cover (SANLC) classification was used **to evaluate**, not generate, segments. Broad land-cover proportions were obtained from the BII crosswalk (`NLC_reclass_BII_land_use_intensity`), with protected-area overlap calculated separately. SANLC was assessed on the 10 m extraction grid during the sensitivity tests; its underlying land-cover information originated from the 20 m product.
+The national run instead used the native grid of SANLC 2022 in WGS84 (EPSG:4326; asset `SA_NLC_2022_GEO`, \~20 m pixels). Running SNIC directly on the land-cover grid means every segment pixel sits exactly on one SANLC pixel, so land-use allocation and intensity zonal statistics in R need no resampling. Delivery products are projected to Albers Equal Area afterwards (see [National segmentation](#national-segmentation)).
+
+The 2022 South African National Land Cover (SANLC) classification was used **to evaluate**, not generate, segments. In the national run it also supplied the CRS, pixel grid, validity mask and study extent, but did not enter SNIC as an input band. Broad land-cover proportions were obtained from the BII crosswalk (`NLC_reclass_BII_land_use_intensity`), with protected-area overlap calculated separately. SANLC was assessed on the 10 m extraction grid during the sensitivity tests; its underlying land-cover information originated from the 20 m product.
 
 ### Sensitivity analysis
 
@@ -46,7 +48,7 @@ Increasing seed spacing reduced segment counts but increased land-cover mixing (
 Table 1. Segmentation metrics for four seed spacings. Counts and assessed areas excluded test-boundary segments. Homogeneity was the area-weighted dominant land-cover share; retention combined the four transformed covers.
 
 | Site   |  Seed (m) |  Segments | Median (ha) | Assessed (ha) | Homogeneity (%) | ≥80% area (%) | Transformed retained (%) |
-|:--------|--------:|--------:|--------:|--------:|--------:|-------:|---------:|
+|:--------|--------:|--------:|--------:|--------:|--------:|--------:|--------:|
 | CT     |       600 |     5,805 |        33.7 |       206,697 |            86.5 |          74.1 |                     92.2 |
 | CT     |       800 |     3,209 |        58.4 |       202,547 |            84.6 |          69.1 |                     91.2 |
 | **CT** | **1,000** | **2,024** |    **91.0** |   **198,480** |        **83.5** |      **66.3** |                 **90.0** |
@@ -75,9 +77,9 @@ At coarser spacings, class retention generally declined. Tree crops were rare in
 
 ![Pooled mapped land-cover composition within each assigned BII class at four SNIC seed spacings in CT and EC. Each bar represents total mapped area pooled across segments; protected is an allocation class, not a separate mapped cover.](images/Fig5_composition_sizes.png){#fig-seed-composition width="100%"}
 
-### 2. Embedding resolution
+### 2. Embedding resolution {#embedding-resolution}
 
-At approximately 1,000 m spacing, moving from 10 m to 30 m reduced the SNIC input pixel count by 88.9% (ninefold fewer pixels). Mean homogeneity changed by −0.5 percentage points in CT and +0.2 in EC, with similarly small differences in transformed-cover retention (@tbl-resolution). The 30 m input therefore offered a substantial computational saving without materially reducing the evaluated land-cover homogeneity. Its seed spacing was 990 m, compared with 1,000 m for the 10 m input.
+At approximately 1,000 m spacing, moving from 10 m to 30 m reduced the SNIC input pixel count by 88.9% (ninefold fewer pixels). Mean homogeneity changed by −0.5 percentage points in CT and +0.2 in EC, with similarly small differences in transformed-cover retention (Table 3). The 30 m input therefore offered a substantial computational saving without materially reducing the evaluated land-cover homogeneity. Its seed spacing was 990 m, compared with 1,000 m for the 10 m input.
 
 Table 3. Comparison of segmentation metrics for 10 m and spatially averaged 30 m embeddings at approximately 1 km seed spacing.
 
@@ -107,21 +109,57 @@ Table 4. Percentage of original mapped land cover retained within its assigned B
 
 ![Pooled land-cover composition within assigned BII classes using 10 m and 30 m embeddings at approximately 1 km seed spacing, shown separately for CT and EC.](images/Fig6_composition_resolution.png){#fig-resolution-composition width="100%"}
 
-## National segmentation
+## National segmentation {#national-segmentation}
 
-We selected 2022 embeddings, all 64 dimensions, spatially averaged to 30 m, and ran SNIC with `size = 33` (990 m), `compactness = 1`, 8-connectivity and `neighborhoodSize = 66`. The national run used a 5 km buffer around the South African country boundary and exported the original SNIC `clusters` labels as a single-band Int64 raster, aligned to the 30 m Albers grid. The country boundary in the GEE data catalogue was use.
+The GEE script for the national run is available [here](https://code.earthengine.google.com/1301611503a074f06100e8cdfd2f03b2).
 
-Before using the segments in species-level spatial joins, the raster was to be checked for coverage and duplicate IDs among disconnected objects, then vectorised and assigned stable geometries. Land-use classes and intensity would subsequently be linked to the validated segment IDs.
+We selected 2022 embeddings, all 64 dimensions, spatially averaged from 10 m to the native \~20 m SANLC grid, and ran SNIC with the parameters in Table 5.
 
-## GEE export considerations
+The sensitivity analysis compared 10 m and 30 m embedding inputs, and the difference in land-cover homogeneity and retention between them was small (see [Embedding resolution](#embedding-resolution)). For the national run we chose 20 m, between the two tested resolutions, because it matches the native pixel size of SANLC 2022. Segments built on the SANLC grid line up pixel-for-pixel with the land cover used to allocate broad land-use classes and calculate land-use intensity, so no resampling is needed and no SANLC pixel is split between segments. It still cuts the input to a quarter of the 10 m pixel count. The raw SNIC `clusters` band was renamed `raw_snic_id`, cast to Int32, masked to the SANLC footprint and exported as a single-band raster.
 
-Because GEE does batch processing, the SNIC algorithm is processed in tiles across the country. This means that the segment ids generated randomly may not be unique. Unique ids are essential for associating species information to the correct segment.
+Table 5. Parameters of the national SNIC run.
 
-`ee.Image.connectedComponents()` function is used to identify image objects and assign a unique ID to each; all pixels belonging to an object are assigned the same integer ID value. The result is a copy of the input image with an additional "labels" band associating pixels with an object ID value based on connectivity of pixels in the first band of the image.
+| Parameter          | Value                                                                                                                                                       | Reasoning                                                                                                                                                                                                                                         |
+|:-----------------------|:-----------------------|:-----------------------|
+| Input              | 2022 Satellite Embedding V1, 64 bands                                                                                                                       | Full embedding retained; no dimension averaging                                                                                                                                                                                                   |
+| Resolution         | 20 m (mean of 10 m pixels, `reduceResolution`, `maxPixels = 9`)                                                                                             | Matches SANLC native pixel size, so segment and land-cover pixels correspond 1:1. Boundaries finer than 20 m cannot be evaluated against SANLC anyway, while 20 m keeps processing \~4× lighter than 10 m                                         |
+| CRS / grid         | EPSG:4326, `crsTransform` copied from `SA_NLC_2022_GEO` (`[0.00017966305682390397, 0, 16.350236486259412, 0, -0.00017966305682390397, -22.12406814340922]`) | Pins the export to the exact SANLC origin and pixel size (scale *and* origin), rather than only a nominal scale                                                                                                                                   |
+| `size`             | 50 pixels (1,000 m seed spacing)                                                                                                                            | Retains the \~1 km spacing consistent with the \~100 ha regional BII grid                                                                                                                                                                         |
+| `compactness`      | 1.5                                                                                                                                                         | Slightly more compact segments than in the tests (1.0), favouring regular, \~1 km-scale units over long, irregular objects. Not separately sensitivity-tested                                                                                     |
+| `connectivity`     | 4                                                                                                                                                           | Pixels join a segment only through shared edges, not corners. Matches the 4-direction rule used to assign unique IDs in R, so segment objects are defined the same way in GEE and R, and avoids diagonal-only links that produce invalid polygons |
+| `neighborhoodSize` | 100 pixels (2 × `size`, the GEE default)                                                                                                                    | Limits tiling overhead at national scale                                                                                                                                                                                                          |
+| Buffer             | 5 km around the SANLC footprint                                                                                                                             | Reduces edge effects where SNIC tiles meet the study-area boundary                                                                                                                                                                                |
+| Output type        | Int32                                                                                                                                                       | Widely supported by GIS software; ample range for national segment IDs                                                                                                                                                                            |
 
-Earth Engine's connectedComponents() limits maxSize to 1,024. Which means it can consider only 1024 connected pixels, but 1,024 pixels at 30 m represent only 92.16 ha. If some segments exceed that, it masks them. 
+**How these choices compare with other SNIC studies.** SNIC has no universal parameter set: seed spacing and compactness are tuned to the image resolution and the size of the objects of interest. Studies using SNIC in GEE have set them by repeated trials and visual inspection of segment outputs [@tassi2020; @tassi2021; @vizzari2025]. We followed the same principle but tested seed spacing quantitatively against SANLC homogeneity and class retention (see [Sensitivity results](#sensitivity-results)). Seed spacing sets the expected segment size [@achanta2017]. Those studies delineated individual fields and land-cover patches from 10–30 m Sentinel-2 and Landsat 8 imagery [@tassi2020; @tassi2021; @vizzari2025], whereas our 1 km spacing deliberately targets landscape units at the scale of the regional BII rather than individual fields. Compactness weights spatial distance against feature similarity in SNIC [@achanta2017]: higher values give more regular, grid-like superpixels, and lower values follow image boundaries more closely. A moderate value (1.5) keeps 1 km segments regular in shape while still letting them follow landscape boundaries in the embedding space. SNIC grows each segment only through neighbouring pixels, so every cluster is spatially connected when it is formed [@achanta2017]. Defining that neighbourhood with 4-connectivity is therefore what makes SNIC objects and the R `patches(directions = 4)` IDs agree.
 
-Checks are underway to ensure globally unique ids are used and no segments exceed the pixel threshold for masking.
+The processing area was the SANLC footprint buffered by 5 km, and the export region was the SANLC bounding box. The output was masked by the SANLC mask in the asset export, then additionally masked to `SANLC > 0` in the final GeoTIFF export to Google Drive (cloud-optimised), which removes no-data pixels outside South Africa.
+
+The raw SNIC IDs are **tile-local labels, not permanent segment IDs**. Globally unique IDs are assigned in R (see below), after which land-use classes and intensity are linked to those IDs.
+
+::: callout-note
+## Notes for future runs
+
+The national run used up the GEE contributor-tier monthly compute quota. SANLC 2022 was used as the mask to keep segmentation aligned with the land-cover grid, but its mask includes pixels with value 0, so SNIC was computed over the full SANLC bounding box, well beyond the South African border. These pixels were only removed afterwards (`SANLC > 0`). Future runs should clip to the South African boundary (or mask `SANLC > 0`) *before* running SNIC to reduce processing.
+:::
+
+## Exporting/converting segmentation layer to use in next steps of workflow
+
+### **Assigning unique ids (switching between platforms)**
+
+Because GEE does batch processing, the SNIC algorithm is processed in tiles across the country. Although the SNIC algorithm considers neighbouring pixels when delineating segments, the resulting segment IDs are not necessarily globally unique, meaning spatially disconnected segments can share the same ID. Globally unique IDs are essential for consistently linking land-use intensity, species data and other attributes to individual segments. Ensuring this uniqueness requires an additional processing step, which can be complicated when transferring data between GIS platforms that support different integer data types.
+
+`ee.Image.connectedComponents()` function can be used to identify image objects and assign a unique ID to each; all pixels belonging to an object are assigned the same integer ID value. The result is a copy of the input image with an additional "labels" band associating pixels with an object ID value based on connectivity of pixels in the first band of the image. However,the output is a 64-bit integer (Int64) raster, whereas the orginal SNIC algorithm outputs a signed 32-bit integer (Int32) "cluster IDs". Many GIS applications and raster-processing tools have limited support for Int64 values, whereas Int32 are more widely compatible and provide more than enough unique IDs for our segments. We therefore export the raw SNIC labels as Int32 and assign unique IDs outside GEE.
+
+Another consideration if GEE is used: connectedComponents() limits maxSize to 1,024. Which means it can consider only 1024 connected pixels, but 1,024 pixels at 20 m represent only 40.96 ha, well below the \~90 ha median segment area. If some segments exceed that, it masks them. The function was considered inappropriate for our purposes.
+
+Unique IDs are instead assigned in R with `terra::patches(directions = 4)`, which gives every spatially connected group of pixels sharing a raw SNIC label its own Int32 ID. Disconnected objects that share a tile-local SNIC label are therefore split into separate segments. Using 4-direction adjacency here matches `connectivity = 4` in SNIC, so a segment is defined by the same edge-sharing rule on both platforms. The resulting raster (WGS84, 20 m) is then projected to Albers Equal Area for delivery with `terra::project(method = "near")`; nearest-neighbour resampling keeps IDs as categorical values rather than interpolating between them.
+
+### Raster to vector
+
+Polygonisation is no longer needed to assign unique IDs or to calculate land-use allocation and intensity: these zonal statistics are computed directly on the raster, where segment and SANLC pixels share the same grid. If vector geometries are needed later (e.g. to associate species distributions with segments), we will vectorise with open-source software for reproducibility: GDAL Polygonize, accessed through QGIS or in R with the gdalraster package.
+
+Self-intersecting polygons need to be considered when vectorising. E.g. a square pixel may share a corner with its segment, but 3 borders with the neighbouring segment. When this pixel converts to a polygon, the connectedness (connectivity) parameter determines whether it remains with its original segment's polygon (i.e. a multipart polygon) or becomes its own polygon. gdalraster explicitly warns that 8-connected can produce invalid geometries (which ArcPro for e.g. can't read). Because the segments were built and labelled with 4-connectivity, vectorising with 4-connectedness keeps polygons consistent with the segment IDs.
 
 ## Exploratory comparison with a regular grid
 
